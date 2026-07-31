@@ -1,0 +1,250 @@
+import { useMemo, useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import CallIcon from "@mui/icons-material/Call";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
+export default function CustomerList({
+  customers = [],
+  onEdit,
+  onDelete,
+}) {
+  const [search, setSearch] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      const text = `
+        ${customer.name}
+        ${customer.mobile}
+        ${customer.city}
+        ${customer.plan}
+      `.toLowerCase();
+
+      return text.includes(search.toLowerCase());
+    });
+  }, [customers, search]);
+
+  const getPlanColor = (plan) => {
+    switch (plan) {
+      case "Premium":
+        return "success";
+      case "Annual":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
+
+  return (
+    <>
+      <Card sx={{ mt: 3, borderRadius: 4 }}>
+        <CardContent>
+
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            mb={2}
+          >
+            Customer List
+          </Typography>
+
+          <TextField
+            fullWidth
+            label="Search Customer"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+
+          {filteredCustomers.length === 0 ? (
+            <Typography color="text.secondary">
+              No customers found.
+            </Typography>
+          ) : (
+            <List>
+
+              {filteredCustomers.map((customer) => (
+
+                <Box key={customer.id}>
+
+                  <ListItem
+                    alignItems="flex-start"
+                  >
+
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: "success.main" }}>
+                        {customer.name?.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemAvatar>
+
+                    <ListItemText
+                      primary={
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          alignItems="center"
+                        >
+                          <Typography fontWeight="bold">
+                            {customer.name}
+                          </Typography>
+
+                          <Chip
+                            size="small"
+                            label={customer.plan}
+                            color={getPlanColor(customer.plan)}
+                          />
+                        </Stack>
+                      }
+
+                      secondary={
+                        <>
+                          <Typography variant="body2">
+                            📞 {customer.mobile}
+                          </Typography>
+
+                          <Typography variant="body2">
+                            📍 {customer.city}
+                          </Typography>
+
+                          {customer.gardenSize && (
+                            <Typography variant="body2">
+                              🌿 Garden : {customer.gardenSize}
+                            </Typography>
+                          )}
+                        </>
+                      }
+                    />
+
+                    <ListItemSecondaryAction>
+
+                      <IconButton
+                        component="a"
+                        href={`tel:${customer.mobile}`}
+                        color="primary"
+                      >
+                        <CallIcon />
+                      </IconButton>
+
+                      <IconButton
+                        component="a"
+                        href={`https://wa.me/91${customer.mobile}`}
+                        target="_blank"
+                        color="success"
+                      >
+                        <WhatsAppIcon />
+                      </IconButton>
+
+                      <IconButton
+                        color="warning"
+                        onClick={() => onEdit(customer)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+
+                      <IconButton
+                        color="error"
+                        onClick={() =>
+                          setSelectedCustomer(customer)
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+
+                    </ListItemSecondaryAction>
+
+                  </ListItem>
+
+                  <Divider />
+
+                </Box>
+
+              ))}
+
+            </List>
+          )}
+
+        </CardContent>
+      </Card>
+
+      <Dialog
+        open={Boolean(selectedCustomer)}
+        onClose={() => setSelectedCustomer(null)}
+      >
+        <DialogTitle>
+          Delete Customer
+        </DialogTitle>
+
+        <DialogContent>
+
+          <DialogContentText>
+            Are you sure you want to delete this customer?
+          </DialogContentText>
+
+          {selectedCustomer && (
+            <Box mt={2}>
+              <Typography>
+                <strong>Name:</strong>{" "}
+                {selectedCustomer.name}
+              </Typography>
+
+              <Typography>
+                <strong>Mobile:</strong>{" "}
+                {selectedCustomer.mobile}
+              </Typography>
+            </Box>
+          )}
+
+        </DialogContent>
+
+        <DialogActions>
+
+          <Button
+            onClick={() =>
+              setSelectedCustomer(null)
+            }
+          >
+            Cancel
+          </Button>
+
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              onDelete(selectedCustomer.id);
+              setSelectedCustomer(null);
+            }}
+          >
+            Delete
+          </Button>
+
+        </DialogActions>
+
+      </Dialog>
+    </>
+  );
+}
