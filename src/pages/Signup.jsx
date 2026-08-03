@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
@@ -7,8 +7,7 @@ import {
 import {
   auth,
   googleProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
 } from "../config/firebase";
 
 import { useAuthStore } from "../store/authStore";
@@ -21,30 +20,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function finishGoogleSignup() {
-      try {
-        const result = await getRedirectResult(auth);
-
-        if (result?.user) {
-          const token = await result.user.getIdToken();
-
-          setAuth(result.user, token);
-
-          navigate("/profile", { replace: true });
-        }
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-    }
-
-    finishGoogleSignup();
-  }, [navigate, setAuth]);
-
   const handleSignup = async (e) => {
     e.preventDefault();
-
     setError("");
 
     try {
@@ -59,7 +36,6 @@ export default function Signup() {
       setAuth(credential.user, token);
 
       navigate("/profile", { replace: true });
-
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -70,7 +46,13 @@ export default function Signup() {
     setError("");
 
     try {
-      await signInWithRedirect(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+
+      const token = await result.user.getIdToken();
+
+      setAuth(result.user, token);
+
+      navigate("/profile", { replace: true });
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -96,17 +78,16 @@ export default function Signup() {
       )}
 
       <form onSubmit={handleSignup}>
-
         <p>Email</p>
 
         <input
           type="email"
           value={email}
-          onChange={(e)=>setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
           style={{
-            width:"100%",
-            padding:10
+            width: "100%",
+            padding: 10,
           }}
         />
 
@@ -115,45 +96,44 @@ export default function Signup() {
         <input
           type="password"
           value={password}
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
           style={{
-            width:"100%",
-            padding:10
+            width: "100%",
+            padding: 10,
           }}
         />
 
         <button
           type="submit"
           style={{
-            width:"100%",
-            marginTop:20,
-            padding:12
+            width: "100%",
+            marginTop: 20,
+            padding: 12,
           }}
         >
           Create Account
         </button>
-
       </form>
 
       <button
         onClick={handleGoogleSignup}
         style={{
-          width:"100%",
-          marginTop:10,
-          padding:12
+          width: "100%",
+          marginTop: 10,
+          padding: 12,
         }}
       >
         Continue with Google
       </button>
 
-      <p style={{marginTop:15}}>
+      <p style={{ marginTop: 15 }}>
         Already have an account?{" "}
         <Link to="/login">
           Login
         </Link>
       </p>
-
     </div>
   );
 }
+

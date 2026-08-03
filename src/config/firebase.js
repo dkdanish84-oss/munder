@@ -5,8 +5,8 @@ import {
   browserLocalPersistence,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -26,10 +26,16 @@ setPersistence(auth, browserLocalPersistence).catch(console.error);
 
 const googleProvider = new GoogleAuthProvider();
 
+// Optional (recommended)
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
+
 export {
   auth,
   googleProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
+  signOut,
   onAuthStateChanged,
 };
+

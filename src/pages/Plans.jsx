@@ -1,282 +1,346 @@
-import React from 'react';
-import { Box, Typography, Button, Paper, IconButton, Container } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import { Box, Typography, Button, Paper, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import SecurityIcon from '@mui/icons-material/Security';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import PaymentIcon from '@mui/icons-material/Payment';
-import GrassIcon from '@mui/icons-material/Grass';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import BottomNav from '../components/BottomNav';
+import StarIcon from '@mui/icons-material/Star';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-export default function Plans() {
+export default function Plan() {
   const navigate = useNavigate();
 
-  const handleWhatsAppChat = (planName) => {
-    window.open(`https://wa.me/917987468974?text=Hi%20I%20want%20to%20know%20more%20about%20${planName}`, '_blank');
+  const plans = [
+    {
+      id: 1,
+      name: 'Basic Care Plan',
+      badge: 'Starter',
+      badgeBg: '#e8f5e9',
+      badgeColor: '#0e4d28',
+      suitable: '🏡 Balcony Garden',
+      price: 999,
+      duration: 'per month',
+      image: '/images/Maintenance01.jpg',
+      features: [
+        '2 Gardener visits per month',
+        'Basic plant watering & cleaning',
+        'Weed removal & soil loosening',
+        'WhatsApp expert support'
+      ]
+    },
+    {
+      id: 2,
+      name: 'Pro Garden Plan',
+      badge: 'Most Popular ⭐',
+      badgeBg: '#fff3e0',
+      badgeColor: '#e65100',
+      suitable: '🏠 Home Garden',
+      price: 1999,
+      duration: 'per month',
+      image: '/images/Development01.jpg',
+      features: [
+        '4 Gardener visits per month',
+        'Professional pruning & trimming',
+        'Organic pest & disease control',
+        'Free seasonal flower seeds',
+        'Priority WhatsApp & Call support'
+      ]
+    },
+    {
+      id: 3,
+      name: 'Ultimate Estate Plan',
+      badge: 'Premium',
+      badgeBg: '#f3e5f5',
+      badgeColor: '#6a1b9a',
+      suitable: '🌳 Villa / Luxury Lawn',
+      price: 3999,
+      duration: 'per month',
+      image: '/images/slide03.jpg', // Distinct Villa landscape image
+      features: [
+        'Weekly dedicated gardener visits',
+        'Lawn mowing & edge trimming',
+        'Smart irrigation system check',
+        'Custom landscape styling advice',
+        'Free replacement guarantee for sick plants'
+      ]
+    }
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(1);
+
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeThreshold = 50;
+    if (touchStartX.current - touchEndX.current > swipeThreshold) {
+      setCurrentIndex((prev) => (prev + 1) % plans.length);
+    } else if (touchEndX.current - touchStartX.current > swipeThreshold) {
+      setCurrentIndex((prev) => (prev - 1 + plans.length) % plans.length);
+    }
+  };
+
+  const handleSelectPlan = (plan) => {
+    // Multi-item cart integration (Zustand / LocalStorage Array ready)
+    const existingCart = JSON.parse(localStorage.getItem('munder_cart') || '[]');
+    const existingIndex = existingCart.findIndex((item) => item.id === plan.id);
+
+    if (existingIndex > -1) {
+      existingCart[existingIndex].quantity += 1;
+    } else {
+      existingCart.push({
+        id: plan.id,
+        name: plan.name,
+        price: plan.price,
+        duration: plan.duration,
+        suitable: plan.suitable,
+        quantity: 1,
+        type: 'Garden Maintenance Plan'
+      });
+    }
+
+    localStorage.setItem('munder_cart', JSON.stringify(existingCart));
+    navigate('/cart');
+  };
+
+  const primaryBtnStyles = {
+    borderRadius: '16px',
+    height: '48px',
+    fontWeight: 700,
+    textTransform: 'none',
   };
 
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f9f6', minHeight: '100vh', pb: 14, position: 'relative' }}>
       
-      {/* HEADER */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: { xs: 1.5, sm: 3 },
-          py: 0.8,
-          height: { xs: 68, sm: 76 },
-          borderBottom: "1px solid #eaeaea",
-          bgcolor: "#ffffff",
-          position: "sticky",
-          top: 0,
-          zIndex: 1100,
-          boxShadow: "0 2px 10px rgba(0,0,0,.04)",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
-          <IconButton edge="start" sx={{ color: "#1b4d3e", p: 0.5 }}>
-            <MenuIcon sx={{ fontSize: 28 }} />
-          </IconButton>
-          <Box
-            component="img"
-            src="/images/munder-logo-horizontal.png"
-            alt="Munder Logo"
-            sx={{ width: { xs: 170, sm: 210, md: 260 }, height: "auto", objectFit: "contain", display: "block" }}
-          />
-        </Box>
-        <Button
-          variant="contained"
-          onClick={() => handleWhatsAppChat("General Plans Inquiry")}
-          startIcon={<WhatsAppIcon />}
-          sx={{
-            bgcolor: "#0e4d28",
-            "&:hover": { bgcolor: "#09361c" },
-            borderRadius: "8px",
-            textTransform: "none",
-            whiteSpace: "nowrap",
-            fontSize: { xs: "0.70rem", sm: "0.85rem" },
-            px: { xs: 1.3, sm: 2 },
-            py: 0.8,
-            flexShrink: 0,
-          }}
-        >
-          Chat on WhatsApp
-        </Button>
+      {/* 1. Simplified Header */}
+      <Box sx={{ pt: 4, pb: 2, px: 3, textAlign: 'center' }}>
+        <Typography variant="h5" fontWeight="900" sx={{ color: '#0f382c', mb: 0.5 }}>
+          Our Plans
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Choose the perfect maintenance plan
+        </Typography>
       </Box>
 
-      {/* PLANS CONTENT */}
-      <Container maxWidth="sm" sx={{ py: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-        
-        {/* TOP 4 TRUST FEATURES GRID */}
-        <Paper elevation={0} sx={{ p: 2.5, borderRadius: '24px', border: '1px solid #e0e0e0', bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2.5, textAlign: 'center' }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                <SecurityIcon sx={{ color: '#0e4d28', fontSize: 24 }} />
-              </Box>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>Trusted Experts</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Trained & Experienced Professionals</Typography>
-            </Box>
+      <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                <AccessTimeIcon sx={{ color: '#0e4d28', fontSize: 24 }} />
-              </Box>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>On-Time Service</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>We value your time, always on schedule.</Typography>
-            </Box>
+        {/* Swipeable Cards with 9. Smooth Zoom Animation */}
+        <Box 
+          sx={{ position: 'relative', py: 1 }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              position: 'relative',
+              minHeight: 530,
+              overflow: 'hidden',
+              px: 1
+            }}
+          >
+            {plans.map((plan, idx) => {
+              const isSelected = idx === currentIndex;
+              const isPrev = idx === (currentIndex - 1 + plans.length) % plans.length;
+              const isNext = idx === (currentIndex + 1) % plans.length;
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                <VerifiedIcon sx={{ color: '#0e4d28', fontSize: 24 }} />
-              </Box>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>Quality Assured</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Best tools, safe products & proven methods.</Typography>
-            </Box>
+              if (!isSelected && !isPrev && !isNext) return null;
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                <PaymentIcon sx={{ color: '#0e4d28', fontSize: 24 }} />
-              </Box>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>Affordable Plans</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Flexible monthly plans that suit your needs.</Typography>
-            </Box>
+              let transformStyle = 'scale(1.03) translateX(0px)';
+              let zIndex = 10;
+              let opacity = 1;
+
+              if (isPrev) {
+                transformStyle = 'scale(0.90) translateX(-58%)';
+                zIndex = 5;
+                opacity = 0.55;
+              } else if (isNext) {
+                transformStyle = 'scale(0.90) translateX(58%)';
+                zIndex = 5;
+                opacity = 0.55;
+              }
+
+              return (
+                <Paper
+                  key={plan.id}
+                  elevation={isSelected ? 8 : 1}
+                  onClick={() => setCurrentIndex(idx)}
+                  sx={{
+                    position: 'absolute',
+                    width: '84%',
+                    maxWidth: '350px',
+                    borderRadius: '28px',
+                    overflow: 'hidden',
+                    bgcolor: '#ffffff',
+                    color: '#0f382c',
+                    border: isSelected ? '2px solid #0e4d28' : '2px solid #E5E7EB',
+                    boxShadow: isSelected ? '0 18px 40px rgba(14,77,40,.18)' : '0 4px 15px rgba(0,0,0,0.03)',
+                    transform: transformStyle,
+                    zIndex: zIndex,
+                    opacity: opacity,
+                    cursor: 'pointer',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  {/* 2 & 5. Card Top Image & 9. Badge Styling */}
+                  <Box sx={{ position: 'relative', height: 130, width: '100%', overflow: 'hidden' }}>
+                    <Box 
+                      component="img" 
+                      src={plan.image} 
+                      alt={plan.name} 
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                    <Box 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: 12, 
+                        left: 12, 
+                        bgcolor: plan.badgeBg, 
+                        color: plan.badgeColor, 
+                        px: 1.5, 
+                        py: 0.4, 
+                        borderRadius: '10px', 
+                        fontSize: '0.7rem', 
+                        fontWeight: 'bold',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      {plan.badge}
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ p: 3, pb: 2 }}>
+                    <Typography variant="h6" fontWeight="900" sx={{ mb: 0.5 }}>
+                      {plan.name}
+                    </Typography>
+
+                    {/* 7. Suitable For */}
+                    <Typography variant="caption" fontWeight="bold" sx={{ color: '#0e4d28', display: 'block', mb: 1.5 }}>
+                      Suitable for: {plan.suitable}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, mb: 0.5 }}>
+                      <Typography variant="h4" fontWeight="900" sx={{ color: '#0e4d28' }}>
+                        ₹{plan.price}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        / {plan.duration}
+                      </Typography>
+                    </Box>
+
+                    {/* 4. GST & No Hidden Charges */}
+                    <Typography variant="caption" sx={{ display: 'block', color: '#16a34a', fontWeight: 700, fontSize: '0.72rem', mb: 2 }}>
+                      ✓ GST Included &nbsp;•&nbsp; No Hidden Charges
+                    </Typography>
+
+                    {/* Features List */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                      {plan.features.map((feat, fIdx) => (
+                        <Box key={fIdx} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <CheckCircleIcon sx={{ fontSize: 16, color: '#0e4d28' }} />
+                          <Typography variant="body2" sx={{ fontSize: '0.82rem', color: '#444' }}>
+                            {feat}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+
+                  {/* 3 & 5. Button with Cart Icon */}
+                  <Box sx={{ p: 3, pt: 0 }}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      startIcon={<ShoppingCartIcon />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectPlan(plan);
+                      }}
+                      sx={{
+                        ...primaryBtnStyles,
+                        bgcolor: '#0e4d28',
+                        '&:hover': { bgcolor: '#09361c' },
+                        color: '#ffffff',
+                        boxShadow: 'none'
+                      }}
+                    >
+                      Select Plan
+                    </Button>
+                  </Box>
+                </Paper>
+              );
+            })}
           </Box>
-        </Paper>
 
-        {/* SECTION HEADER */}
-        <Box sx={{ textAlign: 'center', mt: 1, mb: 0.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 0.5 }}>
-            <GrassIcon sx={{ color: '#0e4d28', fontSize: 20 }} />
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#0e4d28', letterSpacing: 1 }}>PRICING PLANS</Typography>
-            <GrassIcon sx={{ color: '#0e4d28', fontSize: 20 }} />
+          {/* Dots Indicator */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mt: 1 }}>
+            {plans.map((p, idx) => (
+              <Box
+                key={p.id}
+                onClick={() => setCurrentIndex(idx)}
+                sx={{
+                  width: currentIndex === idx ? 24 : 8,
+                  height: 8,
+                  borderRadius: '4px',
+                  bgcolor: currentIndex === idx ? '#0e4d28' : '#d0d0d0',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+              />
+            ))}
           </Box>
-          <Typography variant="h5" fontWeight="900" sx={{ color: '#0f382c', mb: 0.8 }}>
-            Choose the Right Plan for Your Garden
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-            Flexible monthly maintenance plans designed for every garden.
-          </Typography>
         </Box>
 
-        {/* 1. BASIC CARE PLAN */}
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '24px', border: '1px solid #e0e0e0', bgcolor: '#ffffff', textAlign: 'center', position: 'relative' }}>
-          <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5 }}>
-            <GrassIcon sx={{ color: '#0e4d28', fontSize: 30 }} />
+        {/* 10. Updated Trust Section with "Gardens Maintained" */}
+        <Paper elevation={0} sx={{ p: 3, borderRadius: '24px', border: '1px solid #E5E7EB', bgcolor: '#ffffff', mt: 1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, textAlign: 'center' }}>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: '1px solid #f0f0f0', borderBottom: '1px solid #f0f0f0', pb: 2 }}>
+              <StarIcon sx={{ color: '#FACC15', fontSize: 22, mb: 0.5 }} />
+              <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c' }}>4.9 Rating</Typography>
+              <Typography variant="caption" color="text.secondary">Verified Reviews</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottom: '1px solid #f0f0f0', pb: 2 }}>
+              <SentimentVerySatisfiedIcon sx={{ color: '#0e4d28', fontSize: 22, mb: 0.5 }} />
+              <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c' }}>1000+</Typography>
+              <Typography variant="caption" color="text.secondary">Gardens Maintained</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: '1px solid #f0f0f0', pt: 1 }}>
+              <WorkspacePremiumIcon sx={{ color: '#0e4d28', fontSize: 22, mb: 0.5 }} />
+              <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c' }}>5+ Years</Typography>
+              <Typography variant="caption" color="text.secondary">Experience</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 1 }}>
+              <VerifiedUserIcon sx={{ color: '#0e4d28', fontSize: 22, mb: 0.5 }} />
+              <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c' }}>98%</Typography>
+              <Typography variant="caption" color="text.secondary">Customer Satisfaction</Typography>
+            </Box>
+
           </Box>
-          <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c', letterSpacing: 0.5 }}>BASIC CARE</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>Essential care for small gardens</Typography>
-          
-          <Typography variant="h4" fontWeight="900" sx={{ color: '#0e4d28', mb: 0.2 }}>₹999</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>/ Month</Typography>
-
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, bgcolor: '#f1f8e9', px: 2, py: 0.6, borderRadius: '16px', mb: 3 }}>
-            <EventAvailableIcon sx={{ fontSize: 16, color: '#0e4d28' }} />
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#0e4d28' }}>2 Visits / Month</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, textAlign: 'left', mb: 3, px: 1 }}>
-            {['Lawn Cleaning', 'Basic Pruning', 'Weed Removal', 'Garden Clean-up', 'WhatsApp Support'].map((feat, i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <CheckCircleIcon sx={{ fontSize: 18, color: '#2e7d32' }} />
-                <Typography variant="body2" sx={{ color: '#333', fontSize: '0.9rem' }}>{feat}</Typography>
-              </Box>
-            ))}
-          </Box>
-
-          <Button
-            variant="outlined"
-            onClick={() => handleWhatsAppChat("Basic Care Plan")}
-            fullWidth
-            sx={{
-              borderColor: '#0e4d28',
-              color: '#0e4d28',
-              borderRadius: '12px',
-              py: 1.2,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              '&:hover': { bgcolor: '#f1f8e9', borderColor: '#0e4d28' }
-            }}
-          >
-            View Plan
-          </Button>
-        </Paper>
-
-        {/* 2. STANDARD CARE PLAN (MOST POPULAR) */}
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '24px', border: '2px solid #0e4d28', bgcolor: '#ffffff', textAlign: 'center', position: 'relative', mt: 1 }}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: -14,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bgcolor: '#0e4d28',
-              color: '#fff',
-              px: 2.5,
-              py: 0.4,
-              borderRadius: '12px',
-              fontSize: '0.7rem',
-              fontWeight: 'bold',
-              letterSpacing: 0.5
-            }}
-          >
-            ⭐ MOST POPULAR
-          </Box>
-
-          <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5, mt: 1 }}>
-            <GrassIcon sx={{ color: '#0e4d28', fontSize: 30 }} />
-          </Box>
-          <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c', letterSpacing: 0.5 }}>STANDARD CARE</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>Perfect balance of care & value</Typography>
-          
-          <Typography variant="h4" fontWeight="900" sx={{ color: '#0e4d28', mb: 0.2 }}>₹1,999</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>/ Month</Typography>
-
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, bgcolor: '#f1f8e9', px: 2, py: 0.6, borderRadius: '16px', mb: 3 }}>
-            <EventAvailableIcon sx={{ fontSize: 16, color: '#0e4d28' }} />
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#0e4d28' }}>4 Visits / Month</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, textAlign: 'left', mb: 3, px: 1 }}>
-            {['Lawn Maintenance', 'Plant Pruning', 'Fertilizer Application', 'Pest Inspection', 'Irrigation Check', 'Garden Clean-up', 'Priority Support'].map((feat, i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <CheckCircleIcon sx={{ fontSize: 18, color: '#2e7d32' }} />
-                <Typography variant="body2" sx={{ color: '#333', fontSize: '0.9rem' }}>{feat}</Typography>
-              </Box>
-            ))}
-          </Box>
-
-          <Button
-            variant="contained"
-            onClick={() => handleWhatsAppChat("Standard Care Plan")}
-            fullWidth
-            sx={{
-              bgcolor: '#0e4d28',
-              '&:hover': { bgcolor: '#09361c' },
-              borderRadius: '12px',
-              py: 1.2,
-              fontWeight: 'bold',
-              textTransform: 'none'
-            }}
-          >
-            Choose This Plan →
-          </Button>
-        </Paper>
-
-        {/* 3. PREMIUM CARE PLAN */}
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '24px', border: '1px solid #e0e0e0', bgcolor: '#ffffff', textAlign: 'center', position: 'relative', mt: 1 }}>
-          <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: '#f1f8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5 }}>
-            <GrassIcon sx={{ color: '#0e4d28', fontSize: 30 }} />
-          </Box>
-          <Typography variant="h6" fontWeight="900" sx={{ color: '#0f382c', letterSpacing: 0.5 }}>PREMIUM CARE</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>Complete care for lush gardens</Typography>
-          
-          <Typography variant="h4" fontWeight="900" sx={{ color: '#0e4d28', mb: 0.2 }}>₹3,499</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>/ Month</Typography>
-
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, bgcolor: '#f1f8e9', px: 2, py: 0.6, borderRadius: '16px', mb: 3 }}>
-            <EventAvailableIcon sx={{ fontSize: 16, color: '#0e4d28' }} />
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#0e4d28' }}>Weekly Visits</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, textAlign: 'left', mb: 3, px: 1 }}>
-            {['Complete Maintenance', 'Plant Health Monitoring', 'Irrigation Management', 'Seasonal Planting', 'Pest Control', 'Emergency Visit', 'Priority Support'].map((feat, i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <CheckCircleIcon sx={{ fontSize: 18, color: '#2e7d32' }} />
-                <Typography variant="body2" sx={{ color: '#333', fontSize: '0.9rem' }}>{feat}</Typography>
-              </Box>
-            ))}
-          </Box>
-
-          <Button
-            variant="outlined"
-            onClick={() => handleWhatsAppChat("Premium Care Plan")}
-            fullWidth
-            sx={{
-              borderColor: '#0e4d28',
-              color: '#0e4d28',
-              borderRadius: '12px',
-              py: 1.2,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              '&:hover': { bgcolor: '#f1f8e9', borderColor: '#0e4d28' }
-            }}
-          >
-            View Plan
-          </Button>
         </Paper>
 
       </Container>
-
-      {/* COMMON BOTTOM NAVIGATION */}
-      <BottomNav />
-
     </Box>
   );
 }
+
+

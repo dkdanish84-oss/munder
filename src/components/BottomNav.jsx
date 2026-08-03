@@ -1,34 +1,46 @@
-import React from 'react';
-import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import HomeIcon from '@mui/icons-material/Home';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import PersonIcon from '@mui/icons-material/Person';
+import React from "react";
+import {
+  Paper,
+  BottomNavigation,
+  BottomNavigationAction,
+} from "@mui/material";
+
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import MiscellaneousServicesRoundedIcon from "@mui/icons-material/MiscellaneousServicesRounded";
+import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Hide BottomNav on Login and Register pages
-  if (location.pathname === '/login' || location.pathname === '/register') {
-    return null;
-  }
+  const getValue = () => {
+    const path = location.pathname;
 
-  const getActiveTab = () => {
-    if (location.pathname.startsWith('/inspection')) return 1;
-    if (location.pathname.startsWith('/plans')) return 2;
+    if (path === "/" || path === "/home") return 0;
+
     if (
-      location.pathname.startsWith('/shop') ||
-      location.pathname.startsWith('/cart') ||
-      location.pathname.startsWith('/wishlist')
-    ) return 3;
-    if (
-      location.pathname.startsWith('/profile') ||
-      location.pathname.startsWith('/orders') ||
-      location.pathname.startsWith('/settings')
-    ) return 4;
+      path === "/services" ||
+      path === "/visit" ||
+      path === "/plans" ||
+      path === "/cart" ||
+      path === "/checkout" ||
+      path === "/garden-details" ||
+      path === "/choose-date" ||
+      path === "/payment" ||
+      path === "/order-success"
+    )
+      return 1;
+
+    if (path === "/orders") return 2;
+
+    if (path === "/wishlist") return 3;
+
+    if (path === "/profile") return 4;
+
     return 0;
   };
 
@@ -36,66 +48,104 @@ export default function BottomNav() {
     <Paper
       elevation={8}
       sx={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1200,
-        bgcolor: '#ffffff',
-        borderTop: '1px solid #eaeaea',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        overflow: 'hidden',
-        boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
-        pb: 'calc(env(safe-area-inset-bottom, 12px) + 8px)',
-        pt: 1
+        position: "fixed",
+        bottom: 12,
+        left: 12,
+        right: 12,
+        borderRadius: "22px",
+        overflow: "hidden",
+        zIndex: 1500,
+        bgcolor: "#ffffff",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
       }}
     >
       <BottomNavigation
-        value={getActiveTab()}
-        onChange={(event, newValue) => {
-          switch (newValue) {
-            case 0: navigate('/'); break;
-            case 1: navigate('/inspection'); break;
-            case 2: navigate('/plans'); break;
-            case 3: navigate('/shop'); break;
-            case 4: navigate('/profile'); break;
-            default: navigate('/');
+        showLabels
+        value={getValue()}
+        onChange={(event, value) => {
+          switch (value) {
+            case 0:
+              navigate("/");
+              break;
+
+            case 1:
+              navigate("/services");
+              break;
+
+            case 2:
+              navigate("/orders");
+              break;
+
+            case 3:
+              navigate("/wishlist");
+              break;
+
+            case 4:
+              navigate("/profile");
+              break;
+
+            default:
+              navigate("/");
           }
         }}
-        showLabels
         sx={{
-          bgcolor: 'transparent',
-          '& .MuiBottomNavigationAction-root': {
-            color: '#717171',
-            minWidth: 'auto',
-            padding: '6px 0',
-            transition: 'all 0.2s ease',
-            '&.Mui-selected': {
-              color: '#0e4d28',
-              '& .MuiSvgIcon-root': {
-                bgcolor: '#e8f5e9',
-                padding: '6px 18px',
-                borderRadius: '20px',
-                fontSize: '1.8rem',
-                boxShadow: '0 2px 8px rgba(14,77,40,0.12)',
-                transform: 'scale(1.05)',
-                transition: 'transform 0.15s ease-in-out',
-              },
-              '& .MuiBottomNavigationAction-label': {
-                fontWeight: '900',
-                fontSize: '0.75rem',
-              }
-            }
-          }
+          height: 72,
+          bgcolor: "transparent",
+
+          "& .MuiBottomNavigationAction-root": {
+            color: "#8A8A8A",
+            transition: "all .25s ease",
+            minWidth: 60,
+          },
+
+          "& .MuiBottomNavigationAction-label": {
+            fontSize: "11px",
+            fontWeight: 600,
+          },
+
+          "& .Mui-selected": {
+            color: "#0E4D28 !important",
+          },
+
+          "& .MuiSvgIcon-root": {
+            fontSize: 26,
+            transition: "all .25s ease",
+          },
+
+          "& .Mui-selected .MuiSvgIcon-root": {
+            backgroundColor: "#E8F5E9",
+            borderRadius: "50%",
+            padding: "8px",
+            fontSize: 42,
+          },
         }}
       >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Inspect" icon={<AssignmentIcon />} />
-        <BottomNavigationAction label="Plans" icon={<TaskAltIcon />} />
-        <BottomNavigationAction label="Shop" icon={<ShoppingBagIcon />} />
-        <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
+        <BottomNavigationAction
+          label="Home"
+          icon={<HomeRoundedIcon />}
+        />
+
+        <BottomNavigationAction
+          label="Services"
+          icon={<MiscellaneousServicesRoundedIcon />}
+        />
+
+        <BottomNavigationAction
+          label="Orders"
+          icon={<AssignmentRoundedIcon />}
+        />
+
+        <BottomNavigationAction
+          label="Wishlist"
+          icon={<FavoriteRoundedIcon />}
+        />
+
+        <BottomNavigationAction
+          label="Profile"
+          icon={<PersonRoundedIcon />}
+        />
       </BottomNavigation>
     </Paper>
   );
 }
+

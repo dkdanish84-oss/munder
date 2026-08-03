@@ -1,110 +1,132 @@
-import React from 'react';
-import { Box, Typography, Button, Paper, Container, Avatar, Divider, List, ListItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import PersonIcon from '@mui/icons-material/Person';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutIcon from '@mui/icons-material/Logout';
-import EditIcon from '@mui/icons-material/Edit';
-import BottomNav from '../components/BottomNav';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
+import { signOut } from "firebase/auth";
+import { useAuthStore } from "../store/authStore";
+import {
+  Box,
+  Avatar,
+  Typography,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Paper,
+} from "@mui/material";
+import {
+  Person as PersonIcon,
+  ShoppingBag as OrdersIcon,
+  Favorite as WishlistIcon,
+  Settings as SettingsIcon,
+  Notifications as NotificationsIcon,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
 
 export default function Profile() {
+  const { user } = useAuthStore();
   const navigate = useNavigate();
-  const userName = localStorage.getItem('munder_user_name') || 'Munder User';
-  const userMobile = localStorage.getItem('munder_user_mobile') || '+91 9876543210';
 
-  const handleLogout = () => {
-    localStorage.removeItem('munder_user_mobile');
-    localStorage.removeItem('munder_user_name');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
   };
 
-  const menuItems = [
-    { text: 'My Inspection History', icon: <AssignmentIcon sx={{ color: '#0e4d28' }} />, path: '/inspections' },
-    { text: 'My Orders', icon: <LocalShippingIcon sx={{ color: '#0e4d28' }} />, path: '/orders' },
-    { text: 'Wishlist / Saved Plants', icon: <FavoriteIcon sx={{ color: '#0e4d28' }} />, path: '/wishlist' },
-    { text: 'Notifications', icon: <NotificationsIcon sx={{ color: '#0e4d28' }} />, path: '/notifications' },
-    { text: 'Settings', icon: <SettingsIcon sx={{ color: '#0e4d28' }} />, path: '/settings' },
-  ];
-
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f9f6', minHeight: '100vh', pb: 14 }}>
-      {/* HEADER BANNER */}
-      <Box sx={{ bgcolor: '#0e4d28', color: '#fff', pt: 4, pb: 6, px: 3, borderBottomLeftRadius: '32px', borderBottomRightRadius: '32px' }}>
-        <Container maxWidth="sm">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h5" fontWeight="950">My Profile 🌿</Typography>
-            <IconButton sx={{ color: '#ffffff', bgcolor: 'rgba(255,255,255,0.15)', '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' } }}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: '#ffffff', color: '#0e4d28', fontWeight: 'bold', fontSize: '1.5rem' }}>
-              {userName.charAt(0)}
-            </Avatar>
-            <Box>
-              <Typography variant="h6" fontWeight="bold">{userName}</Typography>
-              <Typography variant="body2" sx={{ opacity: 0.85 }}>{userMobile}</Typography>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
+    <Box sx={{ maxWidth: 600, mx: "auto", pb: 10, bgcolor: "#f9f9f9", minHeight: "100vh" }}>
+      {/* Header Banner */}
+      <Box
+        sx={{
+          bgcolor: "primary.main",
+          color: "white",
+          p: 3,
+          textAlign: "center",
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+          My Profile
+        </Typography>
 
-      {/* MENU OPTIONS CONTAINER */}
-      <Container maxWidth="sm" sx={{ mt: -3 }}>
-        <Paper
-          elevation={0}
+        <Avatar
+          src={user?.photoURL || ""}
+          alt={user?.displayName || "User"}
           sx={{
-            borderRadius: '24px',
-            border: '1px solid #e0e0e0',
-            bgcolor: '#ffffff',
-            overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+            width: 80,
+            height: 80,
+            mx: "auto",
+            mb: 1.5,
+            border: "3px solid white",
           }}
         >
+          {!user?.photoURL && <PersonIcon sx={{ fontSize: 40 }} />}
+        </Avatar>
+
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          {user?.displayName || "Munder User"}
+        </Typography>
+        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+          {user?.email || "No Email Provided"}
+        </Typography>
+      </Box>
+
+      {/* Menu Options Section */}
+      <Box sx={{ p: 2 }}>
+        <Paper elevation={1} sx={{ borderRadius: 3, overflow: "hidden", mb: 3 }}>
           <List disablePadding>
-            {menuItems.map((item, index) => (
-              <React.Fragment key={item.text}>
-                <ListItem 
-                  button 
-                  onClick={() => navigate(item.path)}
-                  sx={{ py: 2, px: 3, '&:hover': { bgcolor: '#f1f8e9' } }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={<Typography variant="body1" fontWeight="bold" sx={{ color: '#0f382c' }}>{item.text}</Typography>} />
-                </ListItem>
-                {index < menuItems.length - 1 && <Divider component="li" sx={{ borderColor: '#f0f0f0' }} />}
-              </React.Fragment>
-            ))}
+            <ListItem button onClick={() => navigate("/orders")}>
+              <ListItemIcon><OrdersIcon color="primary" /></ListItemIcon>
+              <ListItemText primary="My Orders" secondary="Check your order status" />
+            </ListItem>
+            <Divider />
+
+            <ListItem button onClick={() => navigate("/wishlist")}>
+              <ListItemIcon><WishlistIcon color="error" /></ListItemIcon>
+              <ListItemText primary="Wishlist" secondary="Your saved items" />
+            </ListItem>
+            <Divider />
+
+            <ListItem button onClick={() => navigate("/notifications")}>
+              <ListItemIcon><NotificationsIcon color="action" /></ListItemIcon>
+              <ListItemText primary="Notifications" secondary="App alerts and updates" />
+            </ListItem>
+            <Divider />
+
+            <ListItem button onClick={() => navigate("/settings")}>
+              <ListItemIcon><SettingsIcon color="action" /></ListItemIcon>
+              <ListItemText primary="Settings" secondary="Preferences and security" />
+            </ListItem>
           </List>
         </Paper>
 
-        <Box sx={{ mt: 3 }}>
-          <Button
-            variant="outlined"
-            onClick={handleLogout}
-            startIcon={<LogoutIcon />}
-            fullWidth
-            sx={{
-              borderColor: '#d32f2f',
-              color: '#d32f2f',
-              borderRadius: '16px',
-              py: 1.5,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              '&:hover': { bgcolor: '#ffebee', borderColor: '#d32f2f' }
-            }}
-          >
-            Logout
-          </Button>
-        </Box>
-      </Container>
-
-      {/* COMMON BOTTOM NAVIGATION */}
-      <BottomNav />
+        {/* Logout Button */}
+        <Button
+          fullWidth
+          variant="outlined"
+          color="error"
+          startIcon={<LogoutIcon />}
+          onClick={handleLogout}
+          sx={{
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: "bold",
+            textTransform: "none",
+            borderColor: "#ff4d4f",
+            backgroundColor: "white",
+            "&:hover": {
+              backgroundColor: "#fff1f0",
+            },
+          }}
+        >
+          Logout
+        </Button>
+      </Box>
     </Box>
   );
 }
