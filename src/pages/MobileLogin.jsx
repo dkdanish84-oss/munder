@@ -28,16 +28,16 @@ export default function MobileLogin() {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/send-otp",
-        { mobile }
+        "https://munder-p9yk.onrender.com/api/auth/send-otp",
+        {
+          mobile,
+        }
       );
 
       alert(res.data.message);
       setSent(true);
     } catch (err) {
-      alert(
-        err.response?.data?.message || "OTP Sending Failed"
-      );
+      alert(err.response?.data?.message || "OTP Sending Failed");
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export default function MobileLogin() {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-otp",
+        "https://munder-p9yk.onrender.com/api/auth/verify-otp",
         {
           mobile,
           otp,
@@ -63,12 +63,9 @@ export default function MobileLogin() {
       localStorage.setItem("token", res.data.token);
 
       alert("Login Successful");
-
       navigate("/profile");
     } catch (err) {
-      alert(
-        err.response?.data?.message || "Invalid OTP"
-      );
+      alert(err.response?.data?.message || "Invalid OTP");
     } finally {
       setLoading(false);
     }
@@ -83,12 +80,7 @@ export default function MobileLogin() {
     >
       <Card sx={{ width: 400 }}>
         <CardContent>
-
-          <Typography
-            variant="h5"
-            align="center"
-            mb={3}
-          >
+          <Typography variant="h5" align="center" mb={3}>
             Login with Mobile
           </Typography>
 
@@ -130,10 +122,10 @@ export default function MobileLogin() {
               </Button>
             </>
           )}
-
         </CardContent>
       </Card>
     </Box>
   );
 }
+
 

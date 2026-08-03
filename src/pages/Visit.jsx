@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Paper, Container, TextField, Avatar, Snackbar, Alert } from '@mui/material';
+
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -45,7 +47,8 @@ export default function Visit() {
     }
   };
 
-  const handleSubmit = (e) => {
+
+const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -67,6 +70,26 @@ export default function Visit() {
       setOpenSnackbar(true);
       return;
     }
+
+const token = localStorage.getItem("token");
+
+await axios.post(
+  "https://munder-p9yk.onrender.com/api/visit",
+  {
+    name: formData.name,
+    mobile: formData.mobile,
+    address: formData.location,
+    gardenType: gardenSize,
+    visitDate: formData.date,
+    visitTime: "Morning",
+    notes: formData.notes,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
     setSubmitted(true);
   };

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+<url>
+<loc>https://munder.in/</loc>
+<priority>1.0</priority>
+</url>
+
+<url>
+<loc>https://munder.in/services</loc>
+</url>
+
+<url>
+<loc>https://munder.in/plans</loc>
+</url>
+
+<url>
+<loc>https://munder.in/visit</loc>
+</url>
+
+<url>
+<loc>https://munder.in/login</loc>
+</url>
+
+<url>
+<loc>https://munder.in/signup</loc>
+</url>
+
+</urlset>
+
+

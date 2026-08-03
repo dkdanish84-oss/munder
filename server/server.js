@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import visitRoutes from "./routes/visit.js";
 
 import profileRoutes from "./routes/profile.js";
 
@@ -28,6 +29,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/visit", visitRoutes);
 
 app.get("/", (req, res) => {
   res.json({

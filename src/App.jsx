@@ -17,7 +17,6 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import Inspections from "./pages/Inspections";
 import Orders from "./pages/Orders";
 import Wishlist from "./pages/Wishlist";
 import Notifications from "./pages/Notifications";
@@ -49,7 +48,6 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
-          <Route path="/inspections" element={<Inspections />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/notifications" element={<Notifications />} />
