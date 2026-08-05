@@ -32,10 +32,6 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-<Route
-  path="/garden-maintenance-bhopal"
-  element={<GardenMaintenance />}
-/>
 <Route path="/mobile-login" element={<MobileLogin />} />
 
 <Route path="/checkout" element={<Checkout />} />
@@ -45,6 +41,11 @@ export default function App() {
 <Route path="/order-success" element={<OrderSuccess />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+
+	<Route
+  path="/garden-maintenance-bhopal"
+  element={<GardenMaintenance />}
+/>
         <Route path="/visit" element={<Visit />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/shop" element={<Shop />} />
