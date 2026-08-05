@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { Checkout } from "./pages/Checkout";
 
 
+import GardenMaintenance from "./pages/GardenMaintenance";
 import MobileLogin from "./pages/MobileLogin";
 import { GardenDetails } from "./pages/GardenDetails";
 import { ChooseDate } from "./pages/ChooseDate";
@@ -31,7 +32,10 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-
+<Route
+  path="/garden-maintenance-bhopal"
+  element={<GardenMaintenance />}
+/>
 <Route path="/mobile-login" element={<MobileLogin />} />
 
 <Route path="/checkout" element={<Checkout />} />

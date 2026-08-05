@@ -20,7 +20,9 @@ import { Link } from "react-router-dom";
 
 const menu = [
   { title: "Home", path: "/" },
-  { title: "Services", path: "/services" },
+  
+
+{ title: "Services", path: "/garden-maintenance-bhopal" },
   { title: "Projects", path: "/projects" },
   { title: "Plans", path: "/plans" },
   { title: "Plants Shop", path: "/shop" },

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Paper, Container, Avatar, Rating } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import SEO from "../components/SEO";
+
 import GrassIcon from '@mui/icons-material/Grass';
 import SecurityIcon from '@mui/icons-material/Security';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -46,6 +48,14 @@ export default function Home() {
   };
 
   return (
+
+<>
+  <SEO
+    title="Munder | Garden Maintenance & Landscaping Services in Bhopal"
+    description="Professional garden maintenance, landscaping, lawn care, irrigation and plant care services in Bhopal. Book your free garden inspection with Munder."
+    keywords="garden maintenance bhopal, landscaping bhopal, gardener service, lawn care, plant care, irrigation, munder"
+    url="https://munder.in/"
+  />
     <Box sx={{ width: '100%', bgcolor: '#f7f9f6', minHeight: '100vh', pb: 14, position: 'relative' }}>
       
       {/* 1. HERO SECTION */}
@@ -152,10 +162,10 @@ export default function Home() {
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.72rem', mb: 1.5 }}>Regular care & pruning.</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Button variant="text" onClick={() => handleWhatsAppChat("Garden Maintenance")} sx={{ ...primaryBtnStyles, height: '32px', fontSize: '0.75rem', color: '#0e4d28', justifyContent: 'flex-start', p: 0 }}>
+                  <Button variant="text" onClick={() => navigate("/garden-maintenance-bhopal")} sx={{ ...primaryBtnStyles, height: '32px', fontSize: '0.75rem', color: '#0e4d28', justifyContent: 'flex-start', p: 0 }}>
                     Learn More →
                   </Button>
-                  <Button variant="contained" onClick={() => handleWhatsAppChat("Book Garden Maintenance Service")} sx={{ ...primaryBtnStyles, height: '36px', fontSize: '0.75rem', bgcolor: '#0e4d28', '&:hover': { bgcolor: '#09361c' } }}>
+                  <Button variant="contained" onClick={() => navigate("/garden-maintenance-bhopal")} sx={{ ...primaryBtnStyles, height: '36px', fontSize: '0.75rem', bgcolor: '#0e4d28', '&:hover': { bgcolor: '#09361c' } }}>
                     Book Service
                   </Button>
                 </Box>
@@ -372,8 +382,8 @@ export default function Home() {
 
       </Container>
 
-    </Box>
-  );
+
+</Box>
+</>
+);
 }
-
-

@@ -23,7 +23,10 @@ export default function BottomNav() {
     if (path === "/" || path === "/home") return 0;
 
     if (
-      path === "/services" ||
+
+
+path === "/garden-maintenance-bhopal" ||
+
       path === "/visit" ||
       path === "/plans" ||
       path === "/cart" ||
@@ -69,9 +72,9 @@ export default function BottomNav() {
               break;
 
             case 1:
-              navigate("/services");
-              break;
 
+
+navigate("/garden-maintenance-bhopal");
             case 2:
               navigate("/orders");
               break;
