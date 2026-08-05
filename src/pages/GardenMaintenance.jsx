@@ -24,15 +24,13 @@ export default function GardenMaintenance() {
     );
   };
 
-  return (
-    <>
-      <SEO
-        title="Garden Maintenance Services in Bhopal | Munder"
-        description="Professional garden maintenance services in Bhopal including lawn mowing, pruning, fertilizer application, weed removal, garden cleaning and monthly maintenance plans."
-        keywords="garden maintenance bhopal,gardener service bhopal,lawn care bhopal,garden care bhopal"
-        url="https://munder.in/garden-maintenance-bhopal"
-      />
 
+
+return (
+  <div style={{ padding: "20px" }}>
+    <h1>Garden Maintenance Test</h1>
+  </div>
+);
       <Box sx={{ bgcolor: "#f7f9f6", minHeight: "100vh" }}>
 
         <Box
