@@ -74,7 +74,8 @@ path === "/garden-maintenance-bhopal" ||
             case 1:
 
 
-navigate("/garden-maintenance-bhopal");
+	navigate("/garden-maintenance-bhopal");
+
             case 2:
               navigate("/orders");
               break;
