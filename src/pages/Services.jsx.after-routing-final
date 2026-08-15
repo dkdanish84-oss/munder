@@ -1,0 +1,587 @@
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Grid
+} from "@mui/material";
+
+import GrassRoundedIcon from "@mui/icons-material/GrassRounded";
+import YardRoundedIcon from "@mui/icons-material/YardRounded";
+import WaterDropRoundedIcon from "@mui/icons-material/WaterDropRounded";
+import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
+import { useNavigate } from "react-router-dom";
+
+export default function Services() {
+  const navigate = useNavigate();
+
+  const [activeImages, setActiveImages] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+  });
+
+  const changeImage = (serviceIndex, imageIndex) => {
+    setActiveImages((current) => ({
+      ...current,
+      [serviceIndex]: imageIndex,
+    }));
+  };
+
+  const services = [
+    {
+      title: "Garden Maintenance",
+      icon: <GrassRoundedIcon sx={{ fontSize: 40 }} />,
+      desc: "Professional garden maintenance with planned visits, lawn care, pruning, trimming, cleaning and plant health management. Every service is documented and tracked through your Munder profile, so you can see what was done and keep track of upcoming visits.",
+      color: "#E8F5E9",
+        work: [
+              "Lawn mowing, edging and regular garden cleaning",
+              "Pruning, hedge trimming and seasonal plant care",
+              "Plant health monitoring and maintenance guidance",
+              "Before & After Photos uploaded by the supervisor",
+              "Complete Visit History available in your Munder profile",
+              "Next Visit Tracking for upcoming scheduled services",
+              "Supervisor updates after every completed visit",
+            ],
+            difference: "Munder combines professional garden care with service tracking. You can see what was done, review your visit history and know when your next service is scheduled.",
+        images: [
+          "/images/services/munder maintenance 01.png",
+          "/images/services/munder maintenance 02.png",
+        ]
+    },
+    {
+      title: "Landscape Development",
+      icon: <YardRoundedIcon sx={{ fontSize: 40 }} />,
+      desc: "Landscape design, lawn setup and complete garden makeover.",
+      color: "#FFF3E0",
+        work: [
+              "Landscape planning based on your property and requirements",
+              "Lawn development and plantation",
+              "Plant selection and garden layout planning",
+              "Garden transformation and outdoor space improvement",
+              "Practical designs planned for long-term maintenance",
+              "Professional execution with quality-focused supervision",
+            ],
+            difference: "Munder focuses on practical, beautiful landscapes designed around your space, plant requirements and future maintenance — not just a one-time makeover.",
+        images: [
+          "/images/services/munder devlopment 01.png",
+          "/images/services/munder devlopment 02.png",
+          "/images/services/munder devlopment 03.png",
+        ]
+    },
+    {
+      title: "Drip Irrigation",
+      icon: <WaterDropRoundedIcon sx={{ fontSize: 40 }} />,
+      desc: "Automatic irrigation systems for every garden.",
+      color: "#E3F2FD",
+        work: [
+              "Garden and water-requirement assessment",
+              "Drip irrigation planning according to plant needs",
+              "Drip lines, emitters and system installation",
+              "Water distribution testing and adjustment",
+              "Efficient watering for different plant zones",
+              "System maintenance and future adjustments",
+            ],
+            difference: "Munder plans irrigation around the actual garden instead of using a one-size-fits-all system, helping provide consistent watering while reducing unnecessary water usage.",
+        images: [
+          "/images/services/munder irrigation 01.png",
+          "/images/services/munder irrigation 02.png",
+          "/images/services/munder irrigation 03.png",
+          "/images/services/munder irrigation 04.png",
+        ]
+    }
+  ];
+
+
+  return (
+    <Box
+      sx={{
+        background: "#F7FAF7",
+        minHeight: "100vh",
+        pb: 12
+      }}
+    >
+      <Box
+        sx={{
+          px: 3,
+          pt: 3,
+          pb: 2
+        }}
+      >
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          color="#0E4D28"
+        >
+          Our Services
+        </Typography>
+        <Typography
+          color="text.secondary"
+          mt={1}
+        >
+          Professional Gardening & Landscaping Solutions
+        </Typography>
+
+      </Box>
+
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          px: 2
+        }}
+      >
+        {services.map((item, index) => {
+          const currentImage = activeImages[index] ?? 0;
+
+          return (
+            <Grid
+              item
+              xs={12}
+              md={4}
+              key={item.title}
+            >
+              <Card
+                sx={{
+                  height: "100%",
+                  borderRadius: 5,
+                  overflow: "hidden",
+                  boxShadow: "0 6px 18px rgba(0,0,0,.08)",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+
+                {/* SERVICE IMAGE */}
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: { xs: 220, sm: 260, md: 230 },
+                    overflow: "hidden",
+                    background: "#EEF3EF",
+                  }}
+                >
+                  <img
+                    src={item.images[currentImage]}
+                    alt={item.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </Box>
+
+                {/* IMAGE THUMBNAILS */}
+                {item.images.length > 1 && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      overflowX: "auto",
+                      px: 2,
+                      py: 1.5,
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                      scrollbarWidth: "none",
+                    }}
+                  >
+                    {item.images.map((image, imageIndex) => (
+                      <Box
+                        key={image}
+                        component="button"
+                        type="button"
+                        onClick={() =>
+                          changeImage(index, imageIndex)
+                        }
+                        sx={{
+                          flexShrink: 0,
+                          width: 64,
+                          height: 46,
+                          p: 0,
+                          overflow: "hidden",
+                          borderRadius: 1.5,
+                          cursor: "pointer",
+                          background: "#fff",
+                          border:
+                            currentImage === imageIndex
+                              ? "2px solid #08783f"
+                              : "2px solid #E5E7EB",
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt=""
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            display: "block",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+
+                <CardContent
+                  sx={{
+                    p: { xs: 2.5, sm: 3 },
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 56,
+                        height: 56,
+                        flexShrink: 0,
+                        borderRadius: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: item.color,
+                      }}
+                    >
+                      {React.cloneElement(item.icon, {
+                        sx: {
+                          fontSize: 32,
+                          color: "#08783f",
+                        },
+                      })}
+                    </Box>
+
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      color="#0E4D28"
+                      sx={{ lineHeight: 1.25 }}
+                    >
+                      {item.title}
+                    </Typography>
+                  </Box>
+
+                  {/* DESCRIPTION */}
+                  <Typography
+                    color="text.secondary"
+                    sx={{
+                      mt: 2,
+                      lineHeight: 1.7,
+                      fontSize: "0.94rem",
+                    }}
+                  >
+                    {item.desc}
+                  </Typography>
+
+                  {/* WHAT WE DO */}
+                  <Box sx={{ mt: 3 }}>
+                    <Typography
+                      fontWeight="bold"
+                      color="#0E4D28"
+                      sx={{ fontSize: "1.05rem" }}
+                    >
+                      What We Do
+                    </Typography>
+
+                    <Box sx={{ mt: 1.5 }}>
+                      {item.work.map((workItem) => (
+                        <Box
+                          key={workItem}
+                          sx={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 7,
+                              height: 7,
+                              flexShrink: 0,
+                              mt: "8px",
+                              borderRadius: "50%",
+                              background: "#08783f",
+                            }}
+                          />
+
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ lineHeight: 1.55 }}
+                          >
+                            {workItem}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+
+                  {/* WHY MUNDER */}
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      borderRadius: 3,
+                      background: "#F7FAF7",
+                      border: "1px solid #E3EEE5",
+                    }}
+                  >
+                    <Typography
+                      fontWeight="bold"
+                      color="#08783f"
+                      sx={{ fontSize: "0.9rem" }}
+                    >
+                      Why Munder
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        mt: 0.8,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {item.difference}
+                    </Typography>
+                  </Box>
+
+                  {/* CTA */}
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    endIcon={<ArrowForwardRounded />}
+                    onClick={() => navigate("/visit")}
+                    sx={{
+                      mt: 3,
+                      bgcolor: "#0E4D28",
+                      borderRadius: 3,
+                      py: 1.35,
+                      fontWeight: "bold",
+                      "&:hover": {
+                        bgcolor: "#08783f",
+                      },
+                    }}
+                  >
+                    Discuss Your Garden
+                  </Button>
+
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      <Box sx={{ px: 3, mt: 6 }}>
+        <Card
+          sx={{
+            borderRadius: 5,
+            bgcolor: "#FFFFFF",
+            boxShadow: "0 6px 20px rgba(0,0,0,.06)",
+            p: { xs: 3, md: 5 },
+          }}
+        >
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color="#0E4D28"
+            textAlign="center"
+          >
+            How Munder Tracks Your Garden
+          </Typography>
+
+          <Typography
+            color="text.secondary"
+            textAlign="center"
+            mt={1}
+          >
+            Your garden service is documented, tracked and available
+            through your Munder profile.
+          </Typography>
+
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: "100%",
+                  borderRadius: 4,
+                  bgcolor: "#F7FAF7",
+                  boxShadow: "none",
+                  textAlign: "center",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  fontWeight="bold"
+                  color="#08783f"
+                  fontSize={24}
+                >
+                  01
+                </Typography>
+
+                <Typography fontWeight="bold" color="#0E4D28" mt={1}>
+                  Before & After Photos
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary" mt={1}>
+                  Your supervisor uploads before and after photos after
+                  each visit, giving you a clear visual record of the work.
+                </Typography>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: "100%",
+                  borderRadius: 4,
+                  bgcolor: "#F7FAF7",
+                  boxShadow: "none",
+                  textAlign: "center",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  fontWeight="bold"
+                  color="#08783f"
+                  fontSize={24}
+                >
+                  02
+                </Typography>
+
+                <Typography fontWeight="bold" color="#0E4D28" mt={1}>
+                  Complete Visit History
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary" mt={1}>
+                  Every completed visit is recorded in your Munder profile,
+                  so you can review your garden service history anytime.
+                </Typography>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: "100%",
+                  borderRadius: 4,
+                  bgcolor: "#F7FAF7",
+                  boxShadow: "none",
+                  textAlign: "center",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  fontWeight="bold"
+                  color="#08783f"
+                  fontSize={24}
+                >
+                  03
+                </Typography>
+
+                <Typography fontWeight="bold" color="#0E4D28" mt={1}>
+                  Next Visit Tracking
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary" mt={1}>
+                  Your profile shows the next scheduled visit, so you always
+                  know when your garden is due for its next service.
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+
+          <Typography
+            textAlign="center"
+            fontWeight="bold"
+            color="#0E4D28"
+            mt={3}
+          >
+            See the work. Track the visits. Know what’s next.
+          </Typography>
+        </Card>
+      </Box>
+
+        <Card
+          sx={{
+            mt: 5,
+            borderRadius: 5,
+            bgcolor: "#0E4D28",
+            color: "#fff",
+            p: 3
+          }}
+        >
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+          >
+            Need a Custom Garden Solution?
+          </Typography>
+          <Typography
+            mt={1}
+            sx={{ opacity: .9 }}
+          >
+            Book a professional inspection. Our expert will visit your garden, understand your requirements and provide the best quotation.
+          </Typography>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => navigate("/visit")}
+            sx={{
+              mt: 3,
+              bgcolor: "#fff",
+              color: "#0E4D28",
+              py: 1.5,
+              fontWeight: "bold",
+              borderRadius: 3,
+              "&:hover": {
+                bgcolor: "#f5f5f5"
+              }
+            }}
+          >
+            Schedule Inspection
+          </Button>
+        </Card>
+
+        <Box
+          sx={{
+            textAlign: "center",
+            mt: 5,
+            mb: 2
+          }}
+        >
+          <Typography
+            variant="body2"
+            color="text.secondary"
+          >
+            Trusted by hundreds of homeowners for
+          </Typography>
+          <Typography
+            fontWeight="bold"
+            color="#0E4D28"
+            mt={0.5}
+          >
+            Garden Maintenance • Landscaping • Irrigation
+          </Typography>
+        </Box>
+      </Box>
+  );
+}
+
+

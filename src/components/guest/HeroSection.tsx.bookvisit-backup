@@ -1,0 +1,151 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Leaf, Trees, ShieldCheck, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+
+export default function HeroSection() {
+  const heroImages = [
+    "/images/projects/slide01.jpg",
+    "/images/projects/slide02.png",
+    "/images/projects/slide03.jpg",
+    "/images/projects/slide04.jpg",
+    "/images/projects/slide05.jpg",
+    "/images/projects/slide06.jpg",
+    "/images/projects/slide07.jpg",
+    "/images/projects/slide08.jpg",
+    "/images/projects/slide09.jpg",
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, []);
+  return (
+    <section className="relative overflow-hidden bg-white pt-20">
+      {/* Hero Section Container */}
+      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
+        
+        {/* Main Banner / Hero Image at the very top */}
+        <div className="relative mb-8 overflow-hidden rounded-3xl shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10" />
+          <img
+            src={heroImages[currentSlide]}
+            alt="Munder Garden"
+            className="h-[380px] w-full object-cover sm:h-[460px] lg:h-[520px]"
+          />
+            <button
+              type="button"
+              onClick={() => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length)}
+              aria-label="Previous project"
+              className="absolute left-3 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur-sm transition hover:bg-black/55"
+            >
+              <ChevronLeft size={28} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % heroImages.length)}
+              aria-label="Next project"
+              className="absolute right-3 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur-sm transition hover:bg-black/55"
+            >
+              <ChevronRight size={28} />
+            </button>
+          <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 gap-2">
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                aria-label={`Go to project ${index + 1}`}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-2.5 rounded-full transition-all ${currentSlide === index ? "w-7 bg-white" : "w-2.5 bg-white/60"}`}
+              />
+            ))}
+          </div>
+          <div className="absolute bottom-6 left-6 right-6 z-20 text-white">
+            <span className="inline-flex items-center rounded-full bg-green-600/90 px-3.5 py-1.5 text-xs font-semibold sm:text-sm">
+              🌿 Professional Gardening Services
+            </span>
+            <h1 className="mt-3 text-3xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+              Bring Your Dream Garden to Life
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-gray-200 sm:text-base">
+              Expert garden care, custom landscaping, and smart solutions delivered right to your doorstep.
+            </p>
+          </div>
+        </div>
+
+          {/* Book Free Visit */}
+          <div className="relative overflow-hidden rounded-[24px] border border-green-900/30 bg-gradient-to-br from-[#075B32] via-[#006B38] to-[#064D2D] px-5 py-6 text-white shadow-xl sm:px-8 sm:py-8">
+
+            {/* Decorative background */}
+            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-green-300/10" />
+            <div className="pointer-events-none absolute -bottom-12 -right-5 h-44 w-44 rounded-full bg-green-200/10" />
+
+            <div className="relative z-10">
+
+              {/* Main content */}
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+
+                {/* 100% FREE Badge */}
+                <div className="mx-auto flex h-[112px] w-[92px] shrink-0 flex-col items-center justify-center rounded-[22px] bg-[#D9F000] text-center text-[#075B32] shadow-lg sm:mx-0">
+                  <span className="text-3xl leading-none">🎁</span>
+
+                  <span className="mt-1 text-[15px] font-extrabold leading-tight">
+                    100%
+                    <br />
+                    FREE
+                  </span>
+                </div>
+
+                {/* Text */}
+                <div className="flex-1 text-center sm:text-left">
+                  <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl">
+                    <span className="text-[#D9F000]">FREE</span>{" "}
+                    <span className="text-white">GARDEN VISIT</span>
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-white sm:text-base">
+                    Book your free visit &amp; get expert advice from our specialists.
+                  </p>
+
+                  {/* Benefits */}
+                  <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+                    <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white">
+                      ✓ No Cost
+                    </span>
+
+                    <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white">
+                      ✓ No Obligation
+                    </span>
+
+                    <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white">
+                      ✓ Expert Advice
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Book Button */}
+              <Link
+                to="/contact"
+                className="mt-6 flex w-full items-center rounded-2xl bg-white px-4 py-3.5 font-bold text-[#064D2D] shadow-lg transition hover:bg-green-50 sm:px-7"
+              >
+                <span className="flex-1 text-center text-lg sm:text-xl">
+                  BOOK FREE VISIT
+                </span>
+
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#075B32] text-white">
+                  <ArrowRight size={24} />
+                </span>
+              </Link>
+
+            </div>
+          </div>
+
+      </div>
+    </section>
+  );
+}

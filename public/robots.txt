@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://munder.in/sitemap.xml
+
