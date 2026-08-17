@@ -514,8 +514,6 @@ app.post(
               customer?.phone || "",
           },
 
-          capture:
-            "automatic",
         });
 
       res.json({
