@@ -93,7 +93,7 @@ export function Payment() {
        */
 
       const response = await fetch(
-        "/api/v1/razorpay/order",
+         "https://munder-p9yk.onrender.com/api/v1/razorpay/order",
         {
           method: "POST",
 
@@ -213,7 +213,7 @@ export function Payment() {
 
             const verifyResponse =
               await fetch(
-                "/api/v1/razorpay/verify",
+                 "https://munder-p9yk.onrender.com/api/v1/razorpay/verify",
                 {
                   method: "POST",
 
