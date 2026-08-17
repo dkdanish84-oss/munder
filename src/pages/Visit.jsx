@@ -129,8 +129,8 @@ let photoData = "";
   };
 
   const handleContinueOnWhatsApp = () => {
-    const text = `ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â¿ *Free Garden Visit Request*%0A%0AÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ *Name:* ${formData.name}%0AÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â± *Mobile:* ${formData.mobile}%0AÃƒÂ°Ã…Â¸Ã¢â‚¬Å“ *Area:*
-${formData.location}%0AÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â³ *Garden Size:* ${gardenSize}%0AÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ *Preferred Date:* ${formData.date}%0AÃƒÂ°Ã…Â¸Ã¢â‚¬Å“  
+    const text = ` *Free Garden Visit Request*%0A%0A *Name:* ${formData.name}%0A *Mobile:* ${formData.mobile}%0A *Area:*
+${formData.location}%0A *Garden Size:* ${gardenSize}%0A *Preferred Date:* ${formData.date}%0A  
 one'}`;
     window.open(`https://wa.me/917987468974?text=${text}`, '_blank');
   };
@@ -391,7 +391,7 @@ Attached</Typography>
           >
             <CheckCircleIcon sx={{ fontSize: 64, color: '#2e7d32', mb: 2 }} />
             <Typography variant="h4" fontWeight="900" sx={{ color: '#0f382c', mb: 1 }}>
-              Thank You! ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â¿
+              Thank You! 
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
               Your Free Garden Visit request has been received.
@@ -399,7 +399,7 @@ Attached</Typography>
 
             <Box sx={{ bgcolor: '#f1f8e9', p: 2, borderRadius: '16px', mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
               <Typography variant="body2" fontWeight="bold" sx={{ color: '#2e7d32' }}>
-                ÃƒÂ¢Ã…â€œÃ¢â‚¬
+                
               </Typography>
             </Box> 
 
@@ -447,14 +447,14 @@ Attached</Typography>
               onClick={() => setSubmitted(false)}
               sx={{ mt: 2, color: 'text.secondary', textTransform: 'none', fontSize: '0.85rem' }}
             >
-              ÃƒÂ¢Ã¢â‚¬ 
+               
             </Button>
           </Paper>
         )}
 
         <Box sx={{ textAlign: 'center', my: 2.5 }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-            ÃƒÂ°Ã…Â¸Ã¢â‚¬
+            
                             </Typography>
         </Box>
 

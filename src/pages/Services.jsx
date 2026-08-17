@@ -278,7 +278,7 @@ export default function Services() {
               whiteSpace: "nowrap",
             }}
           > 
-            ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â¿ Professional Gardening Services 
+             Professional Gardening Services 
           </Box>
 
 
