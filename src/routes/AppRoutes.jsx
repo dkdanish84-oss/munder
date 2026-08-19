@@ -1,3 +1,4 @@
+import AdminDashboard from "../pages/AdminDashboard";
 import { Routes, Route } from "react-router-dom";
 
 import WebsiteLayout from "../layouts/WebsiteLayout";
@@ -25,7 +26,7 @@ export default function AppRoutes() {
 
 <Route path="/login" element={<Login />} />
       <Route path="/admin" element={<DashboardLayout />}>
-        <Route index element={<Dashboard />} />
+        <Route index element={<AdminDashboard />} />
         <Route path="leads" element={<Leads />} />
         <Route path="customers" element={<Customers />} />
         <Route path="products" element={<Products />} />

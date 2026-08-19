@@ -113,10 +113,6 @@ export default function App() {
             path="/dashboard"
             element={<Dashboard />}
           />
-          {/* ADMIN DASHBOARD */}
-          <Route path="/admin" element={<DashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-          </Route>
 
 
           <Route
@@ -161,6 +157,11 @@ export default function App() {
             element={<ChooseDate />}
           />
 
+        </Route>
+
+        {/* SEPARATE CRM / ADMIN PANEL */}
+        <Route path="/admin" element={<DashboardLayout />}>
+          <Route index element={<AdminDashboard />} />
         </Route>
       </Routes>
     </>
