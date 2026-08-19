@@ -26,6 +26,8 @@ import Wishlist from "./pages/Wishlist";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -111,6 +113,11 @@ export default function App() {
             path="/dashboard"
             element={<Dashboard />}
           />
+          {/* ADMIN DASHBOARD */}
+          <Route path="/admin" element={<DashboardLayout />}>
+            <Route index element={<AdminDashboard />} />
+          </Route>
+
 
           <Route
             path="/order-success"
