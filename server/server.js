@@ -142,13 +142,12 @@ app.post("/api/visit", (req, res) => {
     if (
       !cleanName ||
       !cleanMobile ||
-      !cleanAddress ||
-      !cleanDate
+      !cleanAddress
     ) {
       return res.status(400).json({
         success: false,
         message:
-          "Name, mobile, address and visit date are required.",
+          "Name, mobile and address are required.",
       });
     }
 
@@ -180,7 +179,7 @@ app.post("/api/visit", (req, res) => {
           "Garden Maintenance"
         ),
 
-      visitDate: cleanDate,
+      visitDate: cleanDate || null,
 
       visitTime:
         String(
@@ -708,3 +707,5 @@ app.listen(PORT, () => {
 
   console.log("");
 });
+
+

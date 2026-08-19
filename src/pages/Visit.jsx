@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';  
+import React, { useState, useEffect } from 'react';   
 
 import {
   Box,
@@ -18,7 +18,7 @@ import axios from "axios";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';  
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ShieldIcon from '@mui/icons-material/Shield';
 import StarIcon from '@mui/icons-material/Star';
 import HomeIcon from '@mui/icons-material/Home';
@@ -36,26 +36,23 @@ export default function Visit() {
     name: '',
     mobile: '',
     location: '',
-    date: '',
     notes: ''
-  }); 
+  });
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); 
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
-  const todayStr = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     return () => {
       if (photoPreview) {
         URL.revokeObjectURL(photoPreview);
       }
-    };
+    }; 
   }, [photoPreview]);
 
   const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; 
     if (file) {
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
@@ -68,20 +65,14 @@ const handleSubmit = async (e) => {
     setError('');
 
     const mobileRegex = /^[0-9]{10}$/;
-    if (!mobileRegex.test(formData.mobile)) {
+    if (!mobileRegex.test(formData.mobile)) { 
       setError('Please enter a valid 10-digit mobile number.');
-      setOpenSnackbar(true);
-      return; 
-    }
-
-    if (formData.date < todayStr) {
-      setError('Preferred visit date cannot be in the past.');
       setOpenSnackbar(true);
       return;
     }
 
     if (!formData.name || !formData.location) {
-      setError('Please fill in all required fields.');
+      setError('Please fill in all required fields.'); 
       setOpenSnackbar(true);
       return;
     }
@@ -96,18 +87,17 @@ let photoData = "";
         reader.onload = () => resolve(String(reader.result || ""));
         reader.onerror = () => resolve("");
         reader.readAsDataURL(photo);
-      });
+      }); 
     }
 
     const response = await axios.post(
-      "/api/visit",
+      "/api/visit", 
       {
         name: formData.name,
         mobile: formData.mobile,
         address: formData.location,
         gardenType: gardenSize,
         service: selectedService,
-        visitDate: formData.date,
         visitTime: "Morning",
         notes: formData.notes,
         photo: photoData,
@@ -128,9 +118,8 @@ let photoData = "";
     setSubmitted(true);
   };
 
-  const handleContinueOnWhatsApp = () => {
-    const text = ` *Free Garden Visit Request*%0A%0A *Name:* ${formData.name}%0A *Mobile:* ${formData.mobile}%0A *Area:*
-${formData.location}%0A *Garden Size:* ${gardenSize}%0A *Preferred Date:* ${formData.date}%0A  
+  const handleContinueOnWhatsApp = () => { 
+    const text = ` *Free Garden Visit Request*%0A%0A *Name:* ${formData.name}%0A *Mobile:* ${formData.mobile}%0A *Area:*${formData.location}%0A *Garden Size:* ${gardenSize}%0A
 one'}`;
     window.open(`https://wa.me/917987468974?text=${text}`, '_blank');
   };
@@ -154,7 +143,7 @@ one'}`;
             sx={{
               width: '100%',
               maxWidth: { xs: '100%', md: 900 },
-              mx: 'auto', 
+              mx: 'auto',
               p: { xs: 2.5, sm: 3.5, md: 4 },
               borderRadius: '24px',
               border: '1px solid #e0e0e0',
@@ -168,9 +157,9 @@ one'}`;
               </Typography>
               <Box sx={{ border: '1px solid #c8e6c9', bgcolor: '#f1f8e9', px: 1.5, py: 0.4, borderRadius: '12px' }}>    
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#2e7d32', fontSize: '0.7rem' }}>
-                  Quick & Easy
+                  Quick & Easy 
                 </Typography>
-              </Box> 
+              </Box>
             </Box>
 
             <Typography variant="h5" fontWeight="900" sx={{ color: '#0f382c', mb: 2.5 }}>
@@ -180,18 +169,18 @@ one'}`;
             <Box
               sx={{
                 mb: 2.5,
-                p: 1.5,
+                p: 1.5, 
                 borderRadius: '12px',
                 bgcolor: '#f1f8e9',
                 border: '1px solid #c8e6c9',
-              }}
+              }} 
             >
-              <Typography 
+              <Typography
                 variant="caption"
                 sx={{
                   color: '#2e7d32',
                   fontWeight: 700,
-                  display: 'block',
+                  display: 'block', 
                   mb: 0.3,
                 }}
               >
@@ -204,7 +193,7 @@ one'}`;
                   fontSize: '0.95rem',
                 }}
               >
-                {selectedService}
+                {selectedService} 
               </Typography>
             </Box>
 
@@ -219,19 +208,19 @@ one'}`;
                   size="small"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
                 />
               </Box>
 
               <Box>
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 0.5, display: 'block' }}>Mobile Number * (10 digits)</Typography>
-                <TextField
+                <TextField 
                   fullWidth
                   required
-                  placeholder="Enter 10-digit mobile number"
+                  placeholder="Enter 10-digit mobile number" 
                   variant="outlined"
-                  size="small"
-                  inputProps={{ maxLength: 10 }}
+                  size="small" 
+                  inputProps={{ maxLength: 10 }} 
                   value={formData.mobile}
                   onChange={(e) => setFormData({ ...formData, mobile: e.target.value.replace(/\D/g, '') })}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
@@ -240,7 +229,7 @@ one'}`;
 
               <Box>
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 0.5, display: 'block' }}>City / Area *</Typography>
-                <TextField 
+                <TextField  
                   fullWidth
                   required
                   placeholder="Enter your area or society name"
@@ -250,23 +239,23 @@ one'}`;
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
                 />
-              </Box>
+              </Box> 
 
               <Box>
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 1, display: 'block' }}>Garden Size *</Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5 }}> 
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5 }}>  
                   {[
-                    { title: 'Small', desc: 'Up to 500 sq.ft' },
+                    { title: 'Small', desc: 'Up to 500 sq.ft' }, 
                     { title: 'Medium', desc: '500 - 1500 sq.ft' },
                     { title: 'Large', desc: 'Above 1500 sq.ft' }
                   ].map((size) => {
                     const isSelected = gardenSize === size.title;
                     return (
-                      <Paper
+                      <Paper 
                         key={size.title}
                         onClick={() => setGardenSize(size.title)}
                         elevation={0}
-                        sx={{ 
+                        sx={{
                           p: 1.5,
                           textAlign: 'center',
                           borderRadius: '12px',
@@ -274,8 +263,8 @@ one'}`;
                           border: isSelected ? '2px solid #0e4d28' : '1px solid #e0e0e0',
                           bgcolor: isSelected ? '#f1f8e9' : '#ffffff',
                           transition: 'all 0.2s',
-                          '&:hover': { borderColor: '#0e4d28' } 
-                        }}
+                          '&:hover': { borderColor: '#0e4d28' }
+                        }} 
                       >
                         <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>{size.title}</Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', display: 'block', mt: 0.5 }}>{size.desc}</Typography>
@@ -283,35 +272,35 @@ one'}`;
                     );
                   })}
                 </Box>
-              </Box>
+              </Box> 
 
               <Box>
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 0.5, display: 'block' }}>Garden Photo (Optional)</Typography>
-                {!photoPreview ? (
+                {!photoPreview ? ( 
                   <Button
                     variant="outlined"
-                    component="label"
+                    component="label" 
                     startIcon={<PhotoCameraIcon />}
-                    fullWidth 
-                    sx={{
+                    fullWidth
+                    sx={{ 
                       borderColor: '#e0e0e0',
                       color: '#555',
                       borderRadius: '12px',
                       py: 1.2,
                       textTransform: 'none',
-                      bgcolor: '#fafafa',
+                      bgcolor: '#fafafa', 
                       '&:hover': { bgcolor: '#f0f0f0', borderColor: '#ccc' }
                     }}
                   >
-                    Take / Upload Photo
+                    Take / Upload Photo 
                     <input type="file" hidden accept="image/*" onChange={handlePhotoChange} />
                   </Button>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, border: '1px solid #c8e6c9', borderRadius: '12px', bgcolor: '#f1f8e9' }}>
-                    <Avatar src={photoPreview} variant="rounded" sx={{ width: 56, height: 56 }} />  
+                    <Avatar src={photoPreview} variant="rounded" sx={{ width: 56, height: 56 }} />
                     <Box sx={{ flex: 1, overflow: 'hidden' }}>
                       <Typography variant="caption" fontWeight="bold" sx={{ color: '#2e7d32', display: 'block' }}>Photo 
-Attached</Typography>
+Attached</Typography> 
                       <Button
                         component="label"
                         size="small"
@@ -329,22 +318,6 @@ Attached</Typography>
               </Box>
 
               <Box>
-                <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 0.5, display: 'block' }}>Preferred Visit Date *</Typography>
-                <TextField
-                  fullWidth
-                  required
-                  type="date"
-                  variant="outlined"
-                  size="small"
-                  inputProps={{ min: todayStr }} 
-                  InputLabelProps={{ shrink: true }}
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
-                />
-              </Box>
-
-              <Box>
                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#333', mb: 0.5, display: 'block' }}>Additional Notes (Optional)</Typography>
                 <TextField
                   fullWidth
@@ -357,7 +330,7 @@ Attached</Typography>
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
                 />
-              </Box>
+              </Box> 
 
               <Button
                 type="submit"
@@ -365,15 +338,15 @@ Attached</Typography>
                 sx={{
                   bgcolor: '#0e4d28',
                   '&:hover': { bgcolor: '#09361c' },
-                  borderRadius: '12px', 
+                  borderRadius: '12px',
                   py: 1.5,
                   fontWeight: 'bold',
-                  textTransform: 'none',
+                  textTransform: 'none', 
                   fontSize: '1rem',
                   mt: 1
                 }}
               >
-                SUBMIT REQUEST
+                SUBMIT REQUEST 
               </Button>
             </Box>
           </Paper>
@@ -381,27 +354,27 @@ Attached</Typography>
           <Paper
             elevation={0}
             sx={{
-              p: { xs: 3, sm: 4 },
+              p: { xs: 3, sm: 4 }, 
               borderRadius: '24px',
-              border: '1px solid #c8e6c9', 
+              border: '1px solid #c8e6c9',
               bgcolor: '#ffffff',
               textAlign: 'center',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)' 
             }}
           >
             <CheckCircleIcon sx={{ fontSize: 64, color: '#2e7d32', mb: 2 }} />
             <Typography variant="h4" fontWeight="900" sx={{ color: '#0f382c', mb: 1 }}>
-              Thank You! 
+              Thank You!
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}> 
               Your Free Garden Visit request has been received.
             </Typography>
 
             <Box sx={{ bgcolor: '#f1f8e9', p: 2, borderRadius: '16px', mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ color: '#2e7d32' }}>
-                
+              <Typography variant="body2" fontWeight="bold" sx={{ color: '#2e7d32' }}> 
+
               </Typography>
-            </Box> 
+            </Box>
 
             <Button
               variant="contained"
@@ -420,19 +393,19 @@ Attached</Typography>
                 boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)',
                 mb: 1.5
               }}
-            >
+            > 
               Continue on WhatsApp
             </Button>
 
             <Button
               variant="outlined"
               onClick={() => navigate('/')}
-              startIcon={<HomeIcon />} 
+              startIcon={<HomeIcon />}
               fullWidth
               sx={{
                 borderColor: '#0e4d28',
                 color: '#0e4d28',
-                borderRadius: '12px',
+                borderRadius: '12px', 
                 py: 1.2,
                 fontWeight: 'bold',
                 textTransform: 'none',
@@ -444,38 +417,38 @@ Attached</Typography>
 
             <Button
               variant="text"
-              onClick={() => setSubmitted(false)}
+              onClick={() => setSubmitted(false)} 
               sx={{ mt: 2, color: 'text.secondary', textTransform: 'none', fontSize: '0.85rem' }}
             >
-               
+
             </Button>
           </Paper>
         )}
 
         <Box sx={{ textAlign: 'center', my: 2.5 }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-            
+
                             </Typography>
-        </Box>
+        </Box> 
 
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, mt: 3 }}>
           <Paper elevation={0} sx={{ p: 2, borderRadius: '16px', border: '1px solid #e0e0e0', textAlign: 'center', bgcolor: '#ffffff' }}>            <AccessTimeIcon sx={{ fontSize: 28, color: '#0e4d28', mb: 0.5 }} />
             <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>Response in 2 Hours</Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Quick scheduling guaranteed</Typography>
-          </Paper> 
+          </Paper>
 
           <Paper elevation={0} sx={{ p: 2, borderRadius: '16px', border: '1px solid #e0e0e0', textAlign: 'center', bgcolor: '#ffffff' }}>            <ShieldIcon sx={{ fontSize: 28, color: '#0e4d28', mb: 0.5 }} />
             <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>Certified Experts</Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Trained professional gardeners</Typography>
           </Paper>
-        </Box>
+        </Box> 
 
-        <Box sx={{ mt: 2 }}> 
+        <Box sx={{ mt: 2 }}>
           <Paper elevation={0} sx={{ p: 2, borderRadius: '16px', border: '1px solid #e0e0e0', textAlign: 'center', bgcolor: '#ffffff' }}>            <StarIcon sx={{ fontSize: 28, color: '#0e4d28', mb: 0.5 }} />
             <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#0f382c', fontSize: '0.85rem' }}>1000+ Happy Clients</Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Trusted across homes & societies</Typography>
           </Paper>
-        </Box>
+        </Box> 
 
       </Container>
 
@@ -494,4 +467,3 @@ Attached</Typography>
     </Box>
   );
 }
-
