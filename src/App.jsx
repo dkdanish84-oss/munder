@@ -21,15 +21,24 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
+import MyGarden from "./pages/MyGarden";
+import MyVisits from "./pages/MyVisits";
 import Orders from "./pages/Orders";
 import Wishlist from "./pages/Wishlist";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
-import Dashboard from "./pages/Dashboard";
+import PaymentHistory from "./pages/PaymentHistory";
+import MyPlan from "./pages/MyPlan";
+import PlanPayment from "./pages/PlanPayment";
+
 import AdminDashboard from "./pages/AdminDashboard";
-import DashboardLayout from "./layouts/DashboardLayout";
 
 import Layout from "./components/Layout";
+import CustomerLayout from "./layouts/CustomerLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
@@ -39,7 +48,9 @@ export default function App() {
 
       <Routes>
 
-        {/* AUTH PAGES */}
+        {/* =====================================================
+            PUBLIC AUTH
+        ===================================================== */}
 
         <Route
           path="/signup"
@@ -51,11 +62,11 @@ export default function App() {
           element={<MobileLogin />}
         />
 
-        {/* COMMON LAYOUT */}
+        {/* =====================================================
+            GUEST WEBSITE
+        ===================================================== */}
 
         <Route element={<Layout />}>
-
-          {/* GUEST WEBSITE */}
 
           <Route
             path="/"
@@ -107,45 +118,10 @@ export default function App() {
             element={<Payment />}
           />
 
-          {/* DASHBOARD */}
-
-          <Route
-            path="/dashboard"
-            element={<Dashboard />}
-          />
-
-
           <Route
             path="/order-success"
             element={<OrderSuccess />}
           />
-
-          <Route
-            path="/orders"
-            element={<Orders />}
-          />
-
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
-
-          <Route
-            path="/wishlist"
-            element={<Wishlist />}
-          />
-
-          <Route
-            path="/notifications"
-            element={<Notifications />}
-          />
-
-          <Route
-            path="/settings"
-            element={<Settings />}
-          />
-
-          {/* SERVICE FLOW */}
 
           <Route
             path="/garden-details"
@@ -159,13 +135,83 @@ export default function App() {
 
         </Route>
 
-        {/* SEPARATE CRM / ADMIN PANEL */}
+        {/* =====================================================
+            SEPARATE CRM / ADMIN PANEL
+        ===================================================== */}
+
         <Route path="/admin" element={<DashboardLayout />}>
           <Route index element={<AdminDashboard />} />
         </Route>
+
+        {/* =====================================================
+            CUSTOMER DASHBOARD
+            LOGIN REQUIRED
+        ===================================================== */}
+
+        <Route element={<ProtectedRoute />}>
+
+          <Route element={<CustomerLayout />}>
+
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
+
+            <Route
+              path="/my-plan"
+              element={<MyPlan />}
+            />
+
+            <Route
+              path="/plan-payment"
+              element={<PlanPayment />}
+            />
+
+            <Route
+              path="/my-garden"
+              element={<MyGarden />}
+            />
+
+            <Route
+              path="/my-visits"
+              element={<MyVisits />}
+            />
+
+            <Route
+              path="/orders"
+              element={<Orders />}
+            />
+
+            <Route
+              path="/wishlist"
+              element={<Wishlist />}
+            />
+
+            <Route
+              path="/notifications"
+              element={<Notifications />}
+            />
+
+            <Route
+              path="/settings"
+              element={<Settings />}
+            />
+
+            <Route
+              path="/payments"
+              element={<PaymentHistory />}
+            />
+
+            <Route
+              path="/profile"
+              element={<Profile />}
+            />
+
+          </Route>
+
+        </Route>
+
       </Routes>
     </>
   );
 }
-
-

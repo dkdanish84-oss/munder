@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
@@ -94,6 +94,12 @@ const razorpay = (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
 ========================================================= */
 
 const PLAN_PRICES = {
+  // Customer Dashboard plans
+  "Basic Care": 999,
+  "Premium Care": 1999,
+  "Complete Care": 2999,
+
+  // Legacy plan names - keep existing payment flow working
   "Basic Care Plan": 999,
   "Pro Garden Plan": 1999,
   "Ultimate Estate Plan": 3999,

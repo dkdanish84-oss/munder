@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useAuthStore } from "../store/authStore";
+
 import {
   Box,
   Avatar,
@@ -10,15 +11,15 @@ import {
   Button,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Divider,
   Paper,
 } from "@mui/material";
+
 import {
   Person as PersonIcon,
-  ShoppingBag as OrdersIcon,
-  Favorite as WishlistIcon,
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
   Logout as LogoutIcon,
@@ -38,8 +39,17 @@ export default function Profile() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", pb: 10, bgcolor: "#f9f9f9", minHeight: "100vh" }}>
-      {/* Header Banner */}
+    <Box
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        pb: 12,
+        bgcolor: "#f9f9f9",
+        minHeight: "100vh",
+      }}
+    >
+      {/* PROFILE HEADER */}
+
       <Box
         sx={{
           bgcolor: "primary.main",
@@ -71,30 +81,62 @@ export default function Profile() {
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           {user?.displayName || "Munder User"}
         </Typography>
+
         <Typography variant="body2" sx={{ opacity: 0.9 }}>
           {user?.email || "No Email Provided"}
         </Typography>
       </Box>
 
-      {/* Menu Options Section */}
+      {/* MENU */}
+
       <Box sx={{ p: 2 }}>
-        <Paper elevation={1} sx={{ borderRadius: 3, overflow: "hidden", mb: 3 }}>
+        <Paper
+          elevation={1}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            mb: 3,
+          }}
+        >
           <List disablePadding>
 
-            <ListItem button onClick={() => navigate("/notifications")}>
-              <ListItemIcon><NotificationsIcon color="action" /></ListItemIcon>
-              <ListItemText primary="Notifications" secondary="App alerts and updates" />
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => navigate("/notifications")}
+              >
+                <ListItemIcon>
+                  <NotificationsIcon color="action" />
+                </ListItemIcon>
+
+                <ListItemText
+                  primary="Notifications"
+                  secondary="App alerts and updates"
+                />
+              </ListItemButton>
             </ListItem>
+
             <Divider />
 
-            <ListItem button onClick={() => navigate("/settings")}>
-              <ListItemIcon><SettingsIcon color="action" /></ListItemIcon>
-              <ListItemText primary="Settings" secondary="Preferences and security" />
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => navigate("/settings")}
+              >
+                <ListItemIcon>
+                  <SettingsIcon color="action" />
+                </ListItemIcon>
+
+                <ListItemText
+                  primary="Settings"
+                  secondary="Preferences and security"
+                />
+              </ListItemButton>
             </ListItem>
+
           </List>
         </Paper>
 
-        {/* Logout Button */}
+        {/* LOGOUT */}
+
         <Button
           fullWidth
           variant="outlined"
@@ -119,6 +161,3 @@ export default function Profile() {
     </Box>
   );
 }
-
-
-
