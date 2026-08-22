@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -24,6 +24,24 @@ import {
 const RAZORPAY_SCRIPT =
   "https://checkout.razorpay.com/v1/checkout.js";
 
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src =
+      "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+
+    document.body.appendChild(script);
+  });
+};
 const API_BASE =
   "https://munder-p9yk.onrender.com";
 
@@ -38,35 +56,7 @@ export default function PlanPayment() {
   const [scriptLoading, setScriptLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (window.Razorpay) {
-      return;
-    }
 
-    setScriptLoading(true);
-
-    const script = document.createElement("script");
-
-    script.src = RAZORPAY_SCRIPT;
-    script.async = true;
-
-    script.onload = () => {
-      setScriptLoading(false);
-    };
-
-    script.onerror = () => {
-      setScriptLoading(false);
-      setError(
-        "Razorpay Checkout could not be loaded. Please try again."
-      );
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  }, []);
 
   if (!selectedPlan) {
     return (
@@ -193,16 +183,16 @@ export default function PlanPayment() {
        * MAKE SURE RAZORPAY IS AVAILABLE
        */
 
-      if (!window.Razorpay) {
+      const razorpayLoaded = await loadRazorpay();
+
+      if (!razorpayLoaded) {
         throw new Error(
           "Razorpay Checkout could not be loaded."
         );
       }
-
       /*
        * RAZORPAY OPTIONS
        */
-
       const options = {
         key: data.keyId,
 
@@ -800,3 +790,8 @@ export default function PlanPayment() {
     </Box>
   );
 }
+
+
+
+
+

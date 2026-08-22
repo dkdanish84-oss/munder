@@ -31,6 +31,7 @@ import Settings from "./pages/Settings";
 import PaymentHistory from "./pages/PaymentHistory";
 import MyPlan from "./pages/MyPlan";
 import PlanPayment from "./pages/PlanPayment";
+import PlanUpgradeSuccess from "./pages/PlanUpgradeSuccess";
 
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -166,6 +167,10 @@ export default function App() {
               path="/plan-payment"
               element={<PlanPayment />}
             />
+            <Route
+              path="/plan-upgrade-success"
+              element={<PlanUpgradeSuccess />}
+            />
 
             <Route
               path="/my-garden"
@@ -215,3 +220,4 @@ export default function App() {
     </>
   );
 }
+
