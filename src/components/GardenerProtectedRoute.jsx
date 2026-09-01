@@ -22,7 +22,7 @@ export default function GardenerProtectedRoute() {
         const token = await user.getIdToken();
         setAuth(user, token);
 
-        const response = await fetch("/api/v1/gardener/me", {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "https://munder-p9yk.onrender.com"}/api/v1/gardener/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -76,3 +76,4 @@ export default function GardenerProtectedRoute() {
 
   return <Outlet />;
 }
+
