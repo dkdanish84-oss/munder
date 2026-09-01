@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,15 +8,31 @@ import {
   Button,
   useMediaQuery,
 } from "@mui/material";
+
 import { useTheme } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+
+const adminMenu = [
+  ["Dashboard", "/admin"],
+  ["Leads", "/admin/leads"],
+  ["Customers", "/admin/customers"],
+  ["Gardeners", "/admin/gardeners"],
+  ["Categories", "/admin/categories"],
+  ["Products", "/admin/products"],
+  ["Inventory", "/admin/inventory"],
+  ["Projects", "/admin/projects"],
+  ["Quotations", "/admin/quotations"],
+];
 
 export default function Header({
   title = "Dashboard",
   onMenuClick,
+  onLogout,
 }) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -38,13 +54,22 @@ export default function Header({
         borderBottom: "1px solid #e5e7eb",
       }}
     >
-      <Toolbar>
-
+      <Toolbar
+        sx={{
+          minHeight: "70px !important",
+          height: "70px",
+          px: { xs: 2, md: 3 },
+          gap: 2,
+        }}
+      >
         {!isDesktop && (
           <IconButton
             edge="start"
             onClick={onMenuClick}
-            sx={{ mr: 1, color: "#1B5E20" }}
+            sx={{
+              color: "#1B5E20",
+              flexShrink: 0,
+            }}
           >
             <MenuIcon />
           </IconButton>
@@ -52,23 +77,25 @@ export default function Header({
 
         <Box
           component={RouterLink}
-          to="/"
+          to="/admin"
           sx={{
             display: "flex",
             alignItems: "center",
             textDecoration: "none",
             color: "inherit",
-            flexGrow: 1,
+            flexShrink: 0,
           }}
         >
-
           <Box
             component="img"
             src="/images/munder-logo-horizontal.png"
             alt="Munder"
             sx={{
-              height: 42,
-              mr: 1.5,
+              height: 70,
+width: "auto",
+transform: "scale(1.35)",
+transformOrigin: "left center",
+display: "block",
             }}
           />
 
@@ -76,38 +103,151 @@ export default function Header({
             variant="h6"
             fontWeight={700}
             sx={{
+              ml: 1.5,
               display: {
                 xs: "none",
-                sm: "block",
+                xl: "block",
               },
+              whiteSpace: "nowrap",
             }}
           >
             {title}
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<WhatsAppIcon />}
-          onClick={openWhatsApp}
+        <Box
+          component="nav"
+          aria-label="Admin navigation"
           sx={{
-            bgcolor: "#1B5E20",
-            "&:hover": {
-              bgcolor: "#14471a",
-            },
-            textTransform: "none",
-            borderRadius: "10px",
-            px: 2.5,
-            display: {
-              xs: "none",
-              sm: "inline-flex",
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 0.25,
+            flexGrow: 1,
+            minWidth: 0,
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
             },
           }}
         >
-          WhatsApp
-        </Button>
+          {adminMenu.map(([label, path]) => (
+            <Box
+              key={path}
+              component={RouterLink}
+              to={path}
+              sx={{
+                flexShrink: 0,
+                px: {
+                  md: 0.65,
+                  lg: 0.9,
+                  xl: 1.15,
+                },
+                py: 0.8,
+                borderRadius: 2,
+                textDecoration: "none",
+                color: "#183B2A",
+                fontSize: {
+                  md: 13,
+lg: 14,
+xl: 16,
+                },
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  bgcolor: "#F0F6F1",
+                  color: "#1B5E20",
+                },
+              }}
+            >
+              {label}
+            </Box>
+          ))}
+        </Box>
 
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexShrink: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                lg: "flex",
+              },
+              alignItems: "center",
+              gap: 1,
+              px: 1.5,
+              py: 0.7,
+              bgcolor: "#F0F6F1",
+              borderRadius: 2,
+            }}
+          >
+            <AdminPanelSettingsIcon
+              sx={{
+                color: "#1B5E20",
+              }}
+            />
+
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: "#183B2A",
+                  lineHeight: 1.2,
+                }}
+              >
+                Main Admin
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: 10,
+                  color: "#6B7280",
+                }}
+              >
+                Administrator
+              </Typography>
+            </Box>
+          </Box>
+
+          <Button
+            variant="outlined"
+            startIcon={<LogoutIcon />}
+            onClick={() => {
+              if (typeof onLogout === "function") {
+                onLogout();
+              }
+            }}
+            sx={{
+              color: "#B42318",
+              borderColor: "#FECACA",
+              textTransform: "none",
+              fontWeight: 700,
+              borderRadius: 2,
+              "&:hover": {
+                borderColor: "#B42318",
+                bgcolor: "#FEF2F2",
+              },
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
 }
+
+
+
+
+
+

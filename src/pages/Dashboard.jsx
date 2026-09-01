@@ -1,5 +1,8 @@
 ﻿import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
+
 import {
   Box,
   Card,
@@ -16,11 +19,203 @@ import {
   CalendarDays,
   CreditCard,
   ArrowRight,
-  Clock3,
 } from "lucide-react";
+
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "https://munder.in";
+
+function formatDate(value) {
+  if (!value) return "Not available";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function formatPaymentDate(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function getUpcomingVisit(visits) {
+  if (!Array.isArray(visits) || visits.length === 0) {
+    return null;
+  }
+
+  const now = new Date();
+
+  const upcoming = visits
+    .filter((visit) => {
+      if (!visit?.visitDate) return false;
+
+      const date = new Date(
+        `${visit.visitDate}T23:59:59`
+      );
+
+      return !Number.isNaN(date.getTime()) && date >= now;
+    })
+    .sort((a, b) => {
+      const aDate = new Date(
+        `${a.visitDate}T00:00:00`
+      ).getTime();
+
+      const bDate = new Date(
+        `${b.visitDate}T00:00:00`
+      ).getTime();
+
+      return aDate - bDate;
+    });
+
+  return upcoming[0] || null;
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
+  const [customer, setCustomer] = useState(null);
+  const [visits, setVisits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDashboard = async () => {
+      try {
+        const auth = getAuth();
+        const firebaseUser = auth.currentUser;
+
+        if (!firebaseUser) {
+          throw new Error(
+            "Please login to view your customer dashboard."
+          );
+        }
+
+        const token = await firebaseUser.getIdToken();
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const [customerResponse, visitsResponse] =
+          await Promise.all([
+            fetch(
+              `${API_BASE}/api/v1/customer/me`,
+              { headers }
+            ),
+
+            fetch(
+              `${API_BASE}/api/v1/customer/visits`,
+              { headers }
+            ),
+          ]);
+
+        const customerData =
+          await customerResponse.json();
+
+        const visitsData =
+          await visitsResponse.json();
+
+        if (
+          !customerResponse.ok ||
+          !customerData.success
+        ) {
+          throw new Error(
+            customerData.message ||
+              "Unable to load customer account."
+          );
+        }
+
+        if (
+          !visitsResponse.ok ||
+          !visitsData.success
+        ) {
+          throw new Error(
+            visitsData.message ||
+              "Unable to load customer visits."
+          );
+        }
+
+        if (!cancelled) {
+          setCustomer(customerData.customer);
+
+          setVisits(
+            Array.isArray(visitsData.visits)
+              ? visitsData.visits
+              : []
+          );
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err?.message ||
+              "Unable to load customer dashboard."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const nextVisit = getUpcomingVisit(visits);
+
+  const customerName =
+    customer?.name ||
+    "Munder Customer";
+
+  const activePlan =
+    customer?.plan;
+
+  const lastPayment =
+    customer?.lastPayment;
+
+  const nextVisitDate =
+    nextVisit?.visitDate
+      ? formatDate(nextVisit.visitDate)
+      : "No visit scheduled";
+
+  const nextVisitDetails = nextVisit
+    ? [
+        nextVisit.service,
+        nextVisit.visitTime,
+        nextVisit.assignedGardener
+          ? `Gardener: ${nextVisit.assignedGardener}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" • ")
+    : "Visit details will appear here";
+
+  const nextVisitStatus =
+    nextVisit?.status || "Pending";
 
   return (
     <Box
@@ -42,7 +237,13 @@ export default function Dashboard() {
             color: "#183B2A",
           }}
         >
-          Good Evening 👋
+          {loading
+            ? "Loading your account..."
+            : `Good Evening${
+                customerName
+                  ? `, ${customerName}`
+                  : ""
+              } 👋`}
         </Typography>
 
         <Typography
@@ -52,30 +253,38 @@ export default function Dashboard() {
             fontSize: 14,
           }}
         >
-          Welcome back to your MUNDER garden.
+          {error
+            ? error
+            : "Welcome back to your MUNDER garden."}
         </Typography>
       </Box>
 
-      {/* =====================================================
-          ACTIVE PLAN
-      ===================================================== */}
+      {/* ACTIVE PLAN */}
 
       <Card
         sx={{
           mb: 2.5,
           borderRadius: 4,
           border: "1px solid #DCEBDD",
-          boxShadow: "0 8px 30px rgba(31,80,45,0.08)",
+          boxShadow:
+            "0 8px 30px rgba(31,80,45,0.08)",
         }}
       >
-        <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+        <CardContent
+          sx={{
+            p: { xs: 2.5, sm: 3 },
+          }}
+        >
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="flex-start"
             gap={2}
           >
-            <Stack direction="row" spacing={1.5}>
+            <Stack
+              direction="row"
+              spacing={1.5}
+            >
               <Box
                 sx={{
                   width: 46,
@@ -111,7 +320,8 @@ export default function Dashboard() {
                     color: "#183B2A",
                   }}
                 >
-                  Basic Care Plan
+                  {activePlan?.name ||
+                    "No active plan"}
                 </Typography>
 
                 <Typography
@@ -121,13 +331,23 @@ export default function Dashboard() {
                     color: "#66756C",
                   }}
                 >
-                  ₹1,178 / month
+                  {activePlan?.monthlyPrice != null
+                    ? `₹${activePlan.monthlyPrice} / month`
+                    : customer?.status ===
+                      "PAYMENT_PENDING"
+                    ? "Plan payment pending"
+                    : "Price not available"}
                 </Typography>
               </Box>
             </Stack>
 
             <Chip
-              label="Active"
+              label={
+                customer?.status === "ACTIVE"
+                  ? "Active"
+                  : customer?.status ||
+                    "Pending"
+              }
               size="small"
               sx={{
                 bgcolor: "#E8F5E9",
@@ -140,9 +360,15 @@ export default function Dashboard() {
           <Divider sx={{ my: 2 }} />
 
           <Stack
-            direction={{ xs: "column", sm: "row" }}
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
             justifyContent="space-between"
-            alignItems={{ xs: "stretch", sm: "center" }}
+            alignItems={{
+              xs: "stretch",
+              sm: "center",
+            }}
             gap={2}
           >
             <Box>
@@ -162,14 +388,20 @@ export default function Dashboard() {
                   color: "#26382D",
                 }}
               >
-                14 September 2026
+                {formatDate(
+                  activePlan?.renewalDate
+                )}
               </Typography>
             </Box>
 
             <Button
-              onClick={() => navigate("/my-plan")}
+              onClick={() =>
+                navigate("/my-plan")
+              }
               variant="outlined"
-              endIcon={<ArrowRight size={17} />}
+              endIcon={
+                <ArrowRight size={17} />
+              }
               sx={{
                 borderColor: "#2E7D32",
                 color: "#2E7D32",
@@ -184,20 +416,27 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* =====================================================
-          NEXT VISIT
-      ===================================================== */}
+      {/* NEXT VISIT */}
 
       <Card
         sx={{
           mb: 2.5,
           borderRadius: 4,
           border: "1px solid #E4ECE5",
-          boxShadow: "0 5px 20px rgba(0,0,0,0.04)",
+          boxShadow:
+            "0 5px 20px rgba(0,0,0,0.04)",
         }}
       >
-        <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
-          <Stack direction="row" spacing={1.5} alignItems="center">
+        <CardContent
+          sx={{
+            p: { xs: 2.5, sm: 3 },
+          }}
+        >
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+          >
             <Box
               sx={{
                 width: 46,
@@ -231,7 +470,7 @@ export default function Dashboard() {
                   color: "#183B2A",
                 }}
               >
-                18 August 2026
+                {nextVisitDate}
               </Typography>
 
               <Typography
@@ -240,7 +479,7 @@ export default function Dashboard() {
                   fontSize: 14,
                 }}
               >
-                10:00 AM • Routine Maintenance
+                {nextVisitDetails}
               </Typography>
             </Box>
           </Stack>
@@ -254,7 +493,7 @@ export default function Dashboard() {
             gap={2}
           >
             <Chip
-              label="Confirmed"
+              label={nextVisitStatus}
               size="small"
               sx={{
                 bgcolor: "#E8F5E9",
@@ -264,12 +503,18 @@ export default function Dashboard() {
             />
 
             <Button
-              onClick={() => navigate("/my-visits")}
+              onClick={() =>
+                navigate("/my-visits")
+              }
               variant="contained"
-              endIcon={<ArrowRight size={17} />}
+              endIcon={
+                <ArrowRight size={17} />
+              }
               sx={{
                 bgcolor: "#2E7D32",
-                "&:hover": { bgcolor: "#256628" },
+                "&:hover": {
+                  bgcolor: "#256628",
+                },
                 borderRadius: 2.5,
                 textTransform: "none",
                 fontWeight: 700,
@@ -281,19 +526,26 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* =====================================================
-          LAST PAYMENT
-      ===================================================== */}
+      {/* LAST PAYMENT */}
 
       <Card
         sx={{
           borderRadius: 4,
           border: "1px solid #E4ECE5",
-          boxShadow: "0 5px 20px rgba(0,0,0,0.04)",
+          boxShadow:
+            "0 5px 20px rgba(0,0,0,0.04)",
         }}
       >
-        <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
-          <Stack direction="row" spacing={1.5} alignItems="center">
+        <CardContent
+          sx={{
+            p: { xs: 2.5, sm: 3 },
+          }}
+        >
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+          >
             <Box
               sx={{
                 width: 46,
@@ -327,7 +579,9 @@ export default function Dashboard() {
                   color: "#183B2A",
                 }}
               >
-                ₹1,178
+                {lastPayment?.amount != null
+                  ? `₹${lastPayment.amount}`
+                  : "No payment yet"}
               </Typography>
 
               <Typography
@@ -336,7 +590,15 @@ export default function Dashboard() {
                   fontSize: 14,
                 }}
               >
-                01 August 2026 • Basic Care Plan
+                {lastPayment?.date
+                  ? `${formatPaymentDate(
+                      lastPayment.date
+                    )}${
+                      lastPayment.plan
+                        ? ` • ${lastPayment.plan}`
+                        : ""
+                    }`
+                  : "Payment history will appear here"}
               </Typography>
             </Box>
           </Stack>
@@ -349,7 +611,10 @@ export default function Dashboard() {
             alignItems="center"
           >
             <Chip
-              label="Paid"
+              label={
+                lastPayment?.status ||
+                "Pending"
+              }
               size="small"
               sx={{
                 bgcolor: "#E8F5E9",
@@ -359,9 +624,13 @@ export default function Dashboard() {
             />
 
             <Button
-              onClick={() => navigate("/payments")}
+              onClick={() =>
+                navigate("/payments")
+              }
               variant="outlined"
-              endIcon={<ArrowRight size={17} />}
+              endIcon={
+                <ArrowRight size={17} />
+              }
               sx={{
                 borderColor: "#2E7D32",
                 color: "#2E7D32",
@@ -378,3 +647,5 @@ export default function Dashboard() {
     </Box>
   );
 }
+
+

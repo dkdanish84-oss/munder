@@ -1,5 +1,6 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
 
 import {
   Box,
@@ -43,7 +44,8 @@ const loadRazorpay = () => {
   });
 };
 const API_BASE =
-  "https://munder-p9yk.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://munder.in";
 
 export default function PlanPayment() {
   const navigate = useNavigate();
@@ -55,6 +57,80 @@ export default function PlanPayment() {
   const [loading, setLoading] = useState(false);
   const [scriptLoading, setScriptLoading] = useState(false);
   const [error, setError] = useState("");
+  const [customer, setCustomer] = useState(null);
+  const [customerLoading, setCustomerLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCustomer() {
+      try {
+        const user = auth.currentUser;
+
+        if (!user) {
+          throw new Error(
+            "Please login before purchasing a plan."
+          );
+        }
+
+        const token = await user.getIdToken();
+
+        const response = await fetch(
+          `${API_BASE}/api/v1/customer/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !data.customer) {
+          throw new Error(
+            data.message ||
+              "Unable to load customer account."
+          );
+        }
+
+        if (!cancelled) {
+          setCustomer(data.customer);
+        }
+      } catch (error) {
+        console.error(
+          "PlanPayment customer lookup error:",
+          error
+        );
+
+        if (!cancelled) {
+          setError(
+            error.message ||
+              "Unable to load customer account."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setCustomerLoading(false);
+        }
+      }
+    }
+
+    loadCustomer();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const customerName =
+    customer?.name ||
+    auth.currentUser?.displayName ||
+    "Munder Customer";
+
+  const customerPhone =
+    customer?.phone ||
+    auth.currentUser?.phoneNumber ||
+    "";
 
 
 
@@ -114,47 +190,28 @@ export default function PlanPayment() {
 
   const handlePayment = async () => {
     try {
-      setLoading(true);
-      setError("");
+      const user = auth.currentUser;
 
-      /*
-       * CUSTOMER DETAILS
-       *
-       * Existing Payment.jsx uses customer details from checkout.
-       * For plan upgrade, use saved customer details if available.
-       */
-
-      let savedCustomer = {};
-
-      try {
-        savedCustomer = JSON.parse(
-          localStorage.getItem("munder_customer") || "{}"
+      if (!user) {
+        throw new Error(
+          "Please login before making a payment."
         );
-      } catch {
-        savedCustomer = {};
       }
 
-      const customerName =
-        savedCustomer.name ||
-        savedCustomer.fullName ||
-        "Munder Customer";
-
-      const customerPhone =
-        savedCustomer.phone ||
-        savedCustomer.mobile ||
-        "";
-
-      /*
+      const firebaseToken =
+        await user.getIdToken();
+      setLoading(true);
+      setError("");
+/*
        * CREATE RAZORPAY ORDER
-       */
-
-      const response = await fetch(
+       */const response = await fetch(
         `${API_BASE}/api/v1/razorpay/order`,
         {
           method: "POST",
 
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${firebaseToken}`,
           },
 
           body: JSON.stringify({
@@ -205,8 +262,9 @@ export default function PlanPayment() {
         description:
           `${data.pricing.planName} - Plan Upgrade`,
 
-        image:
-          "/images/munder-logo-horizontal.png",
+        // Do not use a localhost-relative image here. Razorpay checkout is hosted
+        // on Razorpay, so it cannot access the local Vite server image.
+        // image: "https://YOUR-PUBLIC-DOMAIN/images/munder-logo-horizontal.png",
 
         order_id: data.order.id,
 
@@ -269,6 +327,7 @@ export default function PlanPayment() {
                   headers: {
                     "Content-Type":
                       "application/json",
+                    Authorization: `Bearer ${firebaseToken}`,
                   },
 
                   body: JSON.stringify({
@@ -295,65 +354,49 @@ export default function PlanPayment() {
                 verifyData.message ||
                   "Payment verification failed."
               );
-            }
-
-            /*
-             * SAVE CUSTOMER PLAN UPGRADE
-             *
-             * This keeps the successful upgrade available
-             * to the customer dashboard until the backend
-             * subscription system is connected.
+            }/*
+             * SUCCESS
              */
 
             const upgradeRecord = {
-              type: "plan_upgrade",
-
               previousPlan:
                 currentPlan?.name || "",
 
               planName:
+                verifyData.subscription?.planName ||
                 data.pricing.planName,
 
               amount:
+                verifyData.payment?.amount ??
                 data.pricing.grandTotal,
 
               razorpayOrderId:
+                verifyData.payment?.razorpayOrderId ||
                 paymentResponse.razorpay_order_id,
 
               razorpayPaymentId:
+                verifyData.payment?.razorpayPaymentId ||
                 paymentResponse.razorpay_payment_id,
 
               paymentStatus: "Paid",
 
-              status: "Active",
+              status:
+                verifyData.subscription?.status ||
+                "ACTIVE",
 
               createdAt:
+                verifyData.payment?.paidAt ||
                 new Date().toISOString(),
+
+              customer:
+                verifyData.customer || null,
+
+              subscription:
+                verifyData.subscription || null,
+
+              payment:
+                verifyData.payment || null,
             };
-
-            localStorage.setItem(
-              "munder_active_plan",
-              JSON.stringify(upgradeRecord)
-            );
-
-            const upgrades =
-              JSON.parse(
-                localStorage.getItem(
-                  "munder_plan_upgrades"
-                ) || "[]"
-              );
-
-            upgrades.unshift(upgradeRecord);
-
-            localStorage.setItem(
-              "munder_plan_upgrades",
-              JSON.stringify(upgrades)
-            );
-
-            /*
-             * SUCCESS
-             */
-
             navigate("/plan-upgrade-success", {
               state: {
                 upgrade: upgradeRecord,
@@ -790,6 +833,15 @@ export default function PlanPayment() {
     </Box>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 

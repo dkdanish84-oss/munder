@@ -11,9 +11,62 @@ import {
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { auth } from "../../config/firebase";
 
 export default function CustomerHeader() {
+  const [hasActivePlan, setHasActivePlan] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkPlan() {
+      try {
+        const user = auth.currentUser;
+
+        if (!user) {
+          if (!cancelled) setHasActivePlan(false);
+          return;
+        }
+
+        const token = await user.getIdToken();
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL || "https://munder.in"}/api/v1/customer/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        const active =
+          response.ok &&
+          data.success &&
+          data.customer?.status === "ACTIVE" &&
+          !!data.customer?.plan;
+
+        if (!cancelled) {
+          setHasActivePlan(active);
+        }
+      } catch (error) {
+        console.error("CustomerHeader plan check:", error);
+
+        if (!cancelled) {
+          setHasActivePlan(false);
+        }
+      }
+    }
+
+    checkPlan();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <AppBar
@@ -70,9 +123,9 @@ export default function CustomerHeader() {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Profile">
+          <Tooltip title={hasActivePlan ? "Profile" : "Profile — Plan required"}>
             <IconButton
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(hasActivePlan ? "/profile" : "/my-plan")}
               aria-label="Profile"
               sx={{ p: 0.4 }}
             >
@@ -94,3 +147,5 @@ export default function CustomerHeader() {
     </AppBar>
   );
 }
+
+

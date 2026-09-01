@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -20,6 +20,8 @@ import {
   Phone,
 } from "lucide-react";
 
+const API_BASE = "";
+
 export default function AdminDashboard() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ export default function AdminDashboard() {
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/visits");
+      const response = await fetch(`${API_BASE}/api/visits`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -195,7 +197,7 @@ export default function AdminDashboard() {
                       >
                         <Phone size={14} />
                         <Typography fontSize={13}>
-                          {visit.mobile || "—"}
+                          {visit.mobile || "â€”"}
                         </Typography>
                       </Box>
                     </Box>
@@ -220,7 +222,7 @@ export default function AdminDashboard() {
                         DATE
                       </Typography>
                       <Typography fontWeight={700}>
-                        {visit.visitDate || "—"}
+                        {visit.visitDate || "â€”"}
                       </Typography>
                     </Box>
 
@@ -241,7 +243,7 @@ export default function AdminDashboard() {
                       >
                         <MapPin size={14} />
                         <Typography fontWeight={600}>
-                          {visit.address || "—"}
+                          {visit.address || "â€”"}
                         </Typography>
                       </Box>
                     </Box>
@@ -310,3 +312,7 @@ function StatCard({ icon, title, value }) {
     </Card>
   );
 }
+
+
+
+

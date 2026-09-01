@@ -11,13 +11,72 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { auth } from "../config/firebase";
 
 export default function BottomNav() {
+  const [hasActivePlan, setHasActivePlan] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const paths = [
     "/dashboard",
+    "/my-garden",
+    "/my-visits",
+    "/profile",
+  ];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkPlan() {
+      try {
+        const user = auth.currentUser;
+
+        if (!user) {
+          if (!cancelled) setHasActivePlan(false);
+          return;
+        }
+
+        const token = await user.getIdToken();
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL || "https://munder.in"}/api/v1/customer/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        const active =
+          response.ok &&
+          data.success &&
+          data.customer?.status === "ACTIVE" &&
+          !!data.customer?.plan;
+
+        if (!cancelled) {
+          setHasActivePlan(active);
+        }
+      } catch (error) {
+        console.error("BottomNav plan check:", error);
+
+        if (!cancelled) {
+          setHasActivePlan(false);
+        }
+      }
+    }
+
+    checkPlan();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const protectedPaths = [
     "/my-garden",
     "/my-visits",
     "/profile",
@@ -102,3 +161,5 @@ export default function BottomNav() {
     </Paper>
   );
 }
+
+

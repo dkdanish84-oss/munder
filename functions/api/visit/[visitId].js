@@ -4,7 +4,10 @@
 
     if (!visitId) {
       return Response.json(
-        { success: false, message: "Visit ID is required." },
+        {
+          success: false,
+          message: "Visit ID is required.",
+        },
         { status: 400 }
       );
     }
@@ -28,7 +31,10 @@
       !allowedStatuses.includes(status)
     ) {
       return Response.json(
-        { success: false, message: "Invalid visit status." },
+        {
+          success: false,
+          message: "Invalid visit status.",
+        },
         { status: 400 }
       );
     }
@@ -40,7 +46,10 @@
 
     if (!existing) {
       return Response.json(
-        { success: false, message: "Visit request not found." },
+        {
+          success: false,
+          message: "Visit request not found.",
+        },
         { status: 404 }
       );
     }
@@ -81,6 +90,7 @@
       message: "Visit updated successfully.",
       visit: updatedVisit,
     });
+
   } catch (error) {
     console.error("Visit update failed:", error);
 

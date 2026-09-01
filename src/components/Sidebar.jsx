@@ -1,4 +1,4 @@
-import {
+﻿import {
   Drawer,
   Box,
   Typography,
@@ -37,6 +37,10 @@ const menus = [
     text: "Customers",
     icon: <PersonIcon />,
     path: "/admin/customers",
+  },  {
+    text: "Gardeners",
+    icon: <EngineeringIcon />,
+    path: "/admin/gardeners",
   },
   {
     text: "Categories",
@@ -69,7 +73,7 @@ export default function Sidebar({ open, onClose }) {
   const location = useLocation();
 
   return (
-    <Drawer open={open} onClose={onClose}>
+    <Drawer open={open} onClose={onClose} sx={{ display: { xs: "block", md: "none" } }}>
       <Box sx={{ width: drawerWidth }}>
         <Box
           sx={{
@@ -79,7 +83,7 @@ export default function Sidebar({ open, onClose }) {
           }}
         >
           <Typography variant="h5" fontWeight="bold">
-            🌿 Munder OS
+            ðŸŒ¿ Munder OS
           </Typography>
 
           <Typography variant="body2">
@@ -108,3 +112,5 @@ export default function Sidebar({ open, onClose }) {
     </Drawer>
   );
 }
+
+

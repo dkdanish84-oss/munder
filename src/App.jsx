@@ -34,11 +34,24 @@ import PlanPayment from "./pages/PlanPayment";
 import PlanUpgradeSuccess from "./pages/PlanUpgradeSuccess";
 
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import AdminGardeners from "./pages/AdminGardeners";
+import Leads from "./pages/Leads";
+import Customers from "./pages/Customers";
+import Categories from "./pages/Categories";
+import Products from "./pages/Products";
+import Inventory from "./pages/Inventory";
+import Projects from "./pages/Projects";
+import Quotations from "./pages/Quotations";
+import GardenerLogin from "./pages/GardenerLogin";
+import GardenerDashboard from "./pages/GardenerDashboard";
 
 import Layout from "./components/Layout";
 import CustomerLayout from "./layouts/CustomerLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import ActivePlanGate from "./components/ActivePlanGate";
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -140,8 +153,64 @@ export default function App() {
             SEPARATE CRM / ADMIN PANEL
         ===================================================== */}
 
-        <Route path="/admin" element={<DashboardLayout />}>
+        {/* MAIN ADMIN LOGIN */}
+        <Route
+          path="/admin-login"
+          element={<AdminLogin />}
+        />
+        <Route
+          path="/gardener/login"
+          element={<GardenerLogin />}
+        />
+
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/admin" element={<DashboardLayout />}>
           <Route index element={<AdminDashboard />} />
+
+          <Route
+            path="leads"
+            element={<Leads />}
+          />
+
+          <Route
+            path="customers"
+            element={<Customers />}
+          />
+
+          <Route
+            path="gardeners"
+            element={<AdminGardeners />}
+          />
+
+          <Route
+            path="categories"
+            element={<Categories />}
+          />
+
+          <Route
+            path="products"
+            element={<Products />}
+          />
+
+          <Route
+            path="inventory"
+            element={<Inventory />}
+          />
+
+          <Route
+            path="projects"
+            element={<Projects />}
+          />
+
+          <Route
+            path="quotations"
+            element={<Quotations />}
+          />
+        </Route>
+        </Route>
+
+        <Route path="/gardener" element={<DashboardLayout />}>
+          <Route index element={<GardenerDashboard />} />
         </Route>
 
         {/* =====================================================
@@ -174,12 +243,12 @@ export default function App() {
 
             <Route
               path="/my-garden"
-              element={<MyGarden />}
+              element={<ActivePlanGate><MyGarden /></ActivePlanGate>}
             />
 
             <Route
               path="/my-visits"
-              element={<MyVisits />}
+              element={<ActivePlanGate><MyVisits /></ActivePlanGate>}
             />
 
             <Route
@@ -209,7 +278,11 @@ export default function App() {
 
             <Route
               path="/profile"
-              element={<Profile />}
+              element={
+                <ActivePlanGate>
+                  <Profile />
+                </ActivePlanGate>
+              }
             />
 
           </Route>
@@ -220,4 +293,16 @@ export default function App() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
 

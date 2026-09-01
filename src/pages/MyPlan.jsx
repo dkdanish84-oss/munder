@@ -1,5 +1,6 @@
-﻿import React from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
 
 import {
   Box,
@@ -21,41 +22,248 @@ import {
 
 export default function MyPlan() {
   const navigate = useNavigate();
+  const [customer, setCustomer] = useState(null);
+  const [customerLoading, setCustomerLoading] = useState(true);
+  const [customerError, setCustomerError] = useState("");
+
+  const API_BASE =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://munder.in";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCustomer() {
+      try {
+        setCustomerLoading(true);
+        setCustomerError("");
+
+        const user = auth.currentUser;
+
+        if (!user) {
+          throw new Error(
+            "Please login to view your plan."
+          );
+        }
+
+        const token = await user.getIdToken();
+
+        const response = await fetch(
+          `${API_BASE}/api/v1/customer/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !data.customer) {
+          throw new Error(
+            data.message ||
+              "Unable to load customer account."
+          );
+        }
+
+        if (!cancelled) {
+          setCustomer(data.customer);
+        }
+      } catch (error) {
+        console.error(
+          "MyPlan customer lookup error:",
+          error
+        );
+
+        if (!cancelled) {
+          setCustomerError(
+            error.message ||
+              "Unable to load your plan."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setCustomerLoading(false);
+        }
+      }
+    }
+
+    loadCustomer();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (customerLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: "#2E7D32",
+            fontWeight: 700,
+          }}
+        >
+          Loading your plan...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (customerError) {
+    return (
+      <Box
+        sx={{
+          maxWidth: 700,
+          mx: "auto",
+          px: 2,
+          py: 4,
+        }}
+      >
+        <Typography
+          sx={{
+            color: "#B3261E",
+            fontWeight: 700,
+            mb: 1,
+          }}
+        >
+          Unable to load your plan
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "#66756C",
+            fontSize: 14,
+          }}
+        >
+          {customerError}
+        </Typography>
+      </Box>
+    );
+  }
+  const backendPlan = customer?.plan;
 
   const currentPlan = {
-    name: "Basic Care",
-    price: "₹1,178",
-    visits: "2 Visits / Month",
-    renewal: "14 September 2026",
+    name:
+      backendPlan?.name ||
+      "No active plan",
+
+    price:
+      backendPlan?.monthlyPrice != null
+        ? `₹${backendPlan.monthlyPrice}`
+        : "—",
+
+    visits:
+      backendPlan?.visitsPerMonth != null
+        ? `${backendPlan.visitsPerMonth} visits per month`
+        : "—",
+
+    renewal:
+      backendPlan?.renewalDate
+        ? new Date(
+            backendPlan.renewalDate
+          ).toLocaleDateString(
+            "en-IN",
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }
+          )
+        : "Not available",
   };
+
+  const isActivePlan =
+    customer?.status === "ACTIVE" &&
+    !!customer?.plan;
+
+  const planStatusLabel =
+    isActivePlan
+      ? "Active"
+      : customer?.status === "PAYMENT_PENDING"
+        ? "Payment Pending"
+        : "No Active Plan";
 
   const upgradePlans = [
     {
-      id: "premium-care",
-      name: "Premium Care",
-      price: "₹1,999",
-      visits: "4 Visits / Month",
+      id: 1,
+      name: "Basic Care Plan",
+      price: "999",
+      duration: "per month",
+      visits: "2 visits per month",
+      suitable: "Balcony Garden",
       features: [
-        "Garden maintenance",
-        "Plant care",
-        "Priority maintenance",
-        "4 scheduled visits",
+        "2 Gardener visits per month",
+        "Garden cleaning & dry-leaf removal",
+        "Light weed removal",
+        "Soil loosening",
+        "Light pruning & dry branch removal",
+        "Basic plant health inspection",
+        "WhatsApp expert support",
       ],
+      description:
+        "An affordable basic maintenance plan for small gardens and balcony spaces, focused on cleaning, light weeding, soil care and basic plant health.",
     },
     {
-      id: "complete-care",
-      name: "Complete Care",
-      price: "₹2,999",
-      visits: "8 Visits / Month",
+      id: 2,
+      name: "Pro Garden Plan",
+      price: "1,999",
+      duration: "per month",
+      visits: "4 visits per month",
+      suitable: "Home Garden",
       features: [
-        "Garden maintenance",
-        "Plant care",
-        "Priority maintenance",
-        "8 scheduled visits",
+        "4 Gardener visits per month",
+        "Garden cleaning & dry-leaf removal",
+        "Regular weed removal",
+        "Soil loosening",
+        "Regular pruning & trimming",
+        "Hedge trimming",
+        "Basic lawn maintenance",
+        "Detailed plant health inspection",
+        "Basic pest & disease care",
+        "Scheduled fertilizer application",
+        "Priority WhatsApp support",
       ],
+      description:
+        "A regular professional maintenance plan for home gardens with four monthly visits, pruning, hedge care, lawn maintenance and scheduled plant care.",
+    },
+    {
+      id: 3,
+      name: "Ultimate Estate Plan",
+      price: "3,999",
+      duration: "per month",
+      visits: "Weekly  4 visits per month",
+      suitable: "Villa / Luxury Lawn",
+      features: [
+        "Weekly 4 gardener visits per month",
+        "Plant watering",
+        "Complete garden cleaning",
+        "Regular weed removal",
+        "Soil loosening & soil care",
+        "Professional pruning & trimming",
+        "Hedge shaping & trimming",
+        "Lawn mowing & edge trimming",
+        "Detailed plant health inspection",
+        "Pest & disease management",
+        "Scheduled fertilizer application",
+        "Irrigation system basic check",
+        "Seasonal plant & flower care",
+        "Landscape styling advice",
+        "Priority WhatsApp & Call support",
+        "Dedicated gardener attention",
+      ],
+      description:
+        "A premium weekly garden management plan for villas and larger estates with watering, lawn and hedge care, pest management, irrigation checks and dedicated attention.",
     },
   ];
-
   const handleSelectPlan = (plan) => {
     navigate("/plan-payment", {
       state: {
@@ -65,6 +273,60 @@ export default function MyPlan() {
     });
   };
 
+  if (customerLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: "#2E7D32",
+            fontWeight: 700,
+          }}
+        >
+          Loading your plan...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (customerError) {
+    return (
+      <Box
+        sx={{
+          maxWidth: 700,
+          mx: "auto",
+          px: 2,
+          py: 4,
+        }}
+      >
+        <Typography
+          sx={{
+            color: "#B3261E",
+            fontWeight: 700,
+            mb: 1,
+          }}
+        >
+          Unable to load your plan
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "#66756C",
+            fontSize: 14,
+          }}
+        >
+          {customerError}
+        </Typography>
+      </Box>
+    );
+  }
   return (
     <Box
       sx={{
@@ -373,3 +635,12 @@ export default function MyPlan() {
     </Box>
   );
 }
+
+
+
+
+
+
+
+
+
