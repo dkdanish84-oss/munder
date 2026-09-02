@@ -20,7 +20,7 @@ import {
   Phone,
 } from "lucide-react";
 
-const API_BASE = "";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function AdminDashboard() {
   const [visits, setVisits] = useState([]);
@@ -312,6 +312,7 @@ function StatCard({ icon, title, value }) {
     </Card>
   );
 }
+
 
 
 
