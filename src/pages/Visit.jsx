@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';   
+﻿import React, { useState, useEffect } from 'react';   
 
 import {
   Box,
@@ -15,6 +15,10 @@ import {
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
+
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:5000";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -91,7 +95,7 @@ let photoData = "";
     }
 
     const response = await axios.post(
-      "/api/visit", 
+      `${API_BASE}/api/visit`, 
       {
         name: formData.name,
         mobile: formData.mobile,
@@ -467,3 +471,4 @@ Attached</Typography>
     </Box>
   );
 }
+
