@@ -32,7 +32,24 @@ export default function AdminDashboard() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE}/api/visits`);
+      const token = sessionStorage.getItem(
+  "munder-admin-token"
+);
+
+if (!token) {
+  throw new Error(
+    "Admin authentication token is required. Please login again."
+  );
+}
+
+const response = await fetch(
+  `${API_BASE}/api/visits`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
       const data = await response.json();
 
       if (!response.ok) {
@@ -312,6 +329,7 @@ function StatCard({ icon, title, value }) {
     </Card>
   );
 }
+
 
 
 
