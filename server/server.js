@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
@@ -6,6 +6,8 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
@@ -16,6 +18,96 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+/* =========================================================
+   MAIN ADMIN LOGIN
+========================================================= */
+
+app.post("/api/v1/admin/login", async (req, res) => {
+  try {
+    const {
+      adminId,
+      password,
+    } = req.body || {};
+
+    const expectedAdminId =
+      process.env.MUNDER_ADMIN_ID || "mainadmin";
+
+    const expectedPassword =
+      process.env.MUNDER_ADMIN_PASSWORD;
+
+    if (
+      !expectedPassword ||
+      !process.env.MUNDER_JWT_SECRET
+    ) {
+      return res.status(500).json({
+        success: false,
+        message:
+          "Admin authentication is not configured.",
+      });
+    }
+
+    if (
+      String(adminId || "").trim() !==
+      expectedAdminId
+    ) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "Invalid Admin ID or Password.",
+      });
+    }
+
+    const passwordMatches =
+      await bcrypt.compare(
+        String(password || ""),
+        expectedPassword
+      );
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "Invalid Admin ID or Password.",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: expectedAdminId,
+        role: "MAIN_ADMIN",
+        name: "Main Administrator",
+      },
+      process.env.MUNDER_JWT_SECRET,
+      {
+        expiresIn: "12h",
+      }
+    );
+
+    return res.json({
+      success: true,
+      message: "Admin login successful.",
+      token,
+      admin: {
+        id: expectedAdminId,
+        role: "MAIN_ADMIN",
+        name: "Main Administrator",
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Admin login failed:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Unable to complete admin login.",
+    });
+  }
+});
+
 /* =========================================================
    FIREBASE ADMIN AUTH
 ========================================================= */
@@ -228,54 +320,53 @@ function getAdminEmails() {
 
 async function verifyAdmin(req, res, next) {
   try {
-    await verifyFirebaseToken(
-      req,
-      res,
-      () => {}
-    );
+    const authHeader =
+      String(req.headers.authorization || "");
 
-    if (!req.firebaseUser) {
-      return;
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Admin authentication token is required.",
+      });
     }
 
-    const uid =
-      req.firebaseUser.uid;
+    const token =
+      authHeader.substring(7);
 
-    const email =
-      String(
-        req.firebaseUser.email || ""
-      ).toLowerCase();
+    const decoded =
+      jwt.verify(
+        token,
+        process.env.MUNDER_JWT_SECRET
+      );
 
-    const isAdmin =
-      getAdminUids().includes(uid) ||
-      getAdminEmails().includes(email) ||
-      req.firebaseUser.admin === true;
-
-    if (!isAdmin) {
+    if (
+      decoded.role !== "MAIN_ADMIN" ||
+      decoded.id !==
+        (process.env.MUNDER_ADMIN_ID || "mainadmin")
+    ) {
       return res.status(403).json({
         success: false,
-        message:
-          "Admin access required.",
+        message: "Admin access required.",
       });
     }
 
     req.userRole = "admin";
+    req.admin = decoded;
 
     return next();
+
   } catch (error) {
     console.error(
       "Admin authorization failed:",
-      error
+      error.message
     );
 
-    return res.status(403).json({
+    return res.status(401).json({
       success: false,
-      message:
-        "Admin authorization failed.",
+      message: "Invalid or expired admin session.",
     });
   }
 }
-
 async function verifyGardener(req, res, next) {
   try {
     await verifyFirebaseToken(
@@ -2364,6 +2455,10 @@ app.listen(PORT, () => {
 
   console.log("");
 });
+
+
+
+
 
 
 
