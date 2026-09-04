@@ -171,7 +171,7 @@ export default function Leads() {
                     </TableCell>
 
                     <TableCell>
-                      {lead.phone || "-"}
+                      {lead.mobile || lead.phone || "-"}
                     </TableCell>
 
                     <TableCell>
@@ -206,4 +206,3 @@ export default function Leads() {
     </Box>
   );
 }
-

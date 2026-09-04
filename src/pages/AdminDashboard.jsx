@@ -293,7 +293,7 @@ const response = await fetch(
                         DATE
                       </Typography>
                       <Typography fontWeight={700}>
-                        {visit.visitDate || "â€”"}
+                        {visit.visitDate || (visit.createdAt ? new Date(visit.createdAt).toLocaleDateString("en-IN") : "—")}
                       </Typography>
                     </Box>
 
@@ -445,4 +445,3 @@ function StatCard({ icon, title, value }) {
     </Card>
   );
 }
-
