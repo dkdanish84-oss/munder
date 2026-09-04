@@ -69,6 +69,58 @@ const response = await fetch(
     loadVisits();
   }, []);
 
+  const updateVisitStatus = async (visitId, status) => {
+    try {
+      setError("");
+
+      const token = sessionStorage.getItem(
+        "munder-admin-token"
+      );
+
+      if (!token) {
+        throw new Error(
+          "Admin authentication token is required. Please login again."
+        );
+      }
+
+      const response = await fetch(
+        `${API_BASE}/api/visit/${encodeURIComponent(visitId)}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(
+          data?.message || "Unable to update visit status."
+        );
+      }
+
+      setVisits((currentVisits) =>
+        currentVisits.map((visit) =>
+          visit.visitId === visitId
+            ? { ...visit, ...data.visit }
+            : visit
+        )
+      );
+
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err.message ||
+        "Unable to update visit status."
+      );
+    }
+  };
+
   const pending = visits.filter(
     (v) => String(v.status || "").toLowerCase() === "pending"
   ).length;
@@ -265,23 +317,85 @@ const response = await fetch(
                       </Box>
                     </Box>
 
-                    <Chip
-                      label={visit.status || "Pending"}
-                      size="small"
-                      sx={{
-                        fontWeight: 800,
-                        bgcolor:
-                          String(visit.status).toLowerCase() ===
-                          "confirmed"
-                            ? "#E8F5E9"
-                            : "#FFF8E1",
-                        color:
-                          String(visit.status).toLowerCase() ===
-                          "confirmed"
-                            ? "#2E7D32"
-                            : "#8A6500",
-                      }}
-                    />
+                    <Box>
+                      <Typography
+                        fontSize={12}
+                        sx={{
+                          color: "#7A857F",
+                          mb: 0.5,
+                        }}
+                      >
+                        STATUS
+                      </Typography>
+
+                      <Select
+                        size="small"
+                        fullWidth
+                        value={
+                          visit.status || "Pending"
+                        }
+                        onChange={(event) =>
+                          updateVisitStatus(
+                            visit.visitId,
+                            event.target.value
+                          )
+                        }
+                        sx={{
+                          minWidth: 175,
+                          fontWeight: 800,
+                          borderRadius: 2,
+                          "& .MuiSelect-select": {
+                            py: 0.8,
+                            fontWeight: 800,
+                          },
+                        }}
+                      >
+                        <MenuItem value="Pending">
+                          Pending
+                        </MenuItem>
+
+                        <MenuItem value="Confirmed">
+                          Confirmed
+                        </MenuItem>
+
+                        <MenuItem
+                          value="Gardener Assigned"
+                        >
+                          Gardener Assigned
+                        </MenuItem>
+
+                        <MenuItem
+                          value="Visit Scheduled"
+                        >
+                          Visit Scheduled
+                        </MenuItem>
+
+                        <MenuItem value="Completed">
+                          Completed  Customer
+                        </MenuItem>
+
+                        <MenuItem value="Cancelled">
+                          Cancelled  Future Lead
+                        </MenuItem>
+                      </Select>
+
+                      <Typography
+                        fontSize={11}
+                        sx={{
+                          mt: 0.7,
+                          fontWeight: 800,
+                          color:
+                            visit.category === "CUSTOMER"
+                              ? "#2E7D32"
+                              : visit.category ===
+                                "FUTURE_LEAD"
+                                ? "#8A6500"
+                                : "#66756C",
+                        }}
+                      >
+                        {visit.category || "LEAD"}
+                      </Typography>
+                    </Box>
                   </Box>
                 </React.Fragment>
               ))}
@@ -329,6 +443,7 @@ function StatCard({ icon, title, value }) {
     </Card>
   );
 }
+
 
 
 
