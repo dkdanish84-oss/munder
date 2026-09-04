@@ -436,6 +436,26 @@ function readVisits() {
   }
 }
 
+/* =========================================================
+   AUTOMATIC VISIT CATEGORY SYSTEM
+========================================================= */
+
+function getVisitCategory(status) {
+  const normalizedStatus = String(status || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalizedStatus === "completed") {
+    return "CUSTOMER";
+  }
+
+  if (normalizedStatus === "cancelled") {
+    return "FUTURE_LEAD";
+  }
+
+  return "LEAD";
+}
+
 function writeVisits(visits) {
   fs.writeFileSync(
     visitsFile,
@@ -873,6 +893,8 @@ app.post("/api/visit", (req, res) => {
 
       status: "Pending",
 
+      category: getVisitCategory("Pending"),
+
       assignedGardener: null,
 
       createdAt:
@@ -1188,9 +1210,12 @@ app.patch(
         ...visits[index],
 
         ...(status
-          ? { status }
+          ? {
+              status,
+              category:
+                getVisitCategory(status),
+            }
           : {}),
-
         ...(req.body
           ?.assignedGardener !==
         undefined
@@ -1522,6 +1547,15 @@ app.patch(
             }
           : {}),
 
+
+        ...(body.status
+          ? {
+              category:
+                getVisitCategory(
+                  body.status
+                ),
+            }
+          : {}),
         ...(body.visitDate !== undefined
           ? {
               visitDate:
@@ -1693,6 +1727,9 @@ app.patch(
         status:
           "In Progress",
 
+        category:
+          getVisitCategory("In Progress"),
+
         startedAt:
           now,
 
@@ -1769,6 +1806,9 @@ app.patch(
 
         status:
           "Completed",
+
+        category:
+          getVisitCategory("Completed"),
 
         completedAt:
           now,
@@ -2455,24 +2495,4 @@ app.listen(PORT, () => {
 
   console.log("");
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
