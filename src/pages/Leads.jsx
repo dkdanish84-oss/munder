@@ -15,12 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { useAuthStore } from "../store/authStore";
 
-const API_URL = "";
+const API_URL = "https://munder-p9yk.onrender.com";
 
 export default function Leads() {
-  const token = useAuthStore((state) => state.token);
+  const token = sessionStorage.getItem("munder-admin-token");
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -207,6 +206,4 @@ export default function Leads() {
     </Box>
   );
 }
-
-
 
