@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
@@ -10,8 +10,24 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceRoleKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceRoleKey) {
+  console.warn(
+    "WARNING: Supabase credentials are not configured."
+  );
+}
+
+const supabase = createClient(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseServiceRoleKey || "placeholder"
+);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -224,78 +240,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dataDir = path.join(__dirname, "data");
-const visitsFile = path.join(dataDir, "visits.json");
-const customersFile = path.join(dataDir, "customers.json");
-const subscriptionsFile = path.join(dataDir, "subscriptions.json");
-const paymentsFile = path.join(dataDir, "payments.json");
-const gardenersFile = path.join(dataDir, "gardeners.json");
-
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
-}
-
-if (!fs.existsSync(customersFile)) {
-  fs.writeFileSync(customersFile, "[]", "utf8");
-}
-
-if (!fs.existsSync(subscriptionsFile)) {
-  fs.writeFileSync(subscriptionsFile, "[]", "utf8");
-}
-
-if (!fs.existsSync(paymentsFile)) {
-  fs.writeFileSync(paymentsFile, "[]", "utf8");
-}
-if (!fs.existsSync(visitsFile)) {
-  fs.writeFileSync(visitsFile, "[]", "utf8");
-}
-
-
-/* =========================================================
-   GARDENER STORAGE + ROLE AUTHORIZATION
-========================================================= */
-
-if (!fs.existsSync(gardenersFile)) {
-  fs.writeFileSync(
-    gardenersFile,
-    "[]",
-    "utf8"
-  );
-}
-
-function readGardeners() {
-  try {
-    const data =
-      fs.readFileSync(
-        gardenersFile,
-        "utf8"
-      );
-
-    const parsed =
-      JSON.parse(data);
-
-    return Array.isArray(parsed)
-      ? parsed
-      : [];
-  } catch (error) {
-    console.error(
-      "Gardener storage read error:",
-      error
-    );
-
-    return [];
-  }
-}
-
-function writeGardeners(gardeners) {
-  fs.writeFileSync(
-    gardenersFile,
-    JSON.stringify(
-      gardeners,
-      null,
-      2
-    ),
-    "utf8"
-  );
 }
 
 function getAdminUids() {
@@ -382,15 +328,28 @@ async function verifyGardener(req, res, next) {
     const uid =
       req.firebaseUser.uid;
 
-    const gardeners =
-      readGardeners();
+    const {
+      data: gardener,
+      error,
+    } =
+      await supabase
+        .from("gardeners")
+        .select("*")
+        .eq(
+          "uid",
+          uid
+        )
+        .eq(
+          "active",
+          true
+        )
+        .maybeSingle();
 
-    const gardener =
-      gardeners.find(
-        (item) =>
-          item.uid === uid &&
-          item.active !== false
+    if (error) {
+      throw new Error(
+        error.message
       );
+    }
 
     if (!gardener) {
       return res.status(403).json({
@@ -401,10 +360,40 @@ async function verifyGardener(req, res, next) {
     }
 
     req.userRole = "gardener";
-    req.gardener = gardener;
+
+    req.gardener = {
+      gardenerId:
+        gardener.gardener_id,
+
+      uid:
+        gardener.uid,
+
+      name:
+        gardener.name,
+
+      email:
+        gardener.email || "",
+
+      phone:
+        gardener.phone || "",
+
+      role:
+        gardener.role || "gardener",
+
+      active:
+        gardener.active !== false,
+
+      createdAt:
+        gardener.created_at,
+
+      updatedAt:
+        gardener.updated_at,
+    };
 
     return next();
+
   } catch (error) {
+
     console.error(
       "Gardener authorization failed:",
       error
@@ -424,17 +413,7 @@ function createGardenerId() {
   )}`;
 }
 
-function readVisits() {
-  try {
-    const data = fs.readFileSync(visitsFile, "utf8");
-    const visits = JSON.parse(data);
 
-    return Array.isArray(visits) ? visits : [];
-  } catch (error) {
-    console.error("Visit storage read error:", error);
-    return [];
-  }
-}
 
 /* =========================================================
    AUTOMATIC VISIT CATEGORY SYSTEM
@@ -456,13 +435,7 @@ function getVisitCategory(status) {
   return "LEAD";
 }
 
-function writeVisits(visits) {
-  fs.writeFileSync(
-    visitsFile,
-    JSON.stringify(visits, null, 2),
-    "utf8"
-  );
-}
+
 
 function readJsonFile(filePath) {
   try {
@@ -536,11 +509,12 @@ function getAutomaticVisitDays(planName, isRenewal) {
   return 7;
 }
 
-function createAutomaticCustomerVisit({
+async function createAutomaticCustomerVisit({
   customer,
   subscription,
   isRenewal = false,
 }) {
+
   if (!customer?.uid) {
     throw new Error(
       "Customer UID is required for automatic visit."
@@ -553,63 +527,153 @@ function createAutomaticCustomerVisit({
     );
   }
 
-  const visits = readVisits();
+  const {
+    data: existingVisit,
+    error: existingError,
+  } = await supabase
+    .from("visits")
+    .select("*")
+    .eq("uid", customer.uid)
+    .eq(
+      "subscription_id",
+      subscription.subscriptionId
+    )
+    .maybeSingle();
 
-  // Prevent duplicate visit for the same subscription.
-  const existingVisit = visits.find(
-    (visit) =>
-      visit.uid === customer.uid &&
-      visit.subscriptionId === subscription.subscriptionId
-  );
-
-  if (existingVisit) {
-    return existingVisit;
+  if (existingError) {
+    throw new Error(
+      existingError.message
+    );
   }
 
-  const now = new Date();
+  if (existingVisit) {
+    return {
+      visitId:
+        existingVisit.visit_id,
 
-  const days = getAutomaticVisitDays(
-    subscription.planName,
-    isRenewal
-  );
+      uid:
+        existingVisit.uid,
 
-  const visitDate = new Date(now);
+      customerId:
+        existingVisit.customer_id,
+
+      subscriptionId:
+        existingVisit.subscription_id,
+
+      planName:
+        existingVisit.plan_name,
+
+      name:
+        existingVisit.name,
+
+      mobile:
+        existingVisit.mobile,
+
+      address:
+        existingVisit.address,
+
+      gardenType:
+        existingVisit.garden_type,
+
+      service:
+        existingVisit.service,
+
+      visitDate:
+        existingVisit.visit_date,
+
+      visitTime:
+        existingVisit.visit_time,
+
+      notes:
+        existingVisit.notes,
+
+      photo:
+        existingVisit.photo,
+
+      status:
+        existingVisit.status,
+
+      category:
+        existingVisit.category,
+
+      assignedGardener:
+        existingVisit.assigned_gardener,
+
+      assignmentType:
+        existingVisit.assignment_type,
+
+      isRenewal:
+        existingVisit.is_renewal,
+
+      schedulingWindowDays:
+        existingVisit.scheduling_window_days,
+
+      createdAt:
+        existingVisit.created_at,
+
+      updatedAt:
+        existingVisit.updated_at,
+    };
+  }
+
+  const now =
+    new Date();
+
+  const days =
+    getAutomaticVisitDays(
+      subscription.planName,
+      isRenewal
+    );
+
+  const visitDate =
+    new Date(now);
 
   visitDate.setDate(
-    visitDate.getDate() + Number(days)
+    visitDate.getDate() +
+      Number(days)
   );
 
   const visit = {
-    visitId: createVisitId(),
+    visitId:
+      createVisitId(),
 
-    uid: customer.uid,
+    uid:
+      customer.uid,
 
     customerId:
-      customer.customerId || null,
+      customer.customerId ||
+      null,
 
     subscriptionId:
       subscription.subscriptionId,
 
     planName:
-      subscription.planName || "",
+      subscription.planName ||
+      "",
 
     name:
-      customer.name || "",
+      customer.name ||
+      "",
 
     mobile:
-      customer.phone || "",
+      customer.phone ||
+      "",
 
     address:
-      customer.address || "",
+      customer.address ||
+      "",
 
     gardenType:
-      customer.gardenType || "Small",
+      customer.gardenType ||
+      "Small",
 
     service:
       "Garden Maintenance",
 
     visitDate:
-      visitDate.toISOString().slice(0, 10),
+      visitDate
+        .toISOString()
+        .slice(0, 10),
 
     visitTime:
       "Morning",
@@ -619,17 +683,28 @@ function createAutomaticCustomerVisit({
         ? "Automatically scheduled renewal visit."
         : "Automatically scheduled first plan visit.",
 
-    photo: "",
+    photo:
+      "",
 
-    status: "Pending",
+    status:
+      "Pending",
 
-    assignedGardener: null,
+    category:
+      getVisitCategory(
+        "Pending"
+      ),
 
-    assignmentType: "AUTO",
+    assignedGardener:
+      null,
 
-    isRenewal,
+    assignmentType:
+      "AUTO",
 
-    schedulingWindowDays: days,
+    isRenewal:
+      isRenewal,
+
+    schedulingWindowDays:
+      days,
 
     createdAt:
       now.toISOString(),
@@ -638,27 +713,194 @@ function createAutomaticCustomerVisit({
       now.toISOString(),
   };
 
-  visits.unshift(visit);
+  const insertData = {
+    visit_id:
+      visit.visitId,
 
-  writeVisits(visits);
+    uid:
+      visit.uid,
+
+    customer_id:
+      visit.customerId,
+
+    subscription_id:
+      visit.subscriptionId,
+
+    plan_name:
+      visit.planName,
+
+    name:
+      visit.name,
+
+    mobile:
+      visit.mobile,
+
+    address:
+      visit.address,
+
+    garden_type:
+      visit.gardenType,
+
+    service:
+      visit.service,
+
+    visit_date:
+      visit.visitDate,
+
+    visit_time:
+      visit.visitTime,
+
+    notes:
+      visit.notes,
+
+    photo:
+      visit.photo,
+
+    status:
+      visit.status,
+
+    category:
+      visit.category,
+
+    assigned_gardener:
+      null,
+
+    assignment_type:
+      visit.assignmentType,
+
+    is_renewal:
+      visit.isRenewal,
+
+    scheduling_window_days:
+      visit.schedulingWindowDays,
+
+    created_at:
+      visit.createdAt,
+
+    updated_at:
+      visit.updatedAt,
+  };
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("visits")
+    .insert(
+      insertData
+    )
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(
+      error.message
+    );
+  }
 
   console.log("");
-  console.log("======================================");
-  console.log(" AUTOMATIC CUSTOMER VISIT CREATED");
-  console.log("======================================");
-  console.log(`Visit ID    : ${visit.visitId}`);
-  console.log(`UID         : ${visit.uid}`);
-  console.log(`Customer ID : ${visit.customerId}`);
-  console.log(`Subscription: ${visit.subscriptionId}`);
-  console.log(`Plan        : ${visit.planName}`);
-  console.log(`Renewal     : ${visit.isRenewal}`);
-  console.log(`Visit Date  : ${visit.visitDate}`);
-  console.log(`Window      : ${visit.schedulingWindowDays} days`);
-  console.log(`Assignment  : ${visit.assignmentType}`);
-  console.log("======================================");
+  console.log(
+    "======================================"
+  );
+  console.log(
+    " AUTOMATIC CUSTOMER VISIT CREATED"
+  );
+  console.log(
+    "======================================"
+  );
+  console.log(
+    `Visit ID    : ${data.visit_id}`
+  );
+  console.log(
+    `UID         : ${data.uid}`
+  );
+  console.log(
+    `Customer ID : ${data.customer_id}`
+  );
+  console.log(
+    `Subscription: ${data.subscription_id}`
+  );
+  console.log(
+    `Plan        : ${data.plan_name}`
+  );
+  console.log(
+    `Renewal     : ${data.is_renewal}`
+  );
+  console.log(
+    `Visit Date  : ${data.visit_date}`
+  );
+  console.log(
+    "======================================"
+  );
   console.log("");
 
-  return visit;
+  return {
+    visitId:
+      data.visit_id,
+
+    uid:
+      data.uid,
+
+    customerId:
+      data.customer_id,
+
+    subscriptionId:
+      data.subscription_id,
+
+    planName:
+      data.plan_name,
+
+    name:
+      data.name,
+
+    mobile:
+      data.mobile,
+
+    address:
+      data.address,
+
+    gardenType:
+      data.garden_type,
+
+    service:
+      data.service,
+
+    visitDate:
+      data.visit_date,
+
+    visitTime:
+      data.visit_time,
+
+    notes:
+      data.notes,
+
+    photo:
+      data.photo,
+
+    status:
+      data.status,
+
+    category:
+      data.category,
+
+    assignedGardener:
+      data.assigned_gardener,
+
+    assignmentType:
+      data.assignment_type,
+
+    isRenewal:
+      data.is_renewal,
+
+    schedulingWindowDays:
+      data.scheduling_window_days,
+
+    createdAt:
+      data.created_at,
+
+    updatedAt:
+      data.updated_at,
+  };
 }
 
 /* =========================================================
@@ -668,9 +910,12 @@ function createAutomaticCustomerVisit({
 app.get(
   "/api/v1/customer/visits",
   verifyFirebaseToken,
-  (req, res) => {
+  async (req, res) => {
+
     try {
-      const uid = req.firebaseUser?.uid;
+
+      const uid =
+        req.firebaseUser?.uid;
 
       if (!uid) {
         return res.status(401).json({
@@ -680,42 +925,124 @@ app.get(
         });
       }
 
-      const visits = readVisits()
-        .filter(
-          (visit) =>
-            visit.uid === uid
+      const {
+        data,
+        error,
+      } = await supabase
+        .from("visits")
+        .select("*")
+        .eq(
+          "uid",
+          uid
         )
-        .sort((a, b) => {
-          const aTime = a.visitDate
-            ? new Date(a.visitDate).getTime()
-            : Number.MAX_SAFE_INTEGER;
+        .order(
+          "visit_date",
+          {
+            ascending: true,
+          }
+        );
 
-          const bTime = b.visitDate
-            ? new Date(b.visitDate).getTime()
-            : Number.MAX_SAFE_INTEGER;
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
 
-          return aTime - bTime;
-        });
+      const visits =
+        (data || []).map(
+          (item) => ({
+            visitId:
+              item.visit_id,
+
+            uid:
+              item.uid,
+
+            customerId:
+              item.customer_id,
+
+            subscriptionId:
+              item.subscription_id,
+
+            planName:
+              item.plan_name,
+
+            name:
+              item.name,
+
+            mobile:
+              item.mobile,
+
+            address:
+              item.address,
+
+            gardenType:
+              item.garden_type,
+
+            service:
+              item.service,
+
+            visitDate:
+              item.visit_date,
+
+            visitTime:
+              item.visit_time,
+
+            notes:
+              item.notes,
+
+            photo:
+              item.photo,
+
+            status:
+              item.status,
+
+            category:
+              item.category,
+
+            assignedGardener:
+              item.assigned_gardener,
+
+            assignmentType:
+              item.assignment_type,
+
+            isRenewal:
+              item.is_renewal,
+
+            schedulingWindowDays:
+              item.scheduling_window_days,
+
+            createdAt:
+              item.created_at,
+
+            updatedAt:
+              item.updated_at,
+          })
+        );
 
       return res.json({
         success: true,
-        count: visits.length,
+        count:
+          visits.length,
         visits,
       });
+
     } catch (error) {
+
       console.error(
-        "Customer visits failed:",
+        "SUPABASE CUSTOMER VISITS ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to load customer visits.",
       });
     }
   }
 );
+
 /* =========================================================
    CUSTOMER API
 ========================================================= */
@@ -723,16 +1050,29 @@ app.get(
 app.get(
   "/api/v1/customer/me",
   verifyFirebaseToken,
-  (req, res) => {
+  async (req, res) => {
     try {
-      const data = fs.readFileSync(customersFile, "utf8");
-      const customers = JSON.parse(data);
+      const uid = req.firebaseUser?.uid;
 
-      const customer = Array.isArray(customers)
-        ? customers.find(
-            (item) => item.uid === req.firebaseUser.uid
-          )
-        : null;
+      if (!uid) {
+        return res.status(401).json({
+          success: false,
+          message: "Customer authentication required.",
+        });
+      }
+
+      const {
+        data: customer,
+        error,
+      } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("uid", uid)
+        .maybeSingle();
+
+      if (error) {
+        throw new Error(error.message);
+      }
 
       if (!customer) {
         return res.status(404).json({
@@ -745,12 +1085,19 @@ app.get(
         success: true,
         customer,
       });
+
     } catch (error) {
-      console.error("Customer lookup error:", error);
+
+      console.error(
+        "SUPABASE CUSTOMER LOOKUP ERROR:",
+        error
+      );
 
       return res.status(500).json({
         success: false,
-        message: "Unable to load customer account.",
+        message:
+          error.message ||
+          "Unable to load customer account.",
       });
     }
   }
@@ -810,7 +1157,7 @@ app.get("/api/v1/health", (req, res) => {
    CREATE VISIT
 ========================================================= */
 
-app.post("/api/visit", (req, res) => {
+app.post("/api/visit", async (req, res) => {
   try {
     const {
       name,
@@ -855,64 +1202,72 @@ app.post("/api/visit", (req, res) => {
       });
     }
 
-    const visits = readVisits();
+    const visitId = createVisitId();
 
-    const visit = {
-      visitId: createVisitId(),
-
+    const visitData = {
+      visit_id: visitId,
       name: cleanName,
-
       mobile: cleanMobile,
-
       address: cleanAddress,
-
-      gardenType:
-        String(gardenType || "Small"),
-
-      service:
-        String(
-          service ||
-          "Garden Maintenance"
-        ),
-
-      visitDate: cleanDate || null,
-
-      visitTime:
-        String(
-          visitTime ||
-          "Morning"
-        ),
-
-      notes:
-        String(notes || "").trim(),
-
+      garden_type: String(gardenType || "Small"),
+      service: String(
+        service || "Garden Maintenance"
+      ),
+      visit_date: cleanDate || null,
+      visit_time: String(
+        visitTime || "Morning"
+      ),
+      notes: String(notes || "").trim(),
       photo:
         typeof photo === "string"
           ? photo
           : "",
-
       status: "Pending",
-
       category: getVisitCategory("Pending"),
-
-      assignedGardener: null,
-
-      createdAt:
-        new Date().toISOString(),
-
-      updatedAt:
-        new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    visits.unshift(visit);
+    const { data, error } = await supabase
+      .from("visits")
+      .insert([visitData])
+      .select()
+      .single();
 
-    writeVisits(visits);
+    if (error) {
+      console.error(
+        "SUPABASE VISIT INSERT ERROR:",
+        error
+      );
+
+      throw new Error(
+        error.message || "Unable to save visit."
+      );
+    }
+
+    const visit = {
+      visitId: data.visit_id,
+      name: data.name,
+      mobile: data.mobile,
+      address: data.address,
+      gardenType: data.garden_type,
+      service: data.service,
+      visitDate: data.visit_date,
+      visitTime: data.visit_time,
+      notes: data.notes,
+      photo: data.photo,
+      status: data.status,
+      category: data.category,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
 
     console.log("");
     console.log(
       "======================================"
     );
-    console.log(" NEW VISIT REQUEST");
+    console.log(
+      " NEW VISIT SAVED TO SUPABASE"
+    );
     console.log(
       "======================================"
     );
@@ -938,10 +1293,8 @@ app.post("/api/visit", (req, res) => {
 
     return res.status(201).json({
       success: true,
-
       message:
         "Visit request received successfully.",
-
       visit,
     });
 
@@ -955,6 +1308,7 @@ app.post("/api/visit", (req, res) => {
     return res.status(500).json({
       success: false,
       message:
+        error.message ||
         "Unable to save visit request.",
     });
   }
@@ -971,116 +1325,123 @@ app.post("/api/visit", (req, res) => {
    at least one plan or paid service.
 ========================================================= */
 
-app.get("/api/admin/customers", verifyAdmin, (req, res) => {
-  try {
-    const customersFile = path.join(__dirname, "data", "customers.json");
+app.get(
+  "/api/admin/customers",
+  verifyAdmin,
+  async (req, res) => {
 
-    if (!fs.existsSync(customersFile)) {
-      return res.json([]);
+    try {
+
+      const {
+        data: customers,
+        error,
+      } = await supabase
+        .from("customers")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false,
+          }
+        );
+
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
+
+      const actualCustomers =
+        (customers || [])
+          .filter((customer) => {
+
+            if (!customer) {
+              return false;
+            }
+
+            const hasPlan =
+              !!customer.plan;
+
+            const hasSuccessfulPayment =
+              customer.last_payment &&
+              customer.last_payment.status ===
+                "PAID";
+
+            return (
+              hasPlan ||
+              hasSuccessfulPayment
+            );
+          })
+          .map((customer) => ({
+            ...customer,
+
+            customerId:
+              customer.customer_id,
+
+            createdAt:
+              customer.created_at,
+
+            updatedAt:
+              customer.updated_at,
+
+            lastPayment:
+              customer.last_payment,
+          }));
+
+      return res.json(
+        actualCustomers
+      );
+
+    } catch (error) {
+
+      console.error(
+        "SUPABASE ADMIN CUSTOMERS API ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        message:
+          error.message ||
+          "Unable to load customers",
+      });
     }
-
-    const customers = JSON.parse(
-      fs.readFileSync(customersFile, "utf8") || "[]"
-    );
-
-    const actualCustomers = customers.filter((customer) => {
-      if (!customer) return false;
-
-      const hasPlan = !!customer.plan;
-
-      const hasSuccessfulPayment =
-        customer.lastPayment &&
-        customer.lastPayment.status === "PAID";
-
-      // Customer remains a customer permanently after
-      // a successful plan/service purchase.
-      return hasPlan || hasSuccessfulPayment;
-    });
-
-    return res.json(actualCustomers);
-
-  } catch (error) {
-    console.error("ADMIN CUSTOMERS API ERROR:", error);
-
-    return res.status(500).json({
-      message: "Unable to load customers",
-    });
   }
-});
-
+);
 /* =========================================================
    ADMIN LEADS API
    Visit/enquiry users who have not purchased a paid
    plan or service are shown as leads.
 ========================================================= */
 
-app.get("/api/admin/leads", verifyAdmin, (req, res) => {
+app.get("/api/admin/leads", verifyAdmin, async (req, res) => {
   try {
-    const visitsFile = path.join(__dirname, "data", "visits.json");
-    const customersFile = path.join(__dirname, "data", "customers.json");
-    const paymentsFile = path.join(__dirname, "data", "payments.json");
+    const { data, error } = await supabase
+      .from("visits")
+      .select("*")
+      .order("created_at", {
+        ascending: false,
+      });
 
-    const visits = fs.existsSync(visitsFile)
-      ? JSON.parse(fs.readFileSync(visitsFile, "utf8") || "[]")
-      : [];
+    if (error) {
+      throw new Error(error.message);
+    }
 
-    const customers = fs.existsSync(customersFile)
-      ? JSON.parse(fs.readFileSync(customersFile, "utf8") || "[]")
-      : [];
-
-    const payments = fs.existsSync(paymentsFile)
-      ? JSON.parse(fs.readFileSync(paymentsFile, "utf8") || "[]")
-      : [];
-
-    // Users who have successfully purchased something
-    const purchasedUids = new Set(
-      payments
-        .filter((payment) => payment?.status === "PAID")
-        .map((payment) => String(payment.uid || ""))
-        .filter(Boolean)
-    );
-
-    const purchasedCustomerIds = new Set(
-      payments
-        .filter((payment) => payment?.status === "PAID")
-        .map((payment) => String(payment.customerId || ""))
-        .filter(Boolean)
-    );
-
-    customers.forEach((customer) => {
-      if (
-        customer &&
-        (
-          customer.plan ||
-          customer.lastPayment?.status === "PAID"
-        )
-      ) {
-        if (customer.uid) {
-          purchasedUids.add(String(customer.uid));
-        }
-
-        if (customer.customerId) {
-          purchasedCustomerIds.add(
-            String(customer.customerId)
-          );
-        }
-      }
-    });
-
-    // Only non-purchased visit records remain leads
-    const leads = visits.filter((visit) => {
-      if (!visit) return false;
-
-      const uid = String(visit.uid || "");
-      const customerId = String(
-        visit.customerId || ""
-      );
-
-      return (
-        !purchasedUids.has(uid) &&
-        !purchasedCustomerIds.has(customerId)
-      );
-    });
+    const leads = (data || []).map((item) => ({
+      visitId: item.visit_id,
+      name: item.name,
+      mobile: item.mobile,
+      address: item.address,
+      gardenType: item.garden_type,
+      service: item.service,
+      visitDate: item.visit_date,
+      visitTime: item.visit_time,
+      notes: item.notes,
+      photo: item.photo,
+      status: item.status,
+      category: item.category,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }));
 
     return res.json({
       success: true,
@@ -1089,18 +1450,50 @@ app.get("/api/admin/leads", verifyAdmin, (req, res) => {
     });
 
   } catch (error) {
-    console.error("ADMIN LEADS API ERROR:", error);
+
+    console.error(
+      "SUPABASE ADMIN LEADS ERROR:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Unable to load leads",
+      message:
+        error.message ||
+        "Unable to load leads",
     });
   }
 });
-app.get("/api/visits", verifyAdmin, (req, res) => {
+app.get("/api/visits", verifyAdmin, async (req, res) => {
   try {
 
-    const visits = readVisits();
+    const { data, error } = await supabase
+      .from("visits")
+      .select("*")
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const visits = (data || []).map((item) => ({
+      visitId: item.visit_id,
+      name: item.name,
+      mobile: item.mobile,
+      address: item.address,
+      gardenType: item.garden_type,
+      service: item.service,
+      visitDate: item.visit_date,
+      visitTime: item.visit_time,
+      notes: item.notes,
+      photo: item.photo,
+      status: item.status,
+      category: item.category,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }));
 
     return res.json({
       success: true,
@@ -1111,13 +1504,14 @@ app.get("/api/visits", verifyAdmin, (req, res) => {
   } catch (error) {
 
     console.error(
-      "Visit list failed:",
+      "SUPABASE VISIT LIST ERROR:",
       error
     );
 
     return res.status(500).json({
       success: false,
       message:
+        error.message ||
         "Unable to load visit requests.",
     });
   }
@@ -1129,58 +1523,79 @@ app.get("/api/visits", verifyAdmin, (req, res) => {
 
 app.get(
   "/api/visit/:visitId",
-  (req, res) => {
-
-    const visits = readVisits();
-
-    const visit = visits.find(
-      (item) =>
-        item.visitId ===
-        req.params.visitId
-    );
-
-    if (!visit) {
-      return res.status(404).json({
-        success: false,
-        message:
-          "Visit request not found.",
-      });
-    }
-
-    return res.json({
-      success: true,
-      visit,
-    });
-  }
-);
-
-/* =========================================================
-   UPDATE VISIT
-========================================================= */
-
-app.patch(
-  "/api/visit/:visitId",
-  (req, res) => {
+  async (req, res) => {
 
     try {
 
-      const visits = readVisits();
+      const { data, error } = await supabase
+        .from("visits")
+        .select("*")
+        .eq(
+          "visit_id",
+          req.params.visitId
+        )
+        .maybeSingle();
 
-      const index =
-        visits.findIndex(
-          (item) =>
-            item.visitId ===
-            req.params.visitId
-        );
+      if (error) {
+        throw new Error(error.message);
+      }
 
-      if (index === -1) {
-
+      if (!data) {
         return res.status(404).json({
           success: false,
           message:
             "Visit request not found.",
         });
       }
+
+      const visit = {
+        visitId: data.visit_id,
+        name: data.name,
+        mobile: data.mobile,
+        address: data.address,
+        gardenType: data.garden_type,
+        service: data.service,
+        visitDate: data.visit_date,
+        visitTime: data.visit_time,
+        notes: data.notes,
+        photo: data.photo,
+        status: data.status,
+        category: data.category,
+        assignedGardener:
+          data.assigned_gardener,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+
+      return res.json({
+        success: true,
+        visit,
+      });
+
+    } catch (error) {
+
+      console.error(
+        "SUPABASE SINGLE VISIT ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          error.message ||
+          "Unable to load visit request.",
+      });
+    }
+  }
+);/* =========================================================
+   UPDATE VISIT
+========================================================= */
+
+app.patch(
+  "/api/visit/:visitId",
+  async (req, res) => {
+
+    try {
 
       const allowedStatuses = [
         "Pending",
@@ -1206,31 +1621,65 @@ app.patch(
         });
       }
 
-      visits[index] = {
-        ...visits[index],
-
-        ...(status
-          ? {
-              status,
-              category:
-                getVisitCategory(status),
-            }
-          : {}),
-        ...(req.body
-          ?.assignedGardener !==
-        undefined
-          ? {
-              assignedGardener:
-                req.body
-                  .assignedGardener,
-            }
-          : {}),
-
-        updatedAt:
+      const updateData = {
+        updated_at:
           new Date().toISOString(),
       };
 
-      writeVisits(visits);
+      if (status) {
+        updateData.status = status;
+        updateData.category =
+          getVisitCategory(status);
+      }
+
+      if (
+        req.body?.assignedGardener !==
+        undefined
+      ) {
+        updateData.assigned_gardener =
+          req.body.assignedGardener;
+      }
+
+      const { data, error } = await supabase
+        .from("visits")
+        .update(updateData)
+        .eq(
+          "visit_id",
+          req.params.visitId
+        )
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Visit request not found.",
+        });
+      }
+
+      const visit = {
+        visitId: data.visit_id,
+        name: data.name,
+        mobile: data.mobile,
+        address: data.address,
+        gardenType: data.garden_type,
+        service: data.service,
+        visitDate: data.visit_date,
+        visitTime: data.visit_time,
+        notes: data.notes,
+        photo: data.photo,
+        status: data.status,
+        category: data.category,
+        assignedGardener:
+          data.assigned_gardener,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
 
       return res.json({
         success: true,
@@ -1238,27 +1687,25 @@ app.patch(
         message:
           "Visit updated successfully.",
 
-        visit: visits[index],
+        visit,
       });
 
     } catch (error) {
 
       console.error(
-        "Visit update failed:",
+        "SUPABASE VISIT UPDATE ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to update visit.",
       });
     }
   }
-);
-
-
-/* =========================================================
+);/* =========================================================
    ADMIN + GARDENER MANAGEMENT APIs
 ========================================================= */
 
@@ -1269,31 +1716,81 @@ app.patch(
 app.get(
   "/api/v1/admin/gardeners",
   verifyAdmin,
-  (req, res) => {
+  async (req, res) => {
     try {
+
+      const { data, error } =
+        await supabase
+          .from("gardeners")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false,
+            }
+          );
+
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
+
       const gardeners =
-        readGardeners();
+        (data || []).map(
+          (item) => ({
+            gardenerId:
+              item.gardener_id,
+
+            uid:
+              item.uid,
+
+            name:
+              item.name,
+
+            email:
+              item.email || "",
+
+            phone:
+              item.phone || "",
+
+            role:
+              item.role || "gardener",
+
+            active:
+              item.active !== false,
+
+            createdAt:
+              item.created_at,
+
+            updatedAt:
+              item.updated_at,
+          })
+        );
 
       return res.json({
         success: true,
-        count: gardeners.length,
+        count:
+          gardeners.length,
         gardeners,
       });
+
     } catch (error) {
+
       console.error(
-        "Admin gardener list failed:",
+        "SUPABASE ADMIN GARDENER LIST ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to load gardeners.",
       });
     }
   }
 );
-
 /* -------------------------
    ADMIN: CREATE GARDENER
 ------------------------- */
@@ -1301,8 +1798,9 @@ app.get(
 app.post(
   "/api/v1/admin/gardeners",
   verifyAdmin,
-  (req, res) => {
+  async (req, res) => {
     try {
+
       const {
         uid,
         name,
@@ -1311,12 +1809,19 @@ app.post(
       } = req.body || {};
 
       const cleanUid =
-        String(uid || "").trim();
+        String(
+          uid || ""
+        ).trim();
 
       const cleanName =
-        String(name || "").trim();
+        String(
+          name || ""
+        ).trim();
 
-      if (!cleanUid || !cleanName) {
+      if (
+        !cleanUid ||
+        !cleanName
+      ) {
         return res.status(400).json({
           success: false,
           message:
@@ -1324,26 +1829,66 @@ app.post(
         });
       }
 
-      const gardeners =
-        readGardeners();
+      const {
+        data: existing,
+        error: existingError,
+      } =
+        await supabase
+          .from("gardeners")
+          .select("*")
+          .eq(
+            "uid",
+            cleanUid
+          )
+          .maybeSingle();
 
-      const existing =
-        gardeners.find(
-          (item) =>
-            item.uid === cleanUid
+      if (existingError) {
+        throw new Error(
+          existingError.message
         );
+      }
 
       if (existing) {
+
         return res.status(409).json({
           success: false,
           message:
             "Gardener already exists.",
-          gardener: existing,
+
+          gardener: {
+            gardenerId:
+              existing.gardener_id,
+
+            uid:
+              existing.uid,
+
+            name:
+              existing.name,
+
+            email:
+              existing.email || "",
+
+            phone:
+              existing.phone || "",
+
+            role:
+              existing.role || "gardener",
+
+            active:
+              existing.active,
+
+            createdAt:
+              existing.created_at,
+
+            updatedAt:
+              existing.updated_at,
+          },
         });
       }
 
       const now =
-        new Date().toISOString();
+        new Date()
+          .toISOString();
 
       const gardener = {
         gardenerId:
@@ -1356,10 +1901,14 @@ app.post(
           cleanName,
 
         email:
-          String(email || "").trim(),
+          String(
+            email || ""
+          ).trim(),
 
         phone:
-          String(phone || "").trim(),
+          String(
+            phone || ""
+          ).trim(),
 
         role:
           "gardener",
@@ -1374,35 +1923,104 @@ app.post(
           now,
       };
 
-      gardeners.unshift(
-        gardener
-      );
+      const insertData = {
+        gardener_id:
+          gardener.gardenerId,
 
-      writeGardeners(
-        gardeners
-      );
+        uid:
+          gardener.uid,
+
+        name:
+          gardener.name,
+
+        email:
+          gardener.email,
+
+        phone:
+          gardener.phone,
+
+        role:
+          gardener.role,
+
+        active:
+          gardener.active,
+
+        created_at:
+          gardener.createdAt,
+
+        updated_at:
+          gardener.updatedAt,
+      };
+
+      const {
+        data,
+        error,
+      } =
+        await supabase
+          .from("gardeners")
+          .insert(
+            insertData
+          )
+          .select()
+          .single();
+
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
 
       return res.status(201).json({
         success: true,
         message:
           "Gardener created successfully.",
-        gardener,
+
+        gardener: {
+          gardenerId:
+            data.gardener_id,
+
+          uid:
+            data.uid,
+
+          name:
+            data.name,
+
+          email:
+            data.email || "",
+
+          phone:
+            data.phone || "",
+
+          role:
+            data.role || "gardener",
+
+          active:
+            data.active,
+
+          createdAt:
+            data.created_at,
+
+          updatedAt:
+            data.updated_at,
+        },
       });
+
     } catch (error) {
+
       console.error(
-        "Gardener creation failed:",
+        "SUPABASE GARDENER CREATION ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to create gardener.",
       });
     }
   }
 );
-
 /* -------------------------
    ADMIN: LIST ALL VISITS
 ------------------------- */
@@ -1410,25 +2028,65 @@ app.post(
 app.get(
   "/api/v1/admin/visits",
   verifyAdmin,
-  (req, res) => {
+  async (req, res) => {
     try {
-      const visits =
-        readVisits();
+
+      const { data, error } = await supabase
+        .from("visits")
+        .select("*")
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const visits = (data || []).map((item) => ({
+        visitId: item.visit_id,
+        name: item.name,
+        mobile: item.mobile,
+        address: item.address,
+        gardenType: item.garden_type,
+        service: item.service,
+        visitDate: item.visit_date,
+        visitTime: item.visit_time,
+        notes: item.notes,
+        photo: item.photo,
+        status: item.status,
+        category: item.category,
+        assignedGardener: item.assigned_gardener,
+        assignmentType: item.assignment_type,
+        assignedAt: item.assigned_at,
+        assignedBy: item.assigned_by,
+        startedAt: item.started_at,
+        startedBy: item.started_by,
+        completedAt: item.completed_at,
+        completedBy: item.completed_by,
+        workVerification: item.work_verification,
+        gardenerNotes: item.gardener_notes,
+        completionPhoto: item.completion_photo,
+        createdAt: item.created_at,
+        updatedAt: item.updated_at,
+      }));
 
       return res.json({
         success: true,
         count: visits.length,
         visits,
       });
+
     } catch (error) {
+
       console.error(
-        "Admin visits failed:",
+        "SUPABASE ADMIN VISITS ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to load admin visits.",
       });
     }
@@ -1442,31 +2100,10 @@ app.get(
 app.patch(
   "/api/v1/admin/visits/:visitId",
   verifyAdmin,
-  (req, res) => {
+  async (req, res) => {
     try {
-      const visits =
-        readVisits();
 
-      const index =
-        visits.findIndex(
-          (item) =>
-            item.visitId ===
-            req.params.visitId
-        );
-
-      if (index === -1) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Visit not found.",
-        });
-      }
-
-      const current =
-        visits[index];
-
-      const body =
-        req.body || {};
+      const body = req.body || {};
 
       const allowedStatuses = [
         "Pending",
@@ -1480,33 +2117,68 @@ app.patch(
 
       if (
         body.status &&
-        !allowedStatuses.includes(
-          body.status
-        )
+        !allowedStatuses.includes(body.status)
       ) {
         return res.status(400).json({
           success: false,
-          message:
-            "Invalid visit status.",
+          message: "Invalid visit status.",
+        });
+      }
+
+      const { data: current, error: findError } =
+        await supabase
+          .from("visits")
+          .select("*")
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .maybeSingle();
+
+      if (findError) {
+        throw new Error(findError.message);
+      }
+
+      if (!current) {
+        return res.status(404).json({
+          success: false,
+          message: "Visit not found.",
         });
       }
 
       let assignedGardener =
-        current.assignedGardener;
+        current.assigned_gardener;
 
-      if (
-        body.gardenerId !== undefined
-      ) {
-        const gardeners =
-          readGardeners();
+      if (body.gardenerId !== undefined) {
+        const {
+          data: gardener,
+          error: gardenerError,
+        } =
+          await supabase
+            .from("gardeners")
+            .select("*")
+            .eq(
+              "gardener_id",
+              body.gardenerId
+            )
+            .eq(
+              "active",
+              true
+            )
+            .maybeSingle();
 
-        const gardener =
-          gardeners.find(
-            (item) =>
-              item.gardenerId ===
-                body.gardenerId &&
-              item.active !== false
+        if (gardenerError) {
+          console.error(
+            "Gardener lookup failed:",
+            gardenerError
           );
+
+          return res.status(500).json({
+            success: false,
+            message:
+              "Failed to verify gardener.",
+          });
+        }
 
         if (!gardener) {
           return res.status(400).json({
@@ -1519,16 +2191,12 @@ app.patch(
         assignedGardener = {
           gardenerId:
             gardener.gardenerId,
-
           uid:
             gardener.uid,
-
           name:
             gardener.name,
-
           email:
             gardener.email || "",
-
           phone:
             gardener.phone || "",
         };
@@ -1537,81 +2205,125 @@ app.patch(
       const now =
         new Date().toISOString();
 
-      const updated = {
-        ...current,
-
-        ...(body.status
-          ? {
-              status:
-                body.status,
-            }
-          : {}),
-
-
-        ...(body.status
-          ? {
-              category:
-                getVisitCategory(
-                  body.status
-                ),
-            }
-          : {}),
-        ...(body.visitDate !== undefined
-          ? {
-              visitDate:
-                body.visitDate || null,
-            }
-          : {}),
-
-        ...(body.visitTime !== undefined
-          ? {
-              visitTime:
-                String(
-                  body.visitTime ||
-                    "Morning"
-                ),
-            }
-          : {}),
-
-        ...(body.gardenerId !== undefined
-          ? {
-              assignedGardener,
-              assignmentType:
-                "ADMIN",
-              assignedAt:
-                now,
-              assignedBy:
-                req.firebaseUser.uid,
-            }
-          : {}),
-
-        updatedAt:
-          now,
+      const updateData = {
+        updated_at: now,
       };
 
-      visits[index] =
-        updated;
+      if (body.status) {
+        updateData.status =
+          body.status;
 
-      writeVisits(
-        visits
-      );
+        updateData.category =
+          getVisitCategory(body.status);
+      }
+
+      if (
+        body.visitDate !== undefined
+      ) {
+        updateData.visit_date =
+          body.visitDate || null;
+      }
+
+      if (
+        body.visitTime !== undefined
+      ) {
+        updateData.visit_time =
+          String(
+            body.visitTime ||
+            "Morning"
+          );
+      }
+
+      if (
+        body.gardenerId !== undefined
+      ) {
+        updateData.assigned_gardener =
+          assignedGardener;
+
+        updateData.assignment_type =
+          "ADMIN";
+
+        updateData.assigned_at =
+          now;
+
+        updateData.assigned_by =
+          req.firebaseUser.uid;
+      }
+
+      const { data, error } =
+        await supabase
+          .from("visits")
+          .update(updateData)
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .select()
+          .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const visit = {
+        visitId: data.visit_id,
+        name: data.name,
+        mobile: data.mobile,
+        address: data.address,
+        gardenType: data.garden_type,
+        service: data.service,
+        visitDate: data.visit_date,
+        visitTime: data.visit_time,
+        notes: data.notes,
+        photo: data.photo,
+        status: data.status,
+        category: data.category,
+        assignedGardener:
+          data.assigned_gardener,
+        assignmentType:
+          data.assignment_type,
+        assignedAt:
+          data.assigned_at,
+        assignedBy:
+          data.assigned_by,
+        startedAt:
+          data.started_at,
+        startedBy:
+          data.started_by,
+        completedAt:
+          data.completed_at,
+        completedBy:
+          data.completed_by,
+        workVerification:
+          data.work_verification,
+        gardenerNotes:
+          data.gardener_notes,
+        completionPhoto:
+          data.completion_photo,
+        createdAt:
+          data.created_at,
+        updatedAt:
+          data.updated_at,
+      };
 
       return res.json({
         success: true,
         message:
           "Visit updated successfully.",
-        visit:
-          updated,
+        visit,
       });
+
     } catch (error) {
+
       console.error(
-        "Admin visit update failed:",
+        "SUPABASE ADMIN VISIT UPDATE ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to update visit.",
       });
     }
@@ -1641,54 +2353,72 @@ app.get(
 app.get(
   "/api/v1/gardener/visits",
   verifyGardener,
-  (req, res) => {
+  async (req, res) => {
     try {
-      const visits =
-        readVisits()
-          .filter(
-            (visit) =>
-              visit?.assignedGardener?.uid ===
+
+      const { data, error } = await supabase
+        .from("visits")
+        .select("*")
+        .order("visit_date", {
+          ascending: true,
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const visits = (data || [])
+        .filter((item) => {
+          const assigned =
+            item.assigned_gardener;
+
+          return (
+            assigned &&
+            assigned.uid ===
               req.firebaseUser.uid
-          )
-          .sort((a, b) => {
-            const aDate =
-              a.visitDate
-                ? new Date(
-                    `${a.visitDate}T00:00:00`
-                  ).getTime()
-                : Number.MAX_SAFE_INTEGER;
-
-            const bDate =
-              b.visitDate
-                ? new Date(
-                    `${b.visitDate}T00:00:00`
-                  ).getTime()
-                : Number.MAX_SAFE_INTEGER;
-
-            return aDate - bDate;
-          });
+          );
+        })
+        .map((item) => ({
+          visitId: item.visit_id,
+          name: item.name,
+          mobile: item.mobile,
+          address: item.address,
+          gardenType: item.garden_type,
+          service: item.service,
+          visitDate: item.visit_date,
+          visitTime: item.visit_time,
+          notes: item.notes,
+          photo: item.photo,
+          status: item.status,
+          category: item.category,
+          assignedGardener:
+            item.assigned_gardener,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+        }));
 
       return res.json({
         success: true,
-        count:
-          visits.length,
+        count: visits.length,
         visits,
       });
+
     } catch (error) {
+
       console.error(
-        "Gardener visits failed:",
+        "SUPABASE GARDENER VISITS ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to load gardener visits.",
       });
     }
   }
 );
-
 /* -------------------------
    GARDENER: START VISIT
 ------------------------- */
@@ -1696,21 +2426,27 @@ app.get(
 app.patch(
   "/api/v1/gardener/visits/:visitId/start",
   verifyGardener,
-  (req, res) => {
+  async (req, res) => {
+
     try {
-      const visits =
-        readVisits();
 
-      const index =
-        visits.findIndex(
-          (item) =>
-            item.visitId ===
-              req.params.visitId &&
-            item?.assignedGardener?.uid ===
-              req.firebaseUser.uid
+      const { data: visit, error: fetchError } =
+        await supabase
+          .from("visits")
+          .select("*")
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .maybeSingle();
+
+      if (fetchError) {
+        throw new Error(
+          fetchError.message
         );
+      }
 
-      if (index === -1) {
+      if (!visit) {
         return res.status(404).json({
           success: false,
           message:
@@ -1718,53 +2454,173 @@ app.patch(
         });
       }
 
+      const assignedGardener =
+        visit.assigned_gardener;
+
+      if (
+        !assignedGardener ||
+        assignedGardener.uid !==
+          req.firebaseUser.uid
+      ) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "You are not assigned to this visit.",
+        });
+      }
+
       const now =
         new Date().toISOString();
 
-      visits[index] = {
-        ...visits[index],
-
+      const updateData = {
         status:
           "In Progress",
 
         category:
-          getVisitCategory("In Progress"),
+          getVisitCategory(
+            "In Progress"
+          ),
 
-        startedAt:
+        started_at:
           now,
 
-        startedBy:
+        started_by:
           req.firebaseUser.uid,
 
-        updatedAt:
+        updated_at:
           now,
       };
 
-      writeVisits(
-        visits
-      );
+      const { data, error } =
+        await supabase
+          .from("visits")
+          .update(updateData)
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .select("*")
+          .maybeSingle();
+
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
+
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Visit not found.",
+        });
+      }
+
+      const updatedVisit = {
+        visitId:
+          data.visit_id,
+
+        name:
+          data.name,
+
+        mobile:
+          data.mobile,
+
+        address:
+          data.address,
+
+        gardenType:
+          data.garden_type,
+
+        service:
+          data.service,
+
+        visitDate:
+          data.visit_date,
+
+        visitTime:
+          data.visit_time,
+
+        notes:
+          data.notes,
+
+        photo:
+          data.photo,
+
+        status:
+          data.status,
+
+        category:
+          data.category,
+
+        assignedGardener:
+          data.assigned_gardener,
+
+        assignmentType:
+          data.assignment_type,
+
+        assignedAt:
+          data.assigned_at,
+
+        assignedBy:
+          data.assigned_by,
+
+        startedAt:
+          data.started_at,
+
+        startedBy:
+          data.started_by,
+
+        completedAt:
+          data.completed_at,
+
+        completedBy:
+          data.completed_by,
+
+        workVerification:
+          data.work_verification,
+
+        gardenerNotes:
+          data.gardener_notes,
+
+        completionPhoto:
+          data.completion_photo,
+
+        createdAt:
+          data.created_at,
+
+        updatedAt:
+          data.updated_at,
+      };
 
       return res.json({
         success: true,
+
         message:
           "Visit started successfully.",
+
         visit:
-          visits[index],
+          updatedVisit,
       });
+
     } catch (error) {
+
       console.error(
-        "Gardener start visit failed:",
+        "SUPABASE GARDENER START VISIT ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
+
         message:
+          error.message ||
           "Unable to start visit.",
       });
     }
   }
 );
+
 
 /* -------------------------
    GARDENER: COMPLETE VISIT
@@ -1773,25 +2629,46 @@ app.patch(
 app.patch(
   "/api/v1/gardener/visits/:visitId/complete",
   verifyGardener,
-  (req, res) => {
+  async (req, res) => {
+
     try {
-      const visits =
-        readVisits();
 
-      const index =
-        visits.findIndex(
-          (item) =>
-            item.visitId ===
-              req.params.visitId &&
-            item?.assignedGardener?.uid ===
-              req.firebaseUser.uid
+      const { data: visit, error: fetchError } =
+        await supabase
+          .from("visits")
+          .select("*")
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .maybeSingle();
+
+      if (fetchError) {
+        throw new Error(
+          fetchError.message
         );
+      }
 
-      if (index === -1) {
+      if (!visit) {
         return res.status(404).json({
           success: false,
           message:
             "Assigned visit not found.",
+        });
+      }
+
+      const assignedGardener =
+        visit.assigned_gardener;
+
+      if (
+        !assignedGardener ||
+        assignedGardener.uid !==
+          req.firebaseUser.uid
+      ) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "You are not assigned to this visit.",
         });
       }
 
@@ -1801,66 +2678,184 @@ app.patch(
       const now =
         new Date().toISOString();
 
-      visits[index] = {
-        ...visits[index],
+      const workVerification =
+        body.workVerification ||
+        body.completedWork ||
+        visit.work_verification ||
+        [];
 
+      const gardenerNotes =
+        body.gardenerNotes !==
+        undefined
+          ? String(
+              body.gardenerNotes || ""
+            ).trim()
+          : (
+              visit.gardener_notes ||
+              ""
+            );
+
+      const completionPhoto =
+        typeof body.completionPhoto ===
+        "string"
+          ? body.completionPhoto
+          : (
+              visit.completion_photo ||
+              ""
+            );
+
+      const updateData = {
         status:
           "Completed",
 
         category:
-          getVisitCategory("Completed"),
+          getVisitCategory(
+            "Completed"
+          ),
 
-        completedAt:
+        completed_at:
           now,
 
-        completedBy:
+        completed_by:
           req.firebaseUser.uid,
 
-        workVerification:
-          body.workVerification ||
-          body.completedWork ||
-          visits[index]
-            .workVerification ||
-          [],
+        work_verification:
+          workVerification,
 
-        gardenerNotes:
-          String(
-            body.gardenerNotes ||
-              ""
-          ).trim(),
+        gardener_notes:
+          gardenerNotes,
 
-        completionPhoto:
-          typeof body.completionPhoto ===
-          "string"
-            ? body.completionPhoto
-            : visits[index]
-                .completionPhoto ||
-              "",
+        completion_photo:
+          completionPhoto,
 
-        updatedAt:
+        updated_at:
           now,
       };
 
-      writeVisits(
-        visits
-      );
+      const { data, error } =
+        await supabase
+          .from("visits")
+          .update(updateData)
+          .eq(
+            "visit_id",
+            req.params.visitId
+          )
+          .select("*")
+          .maybeSingle();
+
+      if (error) {
+        throw new Error(
+          error.message
+        );
+      }
+
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Visit not found.",
+        });
+      }
+
+      const updatedVisit = {
+        visitId:
+          data.visit_id,
+
+        name:
+          data.name,
+
+        mobile:
+          data.mobile,
+
+        address:
+          data.address,
+
+        gardenType:
+          data.garden_type,
+
+        service:
+          data.service,
+
+        visitDate:
+          data.visit_date,
+
+        visitTime:
+          data.visit_time,
+
+        notes:
+          data.notes,
+
+        photo:
+          data.photo,
+
+        status:
+          data.status,
+
+        category:
+          data.category,
+
+        assignedGardener:
+          data.assigned_gardener,
+
+        assignmentType:
+          data.assignment_type,
+
+        assignedAt:
+          data.assigned_at,
+
+        assignedBy:
+          data.assigned_by,
+
+        startedAt:
+          data.started_at,
+
+        startedBy:
+          data.started_by,
+
+        completedAt:
+          data.completed_at,
+
+        completedBy:
+          data.completed_by,
+
+        workVerification:
+          data.work_verification,
+
+        gardenerNotes:
+          data.gardener_notes,
+
+        completionPhoto:
+          data.completion_photo,
+
+        createdAt:
+          data.created_at,
+
+        updatedAt:
+          data.updated_at,
+      };
 
       return res.json({
         success: true,
+
         message:
           "Visit completed successfully.",
+
         visit:
-          visits[index],
+          updatedVisit,
       });
+
     } catch (error) {
+
       console.error(
-        "Gardener complete visit failed:",
+        "SUPABASE GARDENER COMPLETE VISIT ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
+
         message:
+          error.message ||
           "Unable to complete visit.",
       });
     }
@@ -1908,20 +2903,30 @@ app.post(
         });
       }
 
-      const customers = readJsonFile(customersFile);
+      const {
+        data: customer,
+        error: customerError,
+      } = await supabase
+        .from("customers")
+        .select("*")
+        .eq(
+          "uid",
+          req.firebaseUser.uid
+        )
+        .maybeSingle();
 
-      const customerIndex = customers.findIndex(
-        (item) => item.uid === req.firebaseUser.uid
-      );
+      if (customerError) {
+        throw new Error(
+          customerError.message
+        );
+      }
 
-      if (customerIndex === -1) {
+      if (!customer) {
         return res.status(404).json({
           success: false,
           message: "Customer account not found.",
         });
       }
-
-      const customer = customers[customerIndex];
 
       const monthlyPrice = PLAN_PRICES[planName];
       const subtotal = monthlyPrice * parsedMonths;
@@ -2113,44 +3118,95 @@ app.post(
       // Load customer
       // ---------------------------------------------------
 
-      const customers =
-        readJsonFile(customersFile);
+      const {
+        data: customer,
+        error: customerError,
+      } = await supabase
+        .from("customers")
+        .select("*")
+        .eq(
+          "uid",
+          req.firebaseUser.uid
+        )
+        .maybeSingle();
 
-      const customerIndex =
-        customers.findIndex(
-          (item) =>
-            item.uid === req.firebaseUser.uid
+      if (customerError) {
+        throw new Error(
+          customerError.message
         );
+      }
 
-      if (customerIndex === -1) {
+      if (!customer) {
         return res.status(404).json({
           success: false,
           message: "Customer account not found.",
         });
       }
 
-      const customer =
-        customers[customerIndex];
-
       // ---------------------------------------------------
       // Prevent duplicate payment records
       // ---------------------------------------------------
 
-      const payments =
-        readJsonFile(paymentsFile);
+      const {
+        data: existingPayment,
+        error: existingPaymentError,
+      } = await supabase
+        .from("payments")
+        .select("*")
+        .eq(
+          "razorpay_payment_id",
+          razorpay_payment_id
+        )
+        .maybeSingle();
 
-      const alreadyRecorded =
-        payments.find(
-          (item) =>
-            item.razorpayPaymentId ===
-            razorpay_payment_id
+      if (existingPaymentError) {
+        throw new Error(
+          existingPaymentError.message
         );
+      }
 
-      if (alreadyRecorded) {
+      if (existingPayment) {
         return res.json({
           success: true,
           message: "Payment already verified.",
-          payment: alreadyRecorded,
+
+          payment: {
+            paymentRecordId:
+              existingPayment.payment_record_id,
+
+            uid:
+              existingPayment.uid,
+
+            customerId:
+              existingPayment.customer_id,
+
+            planName:
+              existingPayment.plan_name,
+
+            months:
+              existingPayment.months,
+
+            amount:
+              Number(existingPayment.amount),
+
+            currency:
+              existingPayment.currency,
+
+            status:
+              existingPayment.status,
+
+            razorpayOrderId:
+              existingPayment.razorpay_order_id,
+
+            razorpayPaymentId:
+              existingPayment.razorpay_payment_id,
+
+            subscriptionId:
+              existingPayment.subscription_id,
+
+            paidAt:
+              existingPayment.paid_at,
+          },
         });
       }
 
@@ -2158,8 +3214,6 @@ app.post(
       // Create subscription
       // ---------------------------------------------------
 
-      const subscriptions =
-        readJsonFile(subscriptionsFile);
 
       // Renewal logic:
       // If the customer's existing plan is still active,
@@ -2229,12 +3283,120 @@ app.post(
           new Date().toISOString(),
       };
 
-      subscriptions.unshift(subscription);
+      const {
+        data: savedSubscription,
+        error: subscriptionError,
+      } = await supabase
+        .from("subscriptions")
+        .insert([
+          {
+            subscription_id:
+              subscription.subscriptionId,
 
-      writeJsonFile(
-        subscriptionsFile,
-        subscriptions
-      );
+            uid:
+              subscription.uid,
+
+            customer_id:
+              subscription.customerId,
+
+            plan_name:
+              subscription.planName,
+
+            monthly_price:
+              subscription.monthlyPrice,
+
+            months:
+              subscription.months,
+
+            subtotal:
+              subscription.subtotal,
+
+            gst:
+              subscription.gst,
+
+            grand_total:
+              subscription.grandTotal,
+
+            status:
+              subscription.status,
+
+            start_date:
+              subscription.startDate,
+
+            renewal_date:
+              subscription.renewalDate,
+
+            razorpay_order_id:
+              subscription.razorpayOrderId,
+
+            razorpay_payment_id:
+              subscription.razorpayPaymentId,
+
+            created_at:
+              subscription.createdAt,
+
+            updated_at:
+              subscription.updatedAt,
+          },
+        ])
+        .select()
+        .single();
+
+      if (subscriptionError) {
+        throw new Error(
+          subscriptionError.message
+        );
+      }
+
+      const subscriptionRecord = {
+        subscriptionId:
+          savedSubscription.subscription_id,
+
+        uid:
+          savedSubscription.uid,
+
+        customerId:
+          savedSubscription.customer_id,
+
+        planName:
+          savedSubscription.plan_name,
+
+        monthlyPrice:
+          Number(savedSubscription.monthly_price),
+
+        months:
+          savedSubscription.months,
+
+        subtotal:
+          Number(savedSubscription.subtotal),
+
+        gst:
+          Number(savedSubscription.gst),
+
+        grandTotal:
+          Number(savedSubscription.grand_total),
+
+        status:
+          savedSubscription.status,
+
+        startDate:
+          savedSubscription.start_date,
+
+        renewalDate:
+          savedSubscription.renewal_date,
+
+        razorpayOrderId:
+          savedSubscription.razorpay_order_id,
+
+        razorpayPaymentId:
+          savedSubscription.razorpay_payment_id,
+
+        createdAt:
+          savedSubscription.created_at,
+
+        updatedAt:
+          savedSubscription.updated_at,
+      };
 
       // ---------------------------------------------------
       // Payment record
@@ -2267,78 +3429,197 @@ app.post(
           razorpay_payment_id,
 
         subscriptionId:
-          subscription.subscriptionId,
+          subscriptionRecord.subscriptionId,
 
         paidAt:
           new Date().toISOString(),
       };
 
-      payments.unshift(payment);
+      const {
+        data: savedPayment,
+        error: paymentError,
+      } = await supabase
+        .from("payments")
+        .insert([
+          {
+            payment_record_id:
+              payment.paymentRecordId,
 
-      writeJsonFile(
-        paymentsFile,
-        payments
-      );
+            uid:
+              payment.uid,
+
+            customer_id:
+              payment.customerId,
+
+            plan_name:
+              payment.planName,
+
+            months:
+              payment.months,
+
+            amount:
+              payment.amount,
+
+            currency:
+              payment.currency,
+
+            status:
+              payment.status,
+
+            razorpay_order_id:
+              payment.razorpayOrderId,
+
+            razorpay_payment_id:
+              payment.razorpayPaymentId,
+
+            subscription_id:
+              payment.subscriptionId,
+
+            paid_at:
+              payment.paidAt,
+          },
+        ])
+        .select()
+        .single();
+
+      if (paymentError) {
+        throw new Error(
+          paymentError.message
+        );
+      }
+
+      const paymentRecord = {
+        paymentRecordId:
+          savedPayment.payment_record_id,
+
+        uid:
+          savedPayment.uid,
+
+        customerId:
+          savedPayment.customer_id,
+
+        planName:
+          savedPayment.plan_name,
+
+        months:
+          savedPayment.months,
+
+        amount:
+          Number(savedPayment.amount),
+
+        currency:
+          savedPayment.currency,
+
+        status:
+          savedPayment.status,
+
+        razorpayOrderId:
+          savedPayment.razorpay_order_id,
+
+        razorpayPaymentId:
+          savedPayment.razorpay_payment_id,
+
+        subscriptionId:
+          savedPayment.subscription_id,
+
+        paidAt:
+          savedPayment.paid_at,
+      };
 
       // ---------------------------------------------------
       // Activate customer
       // ---------------------------------------------------
 
-      customers[customerIndex] = {
-        ...customer,
+      const customerUpdatedAt =
+        new Date().toISOString();
 
-        status: "ACTIVE",
+      const customerPlan = {
+        name: planName,
 
-        plan: {
-          name: planName,
+        monthlyPrice,
 
-          monthlyPrice,
+        months,
 
-          months,
+        startDate:
+          subscriptionRecord.startDate,
 
-          startDate:
-            subscription.startDate,
+        renewalDate:
+          subscriptionRecord.renewalDate,
 
-          renewalDate:
-            subscription.renewalDate,
-
-          subscriptionId:
-            subscription.subscriptionId,
-        },
-
-        lastPayment: {
-          amount:
-            expectedGrandTotal,
-
-          currency: "INR",
-
-          status: "PAID",
-
-          date:
-            payment.paidAt,
-
-          plan:
-            planName,
-
-          paymentId:
-            razorpay_payment_id,
-        },
-
-        updatedAt:
-          new Date().toISOString(),
+        subscriptionId:
+          subscriptionRecord.subscriptionId,
       };
 
-      writeJsonFile(
-        customersFile,
-        customers
-      );
+      const customerLastPayment = {
+        amount:
+          expectedGrandTotal,
+
+        currency: "INR",
+
+        status: "PAID",
+
+        date:
+          paymentRecord.paidAt,
+
+        plan:
+          planName,
+
+        paymentId:
+          razorpay_payment_id,
+      };
+
+      const {
+        data: updatedCustomer,
+        error: customerUpdateError,
+      } = await supabase
+        .from("customers")
+        .update({
+          status: "ACTIVE",
+
+          plan:
+            customerPlan,
+
+          last_payment:
+            customerLastPayment,
+
+          updated_at:
+            customerUpdatedAt,
+        })
+        .eq(
+          "uid",
+          req.firebaseUser.uid
+        )
+        .select()
+        .single();
+
+      if (customerUpdateError) {
+        throw new Error(
+          customerUpdateError.message
+        );
+      }
+
+      const customerRecord = {
+        ...updatedCustomer,
+
+        customerId:
+          updatedCustomer.customer_id,
+
+        createdAt:
+          updatedCustomer.created_at,
+
+        updatedAt:
+          updatedCustomer.updated_at,
+
+        lastPayment:
+          updatedCustomer.last_payment,
+      };
 
       // ---------------------------------------------------
       // Automatically schedule customer visit
       // ---------------------------------------------------
 
       const automaticVisit =
-        createAutomaticCustomerVisit({
+        await createAutomaticCustomerVisit({
           customer: customers[customerIndex],
           subscription,
           isRenewal,
@@ -2350,14 +3631,14 @@ app.post(
         message:
           "Payment verified and subscription activated.",
 
-        payment,
+        payment: paymentRecord,
 
-        subscription,
+        subscription: subscriptionRecord,
 
         visit: automaticVisit,
 
         customer:
-          customers[customerIndex],
+          customerRecord,
       });
 
     } catch (error) {
@@ -2385,8 +3666,6 @@ app.get(
   verifyFirebaseToken,
   (req, res) => {
     try {
-      const subscriptions =
-        readJsonFile(subscriptionsFile);
 
       const customerSubscriptions =
         subscriptions.filter(
@@ -2423,39 +3702,63 @@ app.get(
   }
 );
 
-/* =========================================================
+/* ========================================================= 
    CUSTOMER PAYMENT HISTORY
 ========================================================= */
 
 app.get(
   "/api/v1/customer/payments",
   verifyFirebaseToken,
-  (req, res) => {
+  async (req, res) => {
     try {
-      const payments =
-        readJsonFile(paymentsFile);
 
-      const customerPayments =
-        payments.filter(
-          (item) =>
-            item.uid === req.firebaseUser.uid
+      const uid = req.firebaseUser?.uid;
+
+      if (!uid) {
+        return res.status(401).json({
+          success: false,
+          message:
+            "Customer authentication required.",
+        });
+      }
+
+      const {
+        data: customerPayments,
+        error,
+      } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("uid", uid)
+        .order(
+          "paid_at",
+          {
+            ascending: false,
+          }
         );
+
+      if (error) {
+        throw new Error(error.message);
+      }
 
       return res.json({
         success: true,
-        count: customerPayments.length,
-        payments: customerPayments,
+        count:
+          (customerPayments || []).length,
+        payments:
+          customerPayments || [],
       });
 
     } catch (error) {
+
       console.error(
-        "Payment history lookup error:",
+        "SUPABASE PAYMENT HISTORY ERROR:",
         error
       );
 
       return res.status(500).json({
         success: false,
         message:
+          error.message ||
           "Unable to load payment history.",
       });
     }

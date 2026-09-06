@@ -248,7 +248,7 @@ export default function App() {
 
             <Route
               path="/my-visits"
-              element={<ActivePlanGate><MyVisits /></ActivePlanGate>}
+              element={<MyVisits />}
             />
 
             <Route
