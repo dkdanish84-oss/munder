@@ -36,7 +36,6 @@ export default function HeroSection() {
 
   return (
     <section className="w-full px-3 pt-4 sm:px-4 sm:pt-6 md:pt-8">
-      {/* CENTERED HERO WRAPPER */}
       <div className="flex w-full justify-center">
         <div className="w-full max-w-[1500px]">
           <div
@@ -80,7 +79,6 @@ export default function HeroSection() {
               />
             ))}
 
-            {/* PREVIOUS */}
             <button
               type="button"
               onClick={previousSlide}
@@ -114,7 +112,6 @@ export default function HeroSection() {
               />
             </button>
 
-            {/* NEXT */}
             <button
               type="button"
               onClick={nextSlide}
@@ -148,7 +145,6 @@ export default function HeroSection() {
               />
             </button>
 
-            {/* SLIDE DOTS */}
             <div
               className="
                 absolute

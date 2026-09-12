@@ -16,21 +16,25 @@ export default function Home() {
   return (
     <main className="w-full overflow-x-hidden bg-white">
 
-      {/* =========================================================
+      {/* =====================================================
           HERO
-         ========================================================= */}
+         ===================================================== */}
+
       <HeroSection />
 
-      {/* =========================================================
-          GARDEN VISIT
-         ========================================================= */}
+
+      {/* =====================================================
+          BOOK A GARDEN VISIT
+         ===================================================== */}
+
       <section className="w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8">
-        
-        {/* IMPORTANT: CENTER THE COMPLETE CARD */}
+
+        {/* OUTER CENTER */}
         <div className="flex w-full justify-center">
-          
+
+          {/* SAME WIDTH SYSTEM AS HERO */}
           <div className="w-full max-w-[1500px]">
-            
+
             <div
               className="
                 relative
@@ -54,7 +58,7 @@ export default function Home() {
               "
             >
 
-              {/* DECORATIVE TOP RIGHT */}
+              {/* DECORATIVE CIRCLE - TOP RIGHT */}
               <div
                 className="
                   pointer-events-none
@@ -73,7 +77,7 @@ export default function Home() {
                 "
               />
 
-              {/* DECORATIVE BOTTOM LEFT */}
+              {/* DECORATIVE CIRCLE - BOTTOM LEFT */}
               <div
                 className="
                   pointer-events-none
@@ -90,12 +94,29 @@ export default function Home() {
                 "
               />
 
-              <div className="relative z-10 w-full">
+
+              {/* =================================================
+                  IMPORTANT CENTER CONTAINER
+                 ================================================= */}
+
+              <div
+                className="
+                  relative
+                  z-10
+                  mx-auto
+                  flex
+                  w-full
+                  max-w-[1120px]
+                  flex-col
+                  items-center
+                "
+              >
 
                 {/* =================================================
                     HEADING
                    ================================================= */}
-                <div className="mx-auto w-full max-w-[950px] text-center">
+
+                <div className="w-full text-center">
 
                   <p
                     className="
@@ -133,6 +154,7 @@ export default function Home() {
                       mx-auto
                       mt-2
                       max-w-[820px]
+                      text-center
                       text-[13px]
                       leading-relaxed
                       text-[#355B49]
@@ -141,8 +163,8 @@ export default function Home() {
                       md:text-[19px]
                     "
                   >
-                    Our gardening experts will visit your space, understand
-                    your needs and suggest the best solutions.
+                    Our gardening experts will visit your space,
+                    understand your needs and suggest the best solutions.
                   </p>
 
                 </div>
@@ -151,13 +173,12 @@ export default function Home() {
                 {/* =================================================
                     INFORMATION CARDS
                    ================================================= */}
+
                 <div
                   className="
-                    mx-auto
                     mt-5
                     grid
                     w-full
-                    max-w-[1100px]
                     grid-cols-1
                     gap-3
                     sm:mt-7
@@ -167,11 +188,12 @@ export default function Home() {
                 >
 
                   {/* VISIT FEE */}
+
                   <div
                     className="
                       flex
-                      min-w-0
                       min-h-[82px]
+                      min-w-0
                       items-center
                       gap-3
                       rounded-[16px]
@@ -184,6 +206,7 @@ export default function Home() {
                       sm:px-5
                     "
                   >
+
                     <div
                       className="
                         flex
@@ -206,27 +229,52 @@ export default function Home() {
                     </div>
 
                     <div className="min-w-0 text-left">
-                      <p className="text-[12px] font-semibold text-[#527263] sm:text-[14px]">
+
+                      <p
+                        className="
+                          text-[12px]
+                          font-semibold
+                          text-[#527263]
+                          sm:text-[14px]
+                        "
+                      >
                         Visit Fee
                       </p>
 
-                      <p className="text-[23px] font-black leading-tight text-[#06452D] sm:text-[27px]">
+                      <p
+                        className="
+                          text-[23px]
+                          font-black
+                          leading-tight
+                          text-[#06452D]
+                          sm:text-[27px]
+                        "
+                      >
                         99
                       </p>
 
-                      <p className="text-[10px] text-[#6B8176] sm:text-[12px]">
+                      <p
+                        className="
+                          text-[10px]
+                          text-[#6B8176]
+                          sm:text-[12px]
+                        "
+                      >
                         One-time fee
                       </p>
+
                     </div>
+
                   </div>
 
 
                   {/* FULLY ADJUSTABLE */}
+
                   <div
                     className="
                       flex
-                      min-w-0
                       min-h-[82px]
+                      min-w-0
                       items-center
                       gap-3
                       rounded-[16px]
@@ -239,6 +287,7 @@ export default function Home() {
                       sm:px-5
                     "
                   >
+
                     <div
                       className="
                         flex
@@ -261,23 +310,42 @@ export default function Home() {
                     </div>
 
                     <div className="min-w-0 text-left">
-                      <p className="text-[14px] font-bold text-[#06452D] sm:text-[16px]">
+
+                      <p
+                        className="
+                          text-[14px]
+                          font-bold
+                          text-[#06452D]
+                          sm:text-[16px]
+                        "
+                      >
                         99 Fully Adjustable
                       </p>
 
-                      <p className="text-[10px] leading-relaxed text-[#527263] sm:text-[12px]">
-                        Your visit fee is adjusted when you purchase a MUNDER plan.
+                      <p
+                        className="
+                          text-[10px]
+                          leading-relaxed
+                          text-[#527263]
+                          sm:text-[12px]
+                        "
+                      >
+                        Your visit fee is adjusted when you purchase
+                        a MUNDER plan.
                       </p>
+
                     </div>
+
                   </div>
 
 
                   {/* NO HIDDEN CHARGES */}
+
                   <div
                     className="
                       flex
-                      min-w-0
                       min-h-[82px]
+                      min-w-0
                       items-center
                       gap-3
                       rounded-[16px]
@@ -290,6 +358,7 @@ export default function Home() {
                       sm:px-5
                     "
                   >
+
                     <div
                       className="
                         flex
@@ -312,29 +381,45 @@ export default function Home() {
                     </div>
 
                     <div className="min-w-0 text-left">
-                      <p className="text-[14px] font-bold text-[#06452D] sm:text-[16px]">
+
+                      <p
+                        className="
+                          text-[14px]
+                          font-bold
+                          text-[#06452D]
+                          sm:text-[16px]
+                        "
+                      >
                         No Hidden Charges
                       </p>
 
-                      <p className="text-[10px] leading-relaxed text-[#527263] sm:text-[12px]">
+                      <p
+                        className="
+                          text-[10px]
+                          leading-relaxed
+                          text-[#527263]
+                          sm:text-[12px]
+                        "
+                      >
                         Pay only 99 for the garden visit.
                       </p>
+
                     </div>
+
                   </div>
 
                 </div>
 
 
                 {/* =================================================
-                    ACTION BUTTONS
+                    BUTTONS
                    ================================================= */}
+
                 <div
                   className="
-                    mx-auto
                     mt-4
                     grid
                     w-full
-                    max-w-[1100px]
                     grid-cols-1
                     gap-3
                     sm:mt-5
@@ -343,40 +428,41 @@ export default function Home() {
                 >
 
                   {/* BOOK VISIT */}
+
                   <Link
                     to="/visit"
                     className="
                       flex
-                      min-w-0
+                      h-[58px]
                       w-full
-                      min-h-[52px]
+                      min-w-0
                       items-center
                       justify-center
                       gap-2
                       overflow-hidden
                       rounded-full
                       bg-[#087A43]
-                      px-4
-                      py-3
+                      px-3
                       text-center
-                      text-[14px]
+                      text-[13px]
                       font-bold
                       text-white
                       shadow-sm
                       transition
                       hover:bg-[#066B3A]
                       hover:shadow-md
-                      sm:min-h-[58px]
-                      sm:px-5
-                      sm:text-[16px]
+                      sm:px-4
+                      sm:text-[15px]
+                      md:text-[16px]
                     "
                   >
+
                     <CalendarDays
-                      size={20}
+                      size={19}
                       className="shrink-0"
                     />
 
-                    <span className="min-w-0 truncate">
+                    <span className="min-w-0 whitespace-nowrap">
                       Book a Garden Visit
                     </span>
 
@@ -384,17 +470,19 @@ export default function Home() {
                       size={18}
                       className="shrink-0"
                     />
+
                   </Link>
 
 
                   {/* SERVICES */}
+
                   <Link
                     to="/garden-maintenance-bhopal"
                     className="
                       flex
-                      min-w-0
+                      h-[58px]
                       w-full
-                      min-h-[52px]
+                      min-w-0
                       items-center
                       justify-center
                       gap-2
@@ -403,20 +491,20 @@ export default function Home() {
                       border-2
                       border-[#087A43]
                       bg-white
-                      px-4
-                      py-3
+                      px-3
                       text-center
-                      text-[14px]
+                      text-[13px]
                       font-bold
                       text-[#087A43]
                       transition
                       hover:bg-[#EAF7EF]
-                      sm:min-h-[58px]
-                      sm:px-5
-                      sm:text-[16px]
+                      sm:px-4
+                      sm:text-[15px]
+                      md:text-[16px]
                     "
                   >
-                    <span className="min-w-0 truncate">
+
+                    <span className="min-w-0 whitespace-nowrap">
                       Explore Services
                     </span>
 
@@ -424,17 +512,19 @@ export default function Home() {
                       size={18}
                       className="shrink-0"
                     />
+
                   </Link>
 
 
                   {/* PLANS */}
+
                   <Link
                     to="/plans"
                     className="
                       flex
-                      min-w-0
+                      h-[58px]
                       w-full
-                      min-h-[52px]
+                      min-w-0
                       items-center
                       justify-center
                       gap-2
@@ -443,20 +533,20 @@ export default function Home() {
                       border-2
                       border-[#087A43]
                       bg-white
-                      px-4
-                      py-3
+                      px-3
                       text-center
-                      text-[14px]
+                      text-[13px]
                       font-bold
                       text-[#087A43]
                       transition
                       hover:bg-[#EAF7EF]
-                      sm:min-h-[58px]
-                      sm:px-5
-                      sm:text-[16px]
+                      sm:px-4
+                      sm:text-[15px]
+                      md:text-[16px]
                     "
                   >
-                    <span className="min-w-0 truncate">
+
+                    <span className="min-w-0 whitespace-nowrap">
                       Explore Plans
                     </span>
 
@@ -464,6 +554,7 @@ export default function Home() {
                       size={18}
                       className="shrink-0"
                     />
+
                   </Link>
 
                 </div>
@@ -472,13 +563,12 @@ export default function Home() {
                 {/* =================================================
                     BENEFITS
                    ================================================= */}
+
                 <div
                   className="
-                    mx-auto
                     mt-5
                     flex
                     w-full
-                    max-w-[900px]
                     flex-wrap
                     items-center
                     justify-center
@@ -550,7 +640,6 @@ export default function Home() {
                     <span className="text-[17px] text-[#087A43]">
                       
                     </span>
-
                     Expert Guidance
                   </div>
 
@@ -563,24 +652,28 @@ export default function Home() {
           </div>
 
         </div>
+
       </section>
 
 
-      {/* =========================================================
+      {/* =====================================================
           WHY CHOOSE MUNDER
-         ========================================================= */}
+         ===================================================== */}
+
       <WhyChooseSection />
 
 
-      {/* =========================================================
+      {/* =====================================================
           TESTIMONIALS
-         ========================================================= */}
+         ===================================================== */}
+
       <TestimonialsSection />
 
 
-      {/* =========================================================
+      {/* =====================================================
           FAQ
-         ========================================================= */}
+         ===================================================== */}
+
       <FaqSection />
 
     </main>
