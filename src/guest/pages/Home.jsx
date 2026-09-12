@@ -3,6 +3,7 @@ import WhyChooseSection from "../../components/guest/WhyChooseSection";
 import TestimonialsSection from "../../components/guest/TestimonialsSection";
 import FaqSection from "../../components/guest/FaqSection";
 import { Link } from "react-router-dom";
+
 import {
   ArrowRight,
   CalendarDays,
@@ -12,13 +13,15 @@ import {
 
 export default function Home() {
   return (
-    <main className="home-center">
+    <main className="w-full overflow-x-hidden bg-white">
 
-      {/* HERO */}
+      {/* =========================================================
+          HERO
+         ========================================================= */}
       <HeroSection />
 
       {/* =========================================================
-          GARDEN VISIT - ₹99
+          GARDEN VISIT - 99
          ========================================================= */}
       <section className="w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8">
         <div className="mx-auto w-full max-w-[1500px]">
@@ -26,71 +29,78 @@ export default function Home() {
           <div
             className="
               relative
+              w-full
               overflow-hidden
               rounded-[22px]
               bg-[#F0F9F4]
               px-4
               py-6
-              shadow-sm
+              shadow-md
               ring-1
               ring-[#D9EDE1]
-              sm:rounded-[28px]
+              sm:rounded-[26px]
               sm:px-8
               sm:py-9
               md:px-12
               md:py-10
+              lg:rounded-[30px]
               lg:px-16
-              lg:py-12
+              lg:py-11
             "
           >
 
-            {/* Decorative background */}
+            {/* Decorative background - top right */}
             <div
               className="
                 pointer-events-none
                 absolute
-                right-[-50px]
-                top-[-50px]
+                right-[-60px]
+                top-[-60px]
                 h-[180px]
                 w-[180px]
                 rounded-full
                 bg-[#DDF2E6]
-                opacity-60
+                opacity-70
+                sm:h-[240px]
+                sm:w-[240px]
+                lg:h-[280px]
+                lg:w-[280px]
+              "
+            />
+
+            {/* Decorative background - bottom left */}
+            <div
+              className="
+                pointer-events-none
+                absolute
+                bottom-[-80px]
+                left-[-60px]
+                h-[190px]
+                w-[190px]
+                rounded-full
+                bg-[#E3F4E9]
+                opacity-70
                 sm:h-[250px]
                 sm:w-[250px]
               "
             />
 
-            <div
-              className="
-                pointer-events-none
-                absolute
-                bottom-[-70px]
-                left-[-50px]
-                h-[180px]
-                w-[180px]
-                rounded-full
-                bg-[#E3F4E9]
-                opacity-60
-                sm:h-[240px]
-                sm:w-[240px]
-              "
-            />
-
             <div className="relative z-10">
 
-              {/* Heading */}
-              <div className="text-center">
+              {/* =====================================================
+                  HEADING
+                 ===================================================== */}
+              <div className="mx-auto max-w-[950px] text-center">
 
                 <p
                   className="
-                    text-[12px]
+                    text-[11px]
                     font-bold
                     uppercase
                     tracking-[0.12em]
                     text-[#087A43]
-                    sm:text-[15px]
-                    md:text-[17px]
+                    sm:text-[14px]
+                    md:text-[15px]
                   "
                 >
                   GET EXPERT ADVICE FOR YOUR GARDEN
@@ -105,9 +115,9 @@ export default function Home() {
                     tracking-tight
                     text-[#06452D]
                     sm:mt-2
-                    sm:text-[42px]
-                    md:text-[50px]
-                    lg:text-[56px]
+                    sm:text-[40px]
+                    md:text-[48px]
+                    lg:text-[54px]
                   "
                 >
                   Book a Garden Visit
@@ -117,13 +127,13 @@ export default function Home() {
                   className="
                     mx-auto
                     mt-2
-                    max-w-[850px]
-                    text-[14px]
+                    max-w-[820px]
+                    text-[13px]
                     leading-relaxed
                     text-[#355B49]
                     sm:mt-3
-                    sm:text-[18px]
-                    md:text-[21px]
+                    sm:text-[17px]
+                    md:text-[19px]
                   "
                 >
                   Our gardening experts will visit your space, understand
@@ -132,12 +142,15 @@ export default function Home() {
 
               </div>
 
-              {/* Visit information */}
+              {/* =====================================================
+                  INFORMATION CARDS
+                 ===================================================== */}
               <div
                 className="
                   mx-auto
                   mt-5
                   grid
+                  w-full
                   max-w-[1000px]
                   grid-cols-1
                   gap-3
@@ -147,10 +160,11 @@ export default function Home() {
                 "
               >
 
-                {/* ₹99 Visit Fee */}
+                {/* VISIT FEE */}
                 <div
                   className="
                     flex
+                    min-h-[82px]
                     items-center
                     gap-3
                     rounded-[16px]
@@ -159,8 +173,8 @@ export default function Home() {
                     py-4
                     ring-1
                     ring-[#D8EDE0]
+                    sm:min-h-[92px]
                     sm:px-5
-                    sm:py-5
                   "
                 >
                   <div
@@ -179,29 +193,30 @@ export default function Home() {
                     "
                   >
                     <span className="text-[22px] font-black sm:text-[26px]">
-                      ₹
+                      
                     </span>
                   </div>
 
-                  <div>
-                    <p className="text-[13px] font-semibold text-[#527263] sm:text-[15px]">
+                  <div className="min-w-0">
+                    <p className="text-[12px] font-semibold text-[#527263] sm:text-[14px]">
                       Visit Fee
                     </p>
 
                     <p className="text-[23px] font-black leading-tight text-[#06452D] sm:text-[27px]">
-                      ₹99
+                      99
                     </p>
 
-                    <p className="text-[11px] text-[#6B8176] sm:text-[12px]">
+                    <p className="text-[10px] text-[#6B8176] sm:text-[12px]">
                       One-time fee
                     </p>
                   </div>
                 </div>
 
-                {/* ₹99 Adjustment */}
+                {/* FULLY ADJUSTABLE */}
                 <div
                   className="
                     flex
+                    min-h-[82px]
                     items-center
                     gap-3
                     rounded-[16px]
@@ -210,8 +225,8 @@ export default function Home() {
                     py-4
                     ring-1
                     ring-[#D8EDE0]
+                    sm:min-h-[92px]
                     sm:px-5
-                    sm:py-5
                   "
                 >
                   <div
@@ -229,25 +244,28 @@ export default function Home() {
                       sm:w-[56px]
                     "
                   >
-                    <CreditCard size={25} strokeWidth={2} />
+                    <CreditCard
+                      size={25}
+                      strokeWidth={2}
+                    />
                   </div>
 
-                  <div>
-                    <p className="text-[15px] font-bold text-[#06452D] sm:text-[17px]">
-                      ₹99 Fully Adjustable
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-bold text-[#06452D] sm:text-[16px]">
+                      99 Fully Adjustable
                     </p>
 
-                    <p className="text-[11px] leading-relaxed text-[#527263] sm:text-[13px]">
-                      Your visit fee is adjusted
-                      when you purchase a MUNDER plan.
+                    <p className="text-[10px] leading-relaxed text-[#527263] sm:text-[12px]">
+                      Your visit fee is adjusted when you purchase a MUNDER plan.
                     </p>
                   </div>
                 </div>
 
-                {/* No Hidden Charges */}
+                {/* NO HIDDEN CHARGES */}
                 <div
                   className="
                     flex
+                    min-h-[82px]
                     items-center
                     gap-3
                     rounded-[16px]
@@ -256,8 +274,8 @@ export default function Home() {
                     py-4
                     ring-1
                     ring-[#D8EDE0]
+                    sm:min-h-[92px]
                     sm:px-5
-                    sm:py-5
                   "
                 >
                   <div
@@ -275,42 +293,48 @@ export default function Home() {
                       sm:w-[56px]
                     "
                   >
-                    <ShieldCheck size={27} strokeWidth={2} />
+                    <ShieldCheck
+                      size={27}
+                      strokeWidth={2}
+                    />
                   </div>
 
-                  <div>
-                    <p className="text-[15px] font-bold text-[#06452D] sm:text-[17px]">
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-bold text-[#06452D] sm:text-[16px]">
                       No Hidden Charges
                     </p>
 
-                    <p className="text-[11px] leading-relaxed text-[#527263] sm:text-[13px]">
-                      Pay only ₹99 for the garden visit.
+                    <p className="text-[10px] leading-relaxed text-[#527263] sm:text-[12px]">
+                      Pay only 99 for the garden visit.
                     </p>
                   </div>
                 </div>
 
               </div>
 
-              {/* Action buttons */}
+              {/* =====================================================
+                  ACTION BUTTONS
+                 ===================================================== */}
               <div
                 className="
                   mx-auto
-                  mt-5
+                  mt-4
                   grid
+                  w-full
                   max-w-[1000px]
                   grid-cols-1
                   gap-3
-                  sm:mt-7
+                  sm:mt-5
                   sm:grid-cols-3
                 "
               >
 
-                {/* Book Visit */}
+                {/* BOOK VISIT */}
                 <Link
                   to="/visit"
                   className="
                     flex
-                    min-h-[54px]
+                    min-h-[52px]
                     items-center
                     justify-center
                     gap-2
@@ -319,33 +343,32 @@ export default function Home() {
                     px-5
                     py-3
                     text-center
-                    text-[15px]
+                    text-[14px]
                     font-bold
                     text-white
-                    shadow-md
-                    transition-all
-                    duration-200
+                    shadow-sm
+                    transition
                     hover:bg-[#066B3A]
-                    hover:shadow-lg
-                    sm:min-h-[60px]
-                    sm:text-[17px]
+                    hover:shadow-md
+                    sm:min-h-[58px]
+                    sm:text-[16px]
                   "
                 >
-                  <CalendarDays size={21} strokeWidth={2.3} />
+                  <CalendarDays size={20} />
 
                   <span>
                     Book a Garden Visit
                   </span>
 
-                  <ArrowRight size={19} strokeWidth={2.5} />
+                  <ArrowRight size={18} />
                 </Link>
 
-                {/* Explore Services */}
+                {/* SERVICES */}
                 <Link
                   to="/garden-maintenance-bhopal"
                   className="
                     flex
-                    min-h-[54px]
+                    min-h-[52px]
                     items-center
                     justify-center
                     gap-2
@@ -356,29 +379,28 @@ export default function Home() {
                     px-5
                     py-3
                     text-center
-                    text-[15px]
+                    text-[14px]
                     font-bold
                     text-[#087A43]
-                    transition-all
-                    duration-200
+                    transition
                     hover:bg-[#EAF7EF]
-                    sm:min-h-[60px]
-                    sm:text-[17px]
+                    sm:min-h-[58px]
+                    sm:text-[16px]
                   "
                 >
                   <span>
                     Explore Services
                   </span>
 
-                  <ArrowRight size={19} strokeWidth={2.5} />
+                  <ArrowRight size={18} />
                 </Link>
 
-                {/* Explore Plans */}
+                {/* PLANS */}
                 <Link
                   to="/plans"
                   className="
                     flex
-                    min-h-[54px]
+                    min-h-[52px]
                     items-center
                     justify-center
                     gap-2
@@ -389,39 +411,41 @@ export default function Home() {
                     px-5
                     py-3
                     text-center
-                    text-[15px]
+                    text-[14px]
                     font-bold
                     text-[#087A43]
-                    transition-all
-                    duration-200
+                    transition
                     hover:bg-[#EAF7EF]
-                    sm:min-h-[60px]
-                    sm:text-[17px]
+                    sm:min-h-[58px]
+                    sm:text-[16px]
                   "
                 >
                   <span>
                     Explore Plans
                   </span>
 
-                  <ArrowRight size={19} strokeWidth={2.5} />
+                  <ArrowRight size={18} />
                 </Link>
 
               </div>
 
-              {/* Bottom benefits */}
+              {/* =====================================================
+                  BENEFITS
+                 ===================================================== */}
               <div
                 className="
                   mx-auto
-                  mt-6
+                  mt-5
                   flex
-                  max-w-[850px]
-                  flex-col
+                  w-full
+                  max-w-[900px]
+                  flex-wrap
                   items-center
                   justify-center
-                  gap-3
+                  gap-y-3
                   text-center
-                  sm:mt-8
-                  sm:flex-row
+                  sm:mt-6
+                  sm:flex-nowrap
                   sm:gap-0
                 "
               >
@@ -431,16 +455,17 @@ export default function Home() {
                     flex
                     items-center
                     gap-2
-                    px-4
-                    text-[13px]
+                    px-3
+                    text-[12px]
                     font-medium
                     text-[#355B49]
-                    sm:text-[14px]
+                    sm:px-4
+                    sm:text-[13px]
                   "
                 >
                   <CalendarDays
-                    size={18}
-                    className="text-[#087A43]"
+                    size={17}
+                    className="shrink-0 text-[#087A43]"
                   />
                   Easy Scheduling
                 </div>
@@ -452,16 +477,17 @@ export default function Home() {
                     flex
                     items-center
                     gap-2
-                    px-4
-                    text-[13px]
+                    px-3
+                    text-[12px]
                     font-medium
                     text-[#355B49]
-                    sm:text-[14px]
+                    sm:px-4
+                    sm:text-[13px]
                   "
                 >
                   <ShieldCheck
-                    size={18}
-                    className="text-[#087A43]"
+                    size={17}
+                    className="shrink-0 text-[#087A43]"
                   />
                   Transparent Process
                 </div>
@@ -473,15 +499,16 @@ export default function Home() {
                     flex
                     items-center
                     gap-2
-                    px-4
-                    text-[13px]
+                    px-3
+                    text-[12px]
                     font-medium
                     text-[#355B49]
-                    sm:text-[14px]
+                    sm:px-4
+                    sm:text-[13px]
                   "
                 >
-                  <span className="text-[18px] text-[#087A43]">
-                    ♥
+                  <span className="text-[17px] text-[#087A43]">
+                    
                   </span>
                   Expert Guidance
                 </div>
@@ -493,13 +520,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHY CHOOSE MUNDER */}
+      {/* =========================================================
+          WHY CHOOSE MUNDER
+         ========================================================= */}
       <WhyChooseSection />
 
-      {/* TESTIMONIALS */}
+      {/* =========================================================
+          TESTIMONIALS
+         ========================================================= */}
       <TestimonialsSection />
 
-      {/* FAQ */}
+      {/* =========================================================
+          FAQ
+         ========================================================= */}
       <FaqSection />
 
     </main>
