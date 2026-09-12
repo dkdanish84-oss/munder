@@ -36,154 +36,153 @@ export default function HeroSection() {
 
   return (
     <section className="w-full px-3 pt-4 sm:px-4 sm:pt-6 md:pt-8">
-      <div className="mx-auto w-full max-w-[1500px]">
-
-        <div
-          className="
-            relative
-            aspect-[16/6]
-            min-h-[230px]
-            w-full
-            overflow-hidden
-            rounded-[22px]
-            bg-gray-100
-            shadow-md
-            ring-1
-            ring-[#D9EDE1]
-            sm:min-h-[300px]
-            sm:rounded-[26px]
-            md:min-h-[380px]
-            lg:rounded-[30px]
-          "
-        >
-
-          {/* SLIDES */}
-          {heroImages.map((image, index) => (
-            <img
-              key={image}
-              src={image}
-              alt={`Munder Garden ${index + 1}`}
-              className={`
-                absolute
-                inset-0
-                h-full
-                w-full
-                object-cover
-                transition-opacity
-                duration-700
-                ease-in-out
-                ${
-                  currentSlide === index
-                    ? "z-10 opacity-100"
-                    : "z-0 opacity-0"
-                }
-              `}
-            />
-          ))}
-
-          {/* PREVIOUS */}
-          <button
-            type="button"
-            onClick={previousSlide}
-            aria-label="Previous slide"
-            className="
-              absolute
-              left-3
-              top-1/2
-              z-20
-              flex
-              h-10
-              w-10
-              -translate-y-1/2
-              items-center
-              justify-center
-              rounded-full
-              bg-black/40
-              text-white
-              backdrop-blur-sm
-              transition
-              hover:bg-black/60
-              sm:left-5
-              sm:h-12
-              sm:w-12
-            "
-          >
-            <ChevronLeft
-              size={25}
-              strokeWidth={2.5}
-              className="sm:h-7 sm:w-7"
-            />
-          </button>
-
-          {/* NEXT */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next slide"
-            className="
-              absolute
-              right-3
-              top-1/2
-              z-20
-              flex
-              h-10
-              w-10
-              -translate-y-1/2
-              items-center
-              justify-center
-              rounded-full
-              bg-black/40
-              text-white
-              backdrop-blur-sm
-              transition
-              hover:bg-black/60
-              sm:right-5
-              sm:h-12
-              sm:w-12
-            "
-          >
-            <ChevronRight
-              size={25}
-              strokeWidth={2.5}
-              className="sm:h-7 sm:w-7"
-            />
-          </button>
-
-          {/* DOTS */}
+      {/* CENTERED HERO WRAPPER */}
+      <div className="flex w-full justify-center">
+        <div className="w-full max-w-[1500px]">
           <div
             className="
-              absolute
-              bottom-3
-              left-1/2
-              z-20
-              flex
-              -translate-x-1/2
-              items-center
-              gap-2
-              sm:bottom-5
+              relative
+              aspect-[16/6]
+              min-h-[230px]
+              w-full
+              overflow-hidden
+              rounded-[22px]
+              bg-gray-100
+              shadow-md
+              ring-1
+              ring-[#D9EDE1]
+              sm:min-h-[300px]
+              sm:rounded-[26px]
+              md:min-h-[380px]
+              lg:rounded-[30px]
             "
           >
-            {heroImages.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                aria-label={`Go to slide ${index + 1}`}
-                onClick={() => setCurrentSlide(index)}
+            {heroImages.map((image, index) => (
+              <img
+                key={image}
+                src={image}
+                alt={`Munder Garden ${index + 1}`}
                 className={`
-                  h-2.5
-                  rounded-full
-                  transition-all
-                  duration-300
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-cover
+                  transition-opacity
+                  duration-700
+                  ease-in-out
                   ${
                     currentSlide === index
-                      ? "w-7 bg-white"
-                      : "w-2.5 bg-white/60"
+                      ? "z-10 opacity-100"
+                      : "z-0 opacity-0"
                   }
                 `}
               />
             ))}
-          </div>
 
+            {/* PREVIOUS */}
+            <button
+              type="button"
+              onClick={previousSlide}
+              aria-label="Previous slide"
+              className="
+                absolute
+                left-3
+                top-1/2
+                z-20
+                flex
+                h-10
+                w-10
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                bg-black/40
+                text-white
+                backdrop-blur-sm
+                transition
+                hover:bg-black/60
+                sm:left-5
+                sm:h-12
+                sm:w-12
+              "
+            >
+              <ChevronLeft
+                size={25}
+                strokeWidth={2.5}
+                className="sm:h-7 sm:w-7"
+              />
+            </button>
+
+            {/* NEXT */}
+            <button
+              type="button"
+              onClick={nextSlide}
+              aria-label="Next slide"
+              className="
+                absolute
+                right-3
+                top-1/2
+                z-20
+                flex
+                h-10
+                w-10
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                bg-black/40
+                text-white
+                backdrop-blur-sm
+                transition
+                hover:bg-black/60
+                sm:right-5
+                sm:h-12
+                sm:w-12
+              "
+            >
+              <ChevronRight
+                size={25}
+                strokeWidth={2.5}
+                className="sm:h-7 sm:w-7"
+              />
+            </button>
+
+            {/* SLIDE DOTS */}
+            <div
+              className="
+                absolute
+                bottom-3
+                left-1/2
+                z-20
+                flex
+                -translate-x-1/2
+                items-center
+                gap-2
+                sm:bottom-5
+              "
+            >
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  aria-label={`Go to slide ${index + 1}`}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`
+                    h-2.5
+                    rounded-full
+                    transition-all
+                    duration-300
+                    ${
+                      currentSlide === index
+                        ? "w-7 bg-white"
+                        : "w-2.5 bg-white/60"
+                    }
+                  `}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
