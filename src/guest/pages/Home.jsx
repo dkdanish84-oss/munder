@@ -29,9 +29,10 @@ export default function Home() {
 
       <section className="w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8">
 
-        {/* CENTER OUTER CARD */}
+        {/* OUTER CENTER */}
         <div className="flex w-full justify-center">
 
+          {/* SAME WIDTH AS HERO */}
           <div className="w-full max-w-[1500px]">
 
             {/* MAIN VISIT CARD */}
@@ -96,17 +97,22 @@ export default function Home() {
 
 
               {/* =================================================
-                  CENTERED CONTENT
+                  FULL WIDTH CONTENT
+                  NO MAX-WIDTH RESTRICTION
                  ================================================= */}
 
               <div
+                style={{
+                  width: "100%",
+                  maxWidth: "none",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
                 className="
                   relative
                   z-10
-                  mx-auto
                   flex
                   w-full
-                  max-w-[1120px]
                   flex-col
                   items-center
                 "
@@ -153,6 +159,7 @@ export default function Home() {
                     className="
                       mx-auto
                       mt-2
+                      w-full
                       max-w-[820px]
                       text-center
                       text-[13px]
@@ -193,6 +200,7 @@ export default function Home() {
                     className="
                       flex
                       min-h-[82px]
+                      w-full
                       min-w-0
                       items-center
                       gap-3
@@ -228,7 +236,7 @@ export default function Home() {
                       />
                     </div>
 
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0 flex-1 text-left">
 
                       <p
                         className="
@@ -274,6 +282,7 @@ export default function Home() {
                     className="
                       flex
                       min-h-[82px]
+                      w-full
                       min-w-0
                       items-center
                       gap-3
@@ -309,7 +318,7 @@ export default function Home() {
                       />
                     </div>
 
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0 flex-1 text-left">
 
                       <p
                         className="
@@ -345,6 +354,7 @@ export default function Home() {
                     className="
                       flex
                       min-h-[82px]
+                      w-full
                       min-w-0
                       items-center
                       gap-3
@@ -380,7 +390,7 @@ export default function Home() {
                       />
                     </div>
 
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0 flex-1 text-left">
 
                       <p
                         className="
@@ -412,7 +422,7 @@ export default function Home() {
 
 
                 {/* =================================================
-                    THREE ACTION BUTTONS
+                    ACTION BUTTONS
                    ================================================= */}
 
                 <div
@@ -474,7 +484,7 @@ export default function Home() {
                   </Link>
 
 
-                  {/* EXPLORE SERVICES */}
+                  {/* SERVICES */}
 
                   <Link
                     to="/garden-maintenance-bhopal"
@@ -516,7 +526,7 @@ export default function Home() {
                   </Link>
 
 
-                  {/* EXPLORE PLANS */}
+                  {/* PLANS */}
 
                   <Link
                     to="/plans"
@@ -640,7 +650,7 @@ export default function Home() {
                     "
                   >
                     <span className="text-[17px] text-[#006b38]">
-                      ♥
+                      
                     </span>
 
                     Expert Guidance
