@@ -93,6 +93,34 @@ export default function Services() {
       details:
         "A properly designed drip irrigation system can make garden watering easier and more efficient. We plan the irrigation layout according to plant type, garden area and water requirements, followed by installation and testing to ensure proper water distribution.",    
     }, 
+
+    {
+      title: "Swimming Pool",
+
+      shortTitle: "Swimming Pool",
+
+      icon: <WaterDropRoundedIcon />,
+
+      color: "#E0F7FA",
+
+      images: [
+        "/images/services/pool01.png",
+        "/images/services/pool02.png",
+        "/images/services/pool03.jpg",
+        "/images/services/pool04.jpeg",
+        "/images/services/pool05.jpeg",
+        "/images/services/pool06.png",
+      ],
+
+      heroDescription:
+        "Swimming pool cleaning, maintenance, water treatment and complete pool care services.",
+
+      description:
+        "Professional swimming pool maintenance services including pool cleaning, water treatment, filtration system checking, surface cleaning and regular maintenance.",
+
+      details:
+        "Munder provides swimming pool maintenance and cleaning solutions for homes, resorts, hotels and other properties. Regular pool care helps maintain clean water, proper filtration and a hygienic swimming environment.",
+    },
   ];
 
   const currentService = services[currentServiceIndex];
@@ -942,6 +970,8 @@ export default function Services() {
     </Box> 
   );
 }
+
+
 
 
 
