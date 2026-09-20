@@ -29,12 +29,12 @@ export default function Home() {
 
       <section className="w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8">
 
-        {/* OUTER CENTER */}
+        {/* CENTER OUTER CARD */}
         <div className="flex w-full justify-center">
 
-          {/* SAME WIDTH SYSTEM AS HERO */}
           <div className="w-full max-w-[1500px]">
 
+            {/* MAIN VISIT CARD */}
             <div
               className="
                 relative
@@ -58,7 +58,7 @@ export default function Home() {
               "
             >
 
-              {/* DECORATIVE CIRCLE - TOP RIGHT */}
+              {/* TOP RIGHT DECORATION */}
               <div
                 className="
                   pointer-events-none
@@ -77,7 +77,7 @@ export default function Home() {
                 "
               />
 
-              {/* DECORATIVE CIRCLE - BOTTOM LEFT */}
+              {/* BOTTOM LEFT DECORATION */}
               <div
                 className="
                   pointer-events-none
@@ -96,7 +96,7 @@ export default function Home() {
 
 
               {/* =================================================
-                  IMPORTANT CENTER CONTAINER
+                  CENTERED CONTENT
                  ================================================= */}
 
               <div
@@ -124,7 +124,7 @@ export default function Home() {
                       font-bold
                       uppercase
                       tracking-[0.12em]
-                      text-[#087A43]
+                      text-[#006b38]
                       sm:text-[14px]
                       md:text-[15px]
                     "
@@ -216,7 +216,7 @@ export default function Home() {
                         items-center
                         justify-center
                         rounded-full
-                        bg-[#087A43]
+                        bg-[#006b38]
                         text-white
                         sm:h-[56px]
                         sm:w-[56px]
@@ -297,7 +297,7 @@ export default function Home() {
                         items-center
                         justify-center
                         rounded-full
-                        bg-[#087A43]
+                        bg-[#006b38]
                         text-white
                         sm:h-[56px]
                         sm:w-[56px]
@@ -368,7 +368,7 @@ export default function Home() {
                         items-center
                         justify-center
                         rounded-full
-                        bg-[#087A43]
+                        bg-[#006b38]
                         text-white
                         sm:h-[56px]
                         sm:w-[56px]
@@ -412,7 +412,7 @@ export default function Home() {
 
 
                 {/* =================================================
-                    BUTTONS
+                    THREE ACTION BUTTONS
                    ================================================= */}
 
                 <div
@@ -441,7 +441,7 @@ export default function Home() {
                       gap-2
                       overflow-hidden
                       rounded-full
-                      bg-[#087A43]
+                      bg-[#006b38]
                       px-3
                       text-center
                       text-[13px]
@@ -449,7 +449,7 @@ export default function Home() {
                       text-white
                       shadow-sm
                       transition
-                      hover:bg-[#066B3A]
+                      hover:bg-[#00582e]
                       hover:shadow-md
                       sm:px-4
                       sm:text-[15px]
@@ -462,7 +462,7 @@ export default function Home() {
                       className="shrink-0"
                     />
 
-                    <span className="min-w-0 whitespace-nowrap">
+                    <span className="whitespace-nowrap">
                       Book a Garden Visit
                     </span>
 
@@ -474,7 +474,7 @@ export default function Home() {
                   </Link>
 
 
-                  {/* SERVICES */}
+                  {/* EXPLORE SERVICES */}
 
                   <Link
                     to="/garden-maintenance-bhopal"
@@ -489,22 +489,22 @@ export default function Home() {
                       overflow-hidden
                       rounded-full
                       border-2
-                      border-[#087A43]
+                      border-[#006b38]
                       bg-white
                       px-3
                       text-center
                       text-[13px]
                       font-bold
-                      text-[#087A43]
+                      text-[#006b38]
                       transition
-                      hover:bg-[#EAF7EF]
+                      hover:bg-[#F0F9F4]
                       sm:px-4
                       sm:text-[15px]
                       md:text-[16px]
                     "
                   >
 
-                    <span className="min-w-0 whitespace-nowrap">
+                    <span className="whitespace-nowrap">
                       Explore Services
                     </span>
 
@@ -516,7 +516,7 @@ export default function Home() {
                   </Link>
 
 
-                  {/* PLANS */}
+                  {/* EXPLORE PLANS */}
 
                   <Link
                     to="/plans"
@@ -531,22 +531,22 @@ export default function Home() {
                       overflow-hidden
                       rounded-full
                       border-2
-                      border-[#087A43]
+                      border-[#006b38]
                       bg-white
                       px-3
                       text-center
                       text-[13px]
                       font-bold
-                      text-[#087A43]
+                      text-[#006b38]
                       transition
-                      hover:bg-[#EAF7EF]
+                      hover:bg-[#F0F9F4]
                       sm:px-4
                       sm:text-[15px]
                       md:text-[16px]
                     "
                   >
 
-                    <span className="min-w-0 whitespace-nowrap">
+                    <span className="whitespace-nowrap">
                       Explore Plans
                     </span>
 
@@ -595,8 +595,9 @@ export default function Home() {
                   >
                     <CalendarDays
                       size={17}
-                      className="shrink-0 text-[#087A43]"
+                      className="shrink-0 text-[#006b38]"
                     />
+
                     Easy Scheduling
                   </div>
 
@@ -617,8 +618,9 @@ export default function Home() {
                   >
                     <ShieldCheck
                       size={17}
-                      className="shrink-0 text-[#087A43]"
+                      className="shrink-0 text-[#006b38]"
                     />
+
                     Transparent Process
                   </div>
 
@@ -637,9 +639,10 @@ export default function Home() {
                       sm:text-[13px]
                     "
                   >
-                    <span className="text-[17px] text-[#087A43]">
-                      
+                    <span className="text-[17px] text-[#006b38]">
+                      ♥
                     </span>
+
                     Expert Guidance
                   </div>
 
