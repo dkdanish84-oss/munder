@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 
 import GrassRoundedIcon from "@mui/icons-material/GrassRounded";
@@ -448,254 +448,6 @@ export default function Services() {
 
         </Box>
 
-
-        {/* ===================================================
-            FIXED SERVICE CARDS 
-
-            IMPORTANT: 
-            NO transform
-            NO translateX 
-            NO scale
-            NO sliding animation
-
-            Cards remain in exactly the same position.
-        =================================================== */}
-
-        <Box
-          sx={{
-            position: "absolute",
-
-            right: { 
-              xs: 4,
-              sm: 10,
-              md: 20,
-            },
-
-            top: {
-              xs: 40,
-              sm: 55, 
-              md: 90,
-            },
-
-            width: {
-              xs: 105,
-              sm: 140,
-              md: 205,
-            },  
-
-            zIndex: 10,
- 
-            display: "flex",
-  
-            flexDirection: "column",
-
-            gap: {
-              xs: 0.55,
-              sm: 0.8,
-              md: 1, 
-            },
-          }}  
-        >
-
-          {services.map((service, index) => {
-            const selected =
-              index === currentServiceIndex;
-
-            return (
-              <Box
-                key={service.title} 
-                onClick={() =>
-                  selectService(index)
-                }
-                sx={{
-                  position: "relative",
- 
-                  width: "100%",
-
-                  minHeight: {
-                    xs: 48,
-                    sm: 58,
-                    md: 78,
-                  },
-
-                  flexShrink: 0,
-
-                  borderRadius: "11px", 
-
-                  background: 
-                    "rgba(255,255,255,.96)",  
-
-                  border: selected
-                    ? "2px solid #08783F"
-                    : "1px solid rgba(255,255,255,.65)",
-
-                  boxShadow: selected
-                    ? "0 5px 16px rgba(0,90,45,.25)"
-                    : "0 5px 14px rgba(0,0,0,.20)",
-
-                  display: "flex",
-
-                  alignItems: "center", 
-
-                  gap: {
-                    xs: 0.6, 
-                    sm: 0.8,
-                    md: 1,
-                  },
-
-                  px: {
-                    xs: 0.6,  
-                    sm: 0.8, 
-                    md: 1,
-                  },
- 
-                  cursor: "pointer",
-
-                  /*
-                    VERY IMPORTANT:
-                    No transform here. 
-                    Cards NEVER move.
-                  */ 
-
-                  transition: 
-                    "border-color .2s ease, box-shadow .2s ease",
-
-                  "&:hover": {
-                  }, 
- 
-                  "&:active": {
-                  }, 
-                }}
-              >
-
-                {/* CARD ICON */}
-
-                <Box
-                  sx={{
-                    width: {
-                      xs: 28, 
-                      sm: 34, 
-                      md: 44,
-                    },
-
-                    height: {
-                      xs: 28,
-                      sm: 34, 
-                      md: 44, 
-                    },
-
-                    minWidth: {
-                      xs: 28,
-                      sm: 34,
-                      md: 44,
-                    },
-
-                    borderRadius: "50%",
-
-                    background:
-                      service.color, 
-
-                    display: "flex",
-
-                    alignItems:
-                      "center", 
-
-                    justifyContent:
-                      "center",
-
-                    color: "#08783F",
-                  }}
-                > 
-                  {React.cloneElement(
-                    service.icon, 
-                    {
-                      sx: {
-                        fontSize: {
-                          xs: 16,
-                          sm: 19,
-                          md: 24,
-                        },
-                      }, 
-                    }
-                  )} 
-                </Box> 
-
-
-                {/* CARD TEXT */}
-
-                <Box
-                  sx={{ 
-                    minWidth: 0,
-                    flex: 1,
-                  }} 
-                >
- 
-                  <Typography
-                    sx={{ 
-                      color:
-                        "#0E4D28",
-
-                      fontSize: { 
-                        xs: "0.58rem",
-                        sm: "0.67rem",
-                        md: "0.85rem",
-                      },
-
-                      fontWeight: 800,
- 
-                      lineHeight: 1.1,
- 
-                      whiteSpace:
-                        "pre-line", 
-                    }}
-                  >
-                    {service.shortTitle}
-                  </Typography> 
-
- 
-                  <Typography
-                    sx={{
-                      mt: 0.25,
-
-                      color:
-                        "#858585",
-
-                      fontSize: {
-                        xs: "0.39rem", 
-                        sm: "0.46rem",
-                        md: "0.58rem",
-                      }, 
-
-                      lineHeight: 1.2,
-
-                      display:
-                        "-webkit-box",
-
-                      WebkitLineClamp: 2, 
-
-                      WebkitBoxOrient:
-                        "vertical",
-
-                      overflow: "hidden", 
-                    }}
-                  >
-                    {service.heroDescription} 
-                  </Typography> 
-
-                </Box>
- 
-              </Box>
-            );
-          })}
-
-        </Box> 
-
-
-        {/* ===================================================
-            SLIDER DOTS
-            FIXED POSITION
-        =================================================== */}
-
         <Box
           sx={{
             position: "absolute",
@@ -767,6 +519,244 @@ export default function Services() {
       </Box> 
 
  
+      {/* =====================================================
+          SERVICE CARDS
+          DIRECTLY BELOW HERO IMAGE
+      ===================================================== */}
+
+      <Box
+        sx={{
+          width: "100%",
+          background: "#F7FAF7",
+          px: {
+            xs: 1.5,
+            sm: 2,
+            md: 4,
+          },
+          pt: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          pb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 1200,
+            mx: "auto",
+
+            display: "grid",
+
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(3, minmax(0, 1fr))",
+            },
+
+            gap: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+          }}
+        >
+          {services.map((service, index) => {
+            const selected = index === currentServiceIndex;
+
+            return (
+              <Box
+                key={service.title}
+                onClick={() => selectService(index)}
+                sx={{
+                  width: "100%",
+                  minWidth: 0,
+                  boxSizing: "border-box",
+
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+
+                  px: {
+                    xs: 1.5,
+                    sm: 2,
+                    md: 2.5,
+                  },
+
+                  py: {
+                    xs: 2,
+                    sm: 2.5,
+                    md: 3,
+                  },
+
+                  minHeight: {
+                    xs: 175,
+                    sm: 190,
+                    md: 205,
+                  },
+
+                  borderRadius: {
+                    xs: 2.5,
+                    md: 3,
+                  },
+
+                  background: "#FFFFFF",
+
+                  border: selected
+                    ? "2px solid #006b38"
+                    : "1px solid #DDE8E0",
+
+                  boxShadow: selected
+                    ? "0 6px 20px rgba(0,107,56,.16)"
+                    : "0 4px 14px rgba(0,0,0,.07)",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "transform .2s ease, border-color .2s ease, box-shadow .2s ease",
+
+                  "&:hover": {
+                    transform: "translateY(-3px)",
+                    borderColor: "#006b38",
+                    boxShadow:
+                      "0 8px 22px rgba(0,107,56,.15)",
+                  },
+                }}
+              >
+
+                {/* ICON */}
+
+                <Box
+                  sx={{
+                    width: {
+                      xs: 54,
+                      sm: 62,
+                      md: 70,
+                    },
+
+                    height: {
+                      xs: 54,
+                      sm: 62,
+                      md: 70,
+                    },
+
+                    borderRadius: "50%",
+
+                    background: service.color,
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                    color: "#006b38",
+
+                    mb: {
+                      xs: 1.2,
+                      sm: 1.5,
+                      md: 1.7,
+                    },
+                  }}
+                >
+                  {React.cloneElement(
+                    service.icon,
+                    {
+                      sx: {
+                        fontSize: {
+                          xs: 26,
+                          sm: 30,
+                          md: 34,
+                        },
+                      },
+                    }
+                  )}
+                </Box>
+
+                {/* SERVICE TITLE */}
+
+                <Typography
+                  sx={{
+                    color: "#0E4D28",
+
+                    fontSize: {
+                      xs: "0.9rem",
+                      sm: "1rem",
+                      md: "1.1rem",
+                    },
+
+                    fontWeight: 800,
+                    lineHeight: 1.2,
+
+                    minHeight: {
+                      xs: 34,
+                      sm: 38,
+                      md: 42,
+                    },
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {service.shortTitle}
+                </Typography>
+
+                {/* DESCRIPTION */}
+
+                <Typography
+                  sx={{
+                    mt: 0.8,
+
+                    color: "#6B7280",
+
+                    fontSize: {
+                      xs: "0.65rem",
+                      sm: "0.7rem",
+                      md: "0.75rem",
+                    },
+
+                    lineHeight: 1.4,
+
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+
+                    maxWidth: 300,
+                  }}
+                >
+                  {service.heroDescription}
+                </Typography>
+
+                {/* VIEW SERVICE */}
+
+                <Typography
+                  sx={{
+                    mt: 1.2,
+
+                    color: "#006b38",
+
+                    fontSize: {
+                      xs: "0.65rem",
+                      sm: "0.7rem",
+                      md: "0.75rem",
+                    },
+
+                    fontWeight: 800,
+                  }}
+                >
+                  View Service →
+                </Typography>
+
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
       {/* =====================================================
           SELECTED SERVICE DETAILS
       ===================================================== */} 
@@ -951,3 +941,9 @@ export default function Services() {
     </Box> 
   );
 }
+
+
+
+
+
+
