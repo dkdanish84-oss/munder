@@ -3,7 +3,8 @@ import { Box, Button, Typography } from "@mui/material";
 
 import GrassRoundedIcon from "@mui/icons-material/GrassRounded";
 import YardRoundedIcon from "@mui/icons-material/YardRounded";
-import WaterDropRoundedIcon from "@mui/icons-material/WaterDropRounded";       
+import WaterDropRoundedIcon from "@mui/icons-material/WaterDropRounded";
+import PoolRoundedIcon from "@mui/icons-material/PoolRounded";       
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded"; 
 
 import { useNavigate } from "react-router-dom";
@@ -555,7 +556,7 @@ export default function Services() {
 
             gridTemplateColumns: {
               xs: "1fr",
-              sm: "repeat(3, minmax(0, 1fr))",
+              sm: "repeat(4, minmax(0, 1fr))",
             },
 
             gap: {
@@ -594,11 +595,11 @@ export default function Services() {
                     md: 3,
                   },
 
-                  minHeight: {
-                    xs: 175,
-                    sm: 190,
-                    md: 205,
-                  },
+                  minheight: {
+                      xs: 42,
+                      sm: 44,
+                      md: 46,
+                    },
 
                   borderRadius: {
                     xs: 2.5,
@@ -634,15 +635,15 @@ export default function Services() {
                 <Box
                   sx={{
                     width: {
-                      xs: 54,
-                      sm: 62,
-                      md: 70,
+                      xs: 42,
+                      sm: 44,
+                      md: 46,
                     },
 
                     height: {
-                      xs: 54,
-                      sm: 62,
-                      md: 70,
+                      xs: 42,
+                      sm: 44,
+                      md: 46,
                     },
 
                     borderRadius: "50%",
@@ -683,18 +684,18 @@ export default function Services() {
                     color: "#0E4D28",
 
                     fontSize: {
-                      xs: "0.9rem",
-                      sm: "1rem",
-                      md: "1.1rem",
+                      xs: "0.72rem",
+                      sm: "0.76rem",
+                      md: "0.82rem",
                     },
 
                     fontWeight: 800,
                     lineHeight: 1.2,
 
-                    minHeight: {
-                      xs: 34,
-                      sm: 38,
-                      md: 42,
+                    minheight: {
+                      xs: 42,
+                      sm: 44,
+                      md: 46,
                     },
 
                     display: "flex",
@@ -709,7 +710,7 @@ export default function Services() {
 
                 <Typography
                   sx={{
-                    mt: 0.8,
+                    mt: 0.45,
 
                     color: "#6B7280",
 
@@ -736,7 +737,7 @@ export default function Services() {
 
                 <Typography
                   sx={{
-                    mt: 1.2,
+                    mt: 0.7,
 
                     color: "#006b38",
 
@@ -941,6 +942,9 @@ export default function Services() {
     </Box> 
   );
 }
+
+
+
 
 
 
