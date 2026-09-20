@@ -106,9 +106,9 @@ export default function Services() {
       images: [
         "/images/services/pool01.png",
         "/images/services/pool02.png",
-        "/images/services/pool03.jpg",
-        "/images/services/pool04.jpeg",
-        "/images/services/pool05.jpeg",
+        "/images/services/pool03.png",
+        "/images/services/pool04.png",
+        "/images/services/pool05.png",
         "/images/services/pool06.png",
       ],
 
@@ -970,6 +970,7 @@ export default function Services() {
     </Box> 
   );
 }
+
 
 
 
