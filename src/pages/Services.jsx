@@ -499,7 +499,6 @@ export default function Services() {
         >
           {services.map((service, index) => {
             const selected = index === currentServiceIndex;
-            const expanded = expandedServiceIndex === index;
 
             return (
               <React.Fragment key={service.title}>
@@ -607,6 +606,7 @@ export default function Services() {
                     })}
                   </Box>
 
+
                   {/* TITLE */}
 
                   <Typography
@@ -682,160 +682,140 @@ export default function Services() {
                       fontWeight: 800,
                     }}
                   >
-                    {expanded
+                    {expandedServiceIndex === index
                       ? "Close Service "
                       : "View Service "}
                   </Typography>
                 </Box>
 
-                {/* EXPANDABLE DETAILS */}
 
-                {expanded && (
-                  <Box
-                    sx={{
-                      gridColumn: "1 / -1",
-                      width: "100%",
-                      boxSizing: "border-box",
-
-                      background: "#FFFFFF",
-
-                      borderRadius: {
-                        xs: 3,
-                        md: 4,
-                      },
-
-                      p: {
-                        xs: 2,
-                        sm: 2.5,
-                        md: 3,
-                      },
-
-                      border: "1px solid #DDE8E0",
-                      borderTop: "3px solid #006b38",
-
-                      boxShadow:
-                        "0 4px 18px rgba(0,0,0,.07)",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "#08783F",
-
-                        fontSize: {
-                          xs: "0.62rem",
-                          sm: "0.72rem",
-                          md: "0.85rem",
-                        },
-
-                        fontWeight: 700,
-                        mb: 0.4,
-                      }}
-                    >
-                      Professional Munder Service
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        color: "#0E4D28",
-
-                        fontSize: {
-                          xs: "1.25rem",
-                          sm: "1.45rem",
-                          md: "1.9rem",
-                        },
-
-                        fontWeight: 800,
-                        lineHeight: 1.15,
-                      }}
-                    >
-                      {service.title}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        mt: 1,
-
-                        color: "#4B5563",
-
-                        fontSize: {
-                          xs: "0.76rem",
-                          sm: "0.88rem",
-                          md: "1rem",
-                        },
-
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      {service.description}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        mt: 1.1,
-
-                        color: "#6B7280",
-
-                        fontSize: {
-                          xs: "0.74rem",
-                          sm: "0.84rem",
-                          md: "0.95rem",
-                        },
-
-                        lineHeight: 1.65,
-                      }}
-                    >
-                      {service.details}
-                    </Typography>
-
-                    <Button
-                      fullWidth
-                      onClick={(event) => {
-                        event.stopPropagation();
-
-                        navigate("/visit", {
-                          state: {
-                            service: service.title,
-                          },
-                        });
-                      }}
-                      endIcon={<ArrowForwardRoundedIcon />}
-                      sx={{
-                        mt: 1.8,
-
-                        height: {
-                          xs: 40,
-                          md: 48,
-                        },
-
-                        borderRadius: 3,
-
-                        background: "#006b38",
-
-                        color: "#FFFFFF",
-
-                        fontSize: {
-                          xs: "0.75rem",
-                          md: "0.9rem",
-                        },
-
-                        fontWeight: 800,
-
-                        textTransform: "none",
-
-                        "&:hover": {
-                          background: "#08783F",
-                        },
-                      }}
-                    >
-                      Book Free Visit
-                    </Button>
-                  </Box>
-                )}
               </React.Fragment>
             );
           })}
         </Box>
+        {/* SELECTED SERVICE DETAILS */}
+        {expandedServiceIndex !== null && (
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 1200,
+              mx: "auto",
+              mt: { xs: 1.5, sm: 2, md: 2.5 },
+              boxSizing: "border-box",
+
+              background: "#FFFFFF",
+
+              borderRadius: {
+                xs: 3,
+                md: 4,
+              },
+
+              p: {
+                xs: 2,
+                sm: 2.5,
+                md: 3,
+              },
+
+              border: "1px solid #DDE8E0",
+              borderTop: "3px solid #006b38",
+
+              boxShadow: "0 4px 18px rgba(0,0,0,.07)",
+            }}
+          >
+            <Typography
+              sx={{
+                color: "#08783F",
+                fontSize: {
+                  xs: "0.62rem",
+                  sm: "0.72rem",
+                  md: "0.85rem",
+                },
+                fontWeight: 700,
+                mb: 0.4,
+              }}
+            >
+              Professional Munder Service
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#0E4D28",
+                fontSize: {
+                  xs: "1.15rem",
+                  sm: "1.35rem",
+                  md: "1.5rem",
+                },
+                fontWeight: 800,
+                lineHeight: 1.25,
+                mb: 1.2,
+              }}
+            >
+              {services[expandedServiceIndex].title}
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#374151",
+                fontSize: {
+                  xs: "0.88rem",
+                  sm: "0.95rem",
+                  md: "1rem",
+                },
+                lineHeight: 1.65,
+                mb: 1.2,
+              }}
+            >
+              {services[expandedServiceIndex].description}
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#4B5563",
+                fontSize: {
+                  xs: "0.84rem",
+                  sm: "0.92rem",
+                  md: "0.98rem",
+                },
+                lineHeight: 1.7,
+              }}
+            >
+              {services[expandedServiceIndex].details}
+            </Typography>
+
+            <Button
+              fullWidth
+              onClick={(event) => {
+                event.stopPropagation();
+
+                navigate("/visit", {
+                  state: {
+                    service:
+                      services[expandedServiceIndex].title,
+                  },
+                });
+              }}
+              endIcon={<ArrowForwardRoundedIcon />}
+              sx={{
+                mt: 2.2,
+                minHeight: 48,
+                borderRadius: 2.5,
+                background: "#006b38",
+                color: "#FFFFFF",
+                fontWeight: 800,
+                textTransform: "none",
+
+                "&:hover": {
+                  background: "#00552D",
+                },
+              }}
+            >
+              Book Free Visit
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
 }
+
+
