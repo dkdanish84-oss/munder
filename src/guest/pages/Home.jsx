@@ -1,694 +1,181 @@
-﻿import HeroSection from "../../components/guest/HeroSection";
+import HeroSection from "../../components/guest/HeroSection";
 import WhyChooseSection from "../../components/guest/WhyChooseSection";
+import ProjectsSection from "../../components/guest/ProjectsSection";
 import TestimonialsSection from "../../components/guest/TestimonialsSection";
 import FaqSection from "../../components/guest/FaqSection";
 import { Link } from "react-router-dom";
-
 import {
-  ArrowRight,
-  CalendarDays,
-  CreditCard,
-  ShieldCheck,
-  IndianRupee,
+  ArrowRight, CalendarDays, CreditCard, ShieldCheck, IndianRupee,
+  Sparkles, CheckCircle2, Grid2X2, FileText,
 } from "lucide-react";
 
 export default function Home() {
+  const serviceItems = [
+    "Garden Maintenance",
+    "Landscaping & Design",
+    "Plantation & Irrigation",
+    "Seasonal Care",
+  ];
+
+  const planItems = [
+    "Affordable Plans",
+    "Regular Maintenance",
+    "Customizable as per your Space",
+    "Long-term Garden Health",
+  ];
+
   return (
     <main className="w-full overflow-x-hidden bg-white">
-
-      {/* =====================================================
-          HERO
-         ===================================================== */}
-
       <HeroSection />
 
+      <section className="w-full bg-white px-3 py-6 sm:px-5 sm:py-8 md:py-12">
+        <div className="mx-auto w-full max-w-[1500px]">
 
-      {/* =====================================================
-          BOOK A GARDEN VISIT
-         ===================================================== */}
+          {/* BOOK A GARDEN VISIT - MAIN HIGHLIGHT */}
+          <div className="relative overflow-hidden rounded-[30px] border-2 border-[#35C978] bg-gradient-to-br from-[#F3FCF6] via-[#E9F8EE] to-[#DFF4E6] px-4 py-7 shadow-[0_12px_35px_rgba(0,107,56,0.16)] sm:px-7 sm:py-9 md:px-10 md:py-11 lg:px-14">
+            <div className="pointer-events-none absolute -left-24 top-8 h-52 w-52 rounded-full bg-[#CDEFD8] opacity-70 blur-2xl" />
+            <div className="pointer-events-none absolute -right-24 bottom-0 h-64 w-64 rounded-full bg-[#C9EED6] opacity-80 blur-2xl" />
 
-      <section className="w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8">
-
-        {/* OUTER CENTER */}
-        <div className="flex w-full justify-center">
-
-          {/* SAME WIDTH AS HERO */}
-          <div className="w-full max-w-[1500px]">
-
-            {/* MAIN VISIT CARD */}
-            <div
-              className="
-                relative
-                w-full
-                overflow-hidden
-                rounded-[22px]
-                bg-[#F0F9F4]
-                px-4
-                py-6
-                shadow-md
-                ring-1
-                ring-[#D9EDE1]
-                sm:rounded-[26px]
-                sm:px-8
-                sm:py-9
-                md:px-12
-                md:py-10
-                lg:rounded-[30px]
-                lg:px-16
-                lg:py-11
-              "
-            >
-
-              {/* TOP RIGHT DECORATION */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute
-                  right-[-60px]
-                  top-[-60px]
-                  h-[180px]
-                  w-[180px]
-                  rounded-full
-                  bg-[#DDF2E6]
-                  opacity-70
-                  sm:h-[240px]
-                  sm:w-[240px]
-                  lg:h-[280px]
-                  lg:w-[280px]
-                "
-              />
-
-              {/* BOTTOM LEFT DECORATION */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute
-                  bottom-[-80px]
-                  left-[-60px]
-                  h-[190px]
-                  w-[190px]
-                  rounded-full
-                  bg-[#E3F4E9]
-                  opacity-70
-                  sm:h-[250px]
-                  sm:w-[250px]
-                "
-              />
-
-
-              {/* =================================================
-                  FULL WIDTH CONTENT
-                  NO MAX-WIDTH RESTRICTION
-                 ================================================= */}
-
-              <div
-                style={{
-                  width: "100%",
-                  maxWidth: "none",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-                className="
-                  relative
-                  z-10
-                  flex
-                  w-full
-                  flex-col
-                  items-center
-                "
-              >
-
-                {/* =================================================
-                    HEADING
-                   ================================================= */}
-
-                <div className="w-full text-center">
-
-                  <p
-                    className="
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-[0.12em]
-                      text-[#006b38]
-                      sm:text-[14px]
-                      md:text-[15px]
-                    "
-                  >
-                    GET EXPERT ADVICE FOR YOUR GARDEN
-                  </p>
-
-                  <h2
-                    className="
-                      mt-1
-                      text-[28px]
-                      font-black
-                      leading-tight
-                      tracking-tight
-                      text-[#06452D]
-                      sm:mt-2
-                      sm:text-[40px]
-                      md:text-[48px]
-                      lg:text-[54px]
-                    "
-                  >
-                    Book a Garden Visit
-                  </h2>
-
-                  <p
-                    className="
-                      mx-auto
-                      mt-2
-                      w-full
-                      max-w-[820px]
-                      text-center
-                      text-[13px]
-                      leading-relaxed
-                      text-[#355B49]
-                      sm:mt-3
-                      sm:text-[17px]
-                      md:text-[19px]
-                    "
-                  >
-                    Our gardening experts will visit your space,
-                    understand your needs and suggest the best solutions.
-                  </p>
-
+            <div className="relative z-10">
+              <div className="mx-auto max-w-5xl text-center">
+                <div className="inline-flex items-center gap-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#08733F] sm:text-xs">
+                  <span className="h-px w-10 bg-[#63B989] sm:w-16" />
+                  Get Expert Advice For Your Garden
+                  <span className="h-px w-10 bg-[#63B989] sm:w-16" />
                 </div>
-
-
-                {/* =================================================
-                    INFORMATION CARDS
-                   ================================================= */}
-
-                <div
-                  className="
-                    mt-5
-                    grid
-                    w-full
-                    grid-cols-1
-                    gap-3
-                    sm:mt-7
-                    sm:grid-cols-3
-                    sm:gap-4
-                  "
-                >
-
-                  {/* VISIT FEE */}
-
-                  <div
-                    className="
-                      flex
-                      min-h-[82px]
-                      w-full
-                      min-w-0
-                      items-center
-                      gap-3
-                      rounded-[16px]
-                      bg-white
-                      px-4
-                      py-4
-                      ring-1
-                      ring-[#D8EDE0]
-                      sm:min-h-[92px]
-                      sm:px-5
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        h-[48px]
-                        w-[48px]
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-[#006b38]
-                        text-white
-                        sm:h-[56px]
-                        sm:w-[56px]
-                      "
-                    >
-                      <IndianRupee
-                        size={25}
-                        strokeWidth={2.5}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1 text-left">
-
-                      <p
-                        className="
-                          text-[12px]
-                          font-semibold
-                          text-[#527263]
-                          sm:text-[14px]
-                        "
-                      >
-                        Visit Fee
-                      </p>
-
-                      <p
-                        className="
-                          text-[23px]
-                          font-black
-                          leading-tight
-                          text-[#06452D]
-                          sm:text-[27px]
-                        "
-                      >
-                        99
-                      </p>
-
-                      <p
-                        className="
-                          text-[10px]
-                          text-[#6B8176]
-                          sm:text-[12px]
-                        "
-                      >
-                        One-time fee
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* FULLY ADJUSTABLE */}
-
-                  <div
-                    className="
-                      flex
-                      min-h-[82px]
-                      w-full
-                      min-w-0
-                      items-center
-                      gap-3
-                      rounded-[16px]
-                      bg-white
-                      px-4
-                      py-4
-                      ring-1
-                      ring-[#D8EDE0]
-                      sm:min-h-[92px]
-                      sm:px-5
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        h-[48px]
-                        w-[48px]
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-[#006b38]
-                        text-white
-                        sm:h-[56px]
-                        sm:w-[56px]
-                      "
-                    >
-                      <CreditCard
-                        size={25}
-                        strokeWidth={2}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1 text-left">
-
-                      <p
-                        className="
-                          text-[14px]
-                          font-bold
-                          text-[#06452D]
-                          sm:text-[16px]
-                        "
-                      >
-                        99 Fully Adjustable
-                      </p>
-
-                      <p
-                        className="
-                          text-[10px]
-                          leading-relaxed
-                          text-[#527263]
-                          sm:text-[12px]
-                        "
-                      >
-                        Your visit fee is adjusted when you purchase
-                        a MUNDER plan.
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* NO HIDDEN CHARGES */}
-
-                  <div
-                    className="
-                      flex
-                      min-h-[82px]
-                      w-full
-                      min-w-0
-                      items-center
-                      gap-3
-                      rounded-[16px]
-                      bg-white
-                      px-4
-                      py-4
-                      ring-1
-                      ring-[#D8EDE0]
-                      sm:min-h-[92px]
-                      sm:px-5
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        h-[48px]
-                        w-[48px]
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-[#006b38]
-                        text-white
-                        sm:h-[56px]
-                        sm:w-[56px]
-                      "
-                    >
-                      <ShieldCheck
-                        size={27}
-                        strokeWidth={2}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1 text-left">
-
-                      <p
-                        className="
-                          text-[14px]
-                          font-bold
-                          text-[#06452D]
-                          sm:text-[16px]
-                        "
-                      >
-                        No Hidden Charges
-                      </p>
-
-                      <p
-                        className="
-                          text-[10px]
-                          leading-relaxed
-                          text-[#527263]
-                          sm:text-[12px]
-                        "
-                      >
-                        Pay only 99 for the garden visit.
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                {/* =================================================
-                    ACTION BUTTONS
-                   ================================================= */}
-
-                <div
-                  className="
-                    mt-4
-                    grid
-                    w-full
-                    grid-cols-1
-                    gap-3
-                    sm:mt-5
-                    sm:grid-cols-3
-                  "
-                >
-
-                  {/* BOOK VISIT */}
-
-                  <Link
-                    to="/visit"
-                    className="
-                      flex
-                      h-[58px]
-                      w-full
-                      min-w-0
-                      items-center
-                      justify-center
-                      gap-2
-                      overflow-hidden
-                      rounded-full
-                      bg-[#006b38]
-                      px-3
-                      text-center
-                      text-[13px]
-                      font-bold
-                      text-white
-                      shadow-sm
-                      transition
-                      hover:bg-[#00582e]
-                      hover:shadow-md
-                      sm:px-4
-                      sm:text-[15px]
-                      md:text-[16px]
-                    "
-                  >
-
-                    <CalendarDays
-                      size={19}
-                      className="shrink-0"
-                    />
-
-                    <span className="whitespace-nowrap">
-                      Book a Garden Visit
-                    </span>
-
-                    <ArrowRight
-                      size={18}
-                      className="shrink-0"
-                    />
-
-                  </Link>
-
-
-                  {/* SERVICES */}
-
-                  <Link
-                    to="/garden-maintenance-bhopal"
-                    className="
-                      flex
-                      h-[58px]
-                      w-full
-                      min-w-0
-                      items-center
-                      justify-center
-                      gap-2
-                      overflow-hidden
-                      rounded-full
-                      border-2
-                      border-[#006b38]
-                      bg-white
-                      px-3
-                      text-center
-                      text-[13px]
-                      font-bold
-                      text-[#006b38]
-                      transition
-                      hover:bg-[#F0F9F4]
-                      sm:px-4
-                      sm:text-[15px]
-                      md:text-[16px]
-                    "
-                  >
-
-                    <span className="whitespace-nowrap">
-                      Explore Services
-                    </span>
-
-                    <ArrowRight
-                      size={18}
-                      className="shrink-0"
-                    />
-
-                  </Link>
-
-
-                  {/* PLANS */}
-
-                  <Link
-                    to="/plans"
-                    className="
-                      flex
-                      h-[58px]
-                      w-full
-                      min-w-0
-                      items-center
-                      justify-center
-                      gap-2
-                      overflow-hidden
-                      rounded-full
-                      border-2
-                      border-[#006b38]
-                      bg-white
-                      px-3
-                      text-center
-                      text-[13px]
-                      font-bold
-                      text-[#006b38]
-                      transition
-                      hover:bg-[#F0F9F4]
-                      sm:px-4
-                      sm:text-[15px]
-                      md:text-[16px]
-                    "
-                  >
-
-                    <span className="whitespace-nowrap">
-                      Explore Plans
-                    </span>
-
-                    <ArrowRight
-                      size={18}
-                      className="shrink-0"
-                    />
-
-                  </Link>
-
-                </div>
-
-
-                {/* =================================================
-                    BENEFITS
-                   ================================================= */}
-
-                <div
-                  className="
-                    mt-5
-                    flex
-                    w-full
-                    flex-wrap
-                    items-center
-                    justify-center
-                    gap-y-3
-                    text-center
-                    sm:mt-6
-                    sm:flex-nowrap
-                    sm:gap-0
-                  "
-                >
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      px-3
-                      text-[12px]
-                      font-medium
-                      text-[#355B49]
-                      sm:px-4
-                      sm:text-[13px]
-                    "
-                  >
-                    <CalendarDays
-                      size={17}
-                      className="shrink-0 text-[#006b38]"
-                    />
-
-                    Easy Scheduling
-                  </div>
-
-                  <div className="hidden h-5 w-px bg-[#9BBBA8] sm:block" />
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      px-3
-                      text-[12px]
-                      font-medium
-                      text-[#355B49]
-                      sm:px-4
-                      sm:text-[13px]
-                    "
-                  >
-                    <ShieldCheck
-                      size={17}
-                      className="shrink-0 text-[#006b38]"
-                    />
-
-                    Transparent Process
-                  </div>
-
-                  <div className="hidden h-5 w-px bg-[#9BBBA8] sm:block" />
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      px-3
-                      text-[12px]
-                      font-medium
-                      text-[#355B49]
-                      sm:px-4
-                      sm:text-[13px]
-                    "
-                  >
-                    <span className="text-[17px] text-[#006b38]">
-                      
-                    </span>
-
-                    Expert Guidance
-                  </div>
-
-                </div>
-
+                <h2 className="mt-3 text-4xl font-black leading-[1.02] tracking-tight text-[#063F2B] sm:text-5xl md:text-6xl lg:text-7xl">
+                  Book a Garden Visit
+                </h2>
+                <p className="mx-auto mt-4 max-w-4xl text-sm font-medium leading-relaxed text-[#557066] sm:text-base md:text-lg">
+                  Our gardening experts will visit your space, understand your needs and suggest the best solutions.
+                </p>
               </div>
 
-            </div>
+              {/* VISIT CARD */}
+              <div className="mx-auto mt-7 max-w-[1100px] rounded-[26px] border border-[#D0E8D9] bg-white/95 p-4 shadow-[0_8px_28px_rgba(0,107,56,0.10)] sm:mt-9 sm:p-5 md:p-6">
+                <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-[1fr_auto]">
+                  <div className="flex items-center gap-4 sm:gap-5">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#08733F] text-white shadow-[0_6px_16px_rgba(0,107,56,0.20)] sm:h-16 sm:w-16">
+                      <CalendarDays size={29} strokeWidth={2.4} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-[#075B36] sm:text-2xl">Book a Garden Visit</h3>
+                      <p className="mt-1 text-sm font-medium text-[#60756C] sm:text-base">Get expert advice at your doorstep</p>
+                    </div>
+                  </div>
+                  <div className="rounded-[18px] bg-[#F1FAF4] px-5 py-3 text-left sm:min-w-[180px]">
+                    <p className="text-xs font-semibold text-[#64786F]">Visit Fee</p>
+                    <p className="text-3xl font-black leading-tight text-[#075B36]">₹99</p>
+                    <p className="text-xs text-[#64786F]">One-time fee</p>
+                  </div>
+                </div>
 
+                {/* THREE BENEFITS IN ONE CARD */}
+                <div className="mt-5 grid grid-cols-1 divide-y divide-[#D9E9DE] rounded-[20px] border border-[#E0ECE4] bg-[#FBFEFC] md:grid-cols-3 md:divide-x md:divide-y-0">
+                  <div className="flex items-center gap-4 px-4 py-4 sm:px-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E1F4E8] text-[#08733F]">
+                      <IndianRupee size={22} strokeWidth={2.6} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-[#61766C]">Visit Fee</p>
+                      <p className="text-xl font-black text-[#063F2B]">₹99</p>
+                      <p className="text-xs text-[#71837B]">One-time fee</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 px-4 py-4 sm:px-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E1F4E8] text-[#08733F]">
+                      <CreditCard size={22} strokeWidth={2.4} />
+                    </div>
+                    <div>
+                      <p className="text-base font-extrabold text-[#063F2B]">₹99 Fully Adjustable</p>
+                      <p className="mt-1 text-xs leading-relaxed text-[#61766C]">
+                        Your visit fee is adjusted when you purchase a MUNDER plan.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 px-4 py-4 sm:px-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E1F4E8] text-[#08733F]">
+                      <ShieldCheck size={22} strokeWidth={2.4} />
+                    </div>
+                    <div>
+                      <p className="text-base font-extrabold text-[#063F2B]">No Hidden Charges</p>
+                      <p className="mt-1 text-xs leading-relaxed text-[#61766C]">Pay only ₹99 for the garden visit.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-center">
+                  <Link to="/visit" className="group inline-flex min-h-[58px] w-full max-w-[500px] items-center justify-center gap-3 rounded-full bg-[#007A43] px-7 py-4 text-base font-black text-white shadow-[0_9px_24px_rgba(0,122,67,0.25)] transition duration-200 hover:-translate-y-1 hover:bg-[#006A39] hover:shadow-[0_14px_30px_rgba(0,122,67,0.30)] sm:text-lg">
+                    <CalendarDays size={23} />
+                    Book a Garden Visit
+                    <ArrowRight size={22} className="transition group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-xs font-bold text-[#4E6D5D] sm:text-sm">
+                <span className="flex items-center gap-2"><CalendarDays size={16} className="text-[#08733F]" />Easy Scheduling</span>
+                <span className="hidden h-4 w-px bg-[#9DC9AE] sm:block" />
+                <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-[#08733F]" />Transparent Process</span>
+                <span className="hidden h-4 w-px bg-[#9DC9AE] sm:block" />
+                <span className="flex items-center gap-2"><Sparkles size={16} className="text-[#08733F]" />Expert Guidance</span>
+              </div>
+            </div>
           </div>
 
-        </div>
+          {/* EXPLORE SERVICES + PLANS */}
+          <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <Link to="/garden-maintenance-bhopal" className="group relative overflow-hidden rounded-[28px] border border-[#CFE7D8] bg-gradient-to-br from-[#F0FAF4] via-[#EAF8EE] to-white p-5 shadow-[0_8px_25px_rgba(0,107,56,0.07)] transition duration-200 hover:-translate-y-1 hover:border-[#8CC9A4] hover:shadow-[0_15px_35px_rgba(0,107,56,0.13)] sm:p-7 md:p-8">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#D5F0DE] opacity-70 blur-2xl" />
+              <div className="relative z-10">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#DDF3E5] text-[#08733F]"><Grid2X2 size={28} strokeWidth={2.3} /></div>
+                  <div>
+                    <h3 className="text-2xl font-black text-[#063F2B] sm:text-3xl">Explore Services</h3>
+                    <p className="mt-2 max-w-lg text-sm leading-relaxed text-[#5C7167] sm:text-base">
+                      Complete garden solutions for every space — from maintenance to landscaping, plantation and more.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 grid grid-cols-1 gap-2 text-sm font-semibold text-[#385B4A] sm:grid-cols-2">
+                  {serviceItems.map((item) => <span key={item} className="flex items-center gap-2"><CheckCircle2 size={17} className="shrink-0 text-[#08733F]" />{item}</span>)}
+                </div>
+                <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#08733F] px-6 py-3.5 text-sm font-black text-white shadow-[0_7px_18px_rgba(0,107,56,0.16)]">
+                  Explore Services <ArrowRight size={19} className="transition group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
 
+            <Link to="/plans" className="group relative overflow-hidden rounded-[28px] border border-[#E8DFC2] bg-gradient-to-br from-[#FFFDF5] via-[#FAF8EA] to-white p-5 shadow-[0_8px_25px_rgba(116,94,31,0.06)] transition duration-200 hover:-translate-y-1 hover:border-[#D9C77E] hover:shadow-[0_15px_35px_rgba(116,94,31,0.12)] sm:p-7 md:p-8">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#F5EDC8] opacity-70 blur-2xl" />
+              <div className="relative z-10">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#F4EECF] text-[#08733F]"><FileText size={28} strokeWidth={2.3} /></div>
+                  <div>
+                    <h3 className="text-2xl font-black text-[#063F2B] sm:text-3xl">Explore Plans</h3>
+                    <p className="mt-2 max-w-lg text-sm leading-relaxed text-[#5C7167] sm:text-base">
+                      Flexible maintenance plans designed for your garden's needs and your peace of mind.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 grid grid-cols-1 gap-2 text-sm font-semibold text-[#385B4A] sm:grid-cols-2">
+                  {planItems.map((item) => <span key={item} className="flex items-center gap-2"><CheckCircle2 size={17} className="shrink-0 text-[#08733F]" />{item}</span>)}
+                </div>
+                <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#08733F] px-6 py-3.5 text-sm font-black text-white shadow-[0_7px_18px_rgba(0,107,56,0.16)]">
+                  Explore Plans <ArrowRight size={19} className="transition group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
       </section>
 
-
-      {/* =====================================================
-          WHY CHOOSE MUNDER
-         ===================================================== */}
-
       <WhyChooseSection />
-
-
-      {/* =====================================================
-          TESTIMONIALS
-         ===================================================== */}
-
+      <ProjectsSection />
       <TestimonialsSection />
-
-
-      {/* =====================================================
-          FAQ
-         ===================================================== */}
-
       <FaqSection />
-
     </main>
   );
 }
