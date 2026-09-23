@@ -458,6 +458,7 @@ export default function Services() {
 
       <Box
         sx={{
+          display: { xs: "none", md: "block" },
           width: "100%",
           background: "#F7FAF7",
           px: {
@@ -693,10 +694,217 @@ export default function Services() {
             );
           })}
         </Box>
-        {/* SELECTED SERVICE DETAILS */}
+        {/* MOBILE SERVICE CARDS + INLINE DETAILS */}
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          px: 2,
+          py: 3,
+          background: "#F7FAF7",
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 600,
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 1.5,
+          }}
+        >
+          {services.map((service, index) => {
+            const selected = index === currentServiceIndex;
+            const expanded = index === expandedServiceIndex;
+
+            return (
+              <Box key={service.title}>
+                {/* MOBILE SERVICE CARD */}
+                <Box
+                  onClick={() => toggleServiceDetails(index)}
+                  sx={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    cursor: "pointer",
+                    background: selected
+                      ? service.color || "#2E7D32"
+                      : "#FFFFFF",
+                    color: selected ? "#FFFFFF" : "#1B4332",
+                    border: selected
+                      ? "2px solid transparent"
+                      : "1px solid rgba(46,125,50,0.16)",
+                    boxShadow: selected
+                      ? "0 8px 20px rgba(0,0,0,0.12)"
+                      : "0 4px 12px rgba(0,0,0,0.06)",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      minWidth: 48,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: selected
+                        ? "rgba(255,255,255,0.18)"
+                        : "rgba(46,125,50,0.08)",
+                    }}
+                  >
+                    {service.icon &&
+                      React.cloneElement(service.icon, {
+                        sx: {
+                          fontSize: 25,
+                          color: selected
+                            ? "#FFFFFF"
+                            : service.color || "#2E7D32",
+                        },
+                      })}
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      sx={{
+                        fontSize: "0.98rem",
+                        fontWeight: 800,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {service.title}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 0.4,
+                        fontSize: "0.76rem",
+                        lineHeight: 1.35,
+                        opacity: selected ? 0.9 : 0.7,
+                      }}
+                    >
+                      {service.heroDescription}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      fontSize: 22,
+                      lineHeight: 1,
+                      fontWeight: 700,
+                      transform: expanded
+                        ? "rotate(90deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.2s ease",
+                    }}
+                  >
+                    →
+                  </Box>
+                </Box>
+
+                {/* INLINE MOBILE DETAILS */}
+                {expanded && (
+                  <Box
+                    sx={{
+                      mt: 1,
+                      p: 2,
+                      borderRadius: 2.5,
+                      background: "#FFFFFF",
+                      border: "1px solid rgba(46,125,50,0.12)",
+                      boxShadow: "0 5px 16px rgba(0,0,0,0.06)",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: service.color || "#2E7D32",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                        letterSpacing: 1,
+                        textTransform: "uppercase",
+                        mb: 0.7,
+                      }}
+                    >
+                      Professional Munder Service
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "1.25rem",
+                        fontWeight: 800,
+                        color: "#163020",
+                        mb: 1,
+                      }}
+                    >
+                      {service.title}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "0.9rem",
+                        lineHeight: 1.65,
+                        color: "#4B5563",
+                        mb: 1.3,
+                      }}
+                    >
+                      {service.description}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "0.86rem",
+                        lineHeight: 1.65,
+                        color: "#5B6470",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {service.details}
+                    </Typography>
+
+                    <Button
+                      fullWidth
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        navigate("/visit", {
+                          state: {
+                            service: service.title,
+                          },
+                        });
+                      }}
+                      endIcon={<ArrowForwardRoundedIcon />}
+                      sx={{
+                        mt: 2,
+                        py: 1.25,
+                        borderRadius: 2,
+                        background:
+                          service.color || "#2E7D32",
+                        color: "#FFFFFF",
+                        fontWeight: 800,
+                        textTransform: "none",
+                        "&:hover": {
+                          background:
+                            service.color || "#256628",
+                        },
+                      }}
+                    >
+                      Book Free Visit
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+      {/* SELECTED SERVICE DETAILS */}
         {expandedServiceIndex !== null && (
           <Box
             sx={{
+              display: { xs: "none", md: "block" },
               width: "100%",
               maxWidth: 1200,
               mx: "auto",
@@ -817,5 +1025,8 @@ export default function Services() {
     </Box>
   );
 }
+
+
+
 
 
