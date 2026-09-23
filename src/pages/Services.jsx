@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 
 import GrassRoundedIcon from "@mui/icons-material/GrassRounded";
@@ -694,7 +694,9 @@ export default function Services() {
             );
           })}
         </Box>
-        {/* MOBILE SERVICE CARDS + INLINE DETAILS */}
+      </Box>
+
+      {/* MOBILE SERVICE CARDS + INLINE DETAILS */}
       <Box
         sx={{
           display: { xs: "block", md: "none" },
@@ -1021,7 +1023,6 @@ export default function Services() {
             </Button>
           </Box>
         )}
-      </Box>
     </Box>
   );
 }
