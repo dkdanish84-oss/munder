@@ -453,244 +453,167 @@ export default function Services() {
       </Box>
 
       {/* =====================================================
-          SERVICE CARDS
+          DESKTOP SERVICE CARDS
       ===================================================== */}
-
       <Box
         sx={{
           display: { xs: "none", md: "block" },
           width: "100%",
-          background: "#F7FAF7",
-          px: {
-            xs: 1.5,
-            sm: 2,
-            md: 4,
-          },
-          pt: {
-            xs: 2,
-            sm: 2.5,
-            md: 3,
-          },
-          pb: {
-            xs: 2,
-            sm: 2.5,
-            md: 3,
-          },
+          background: "linear-gradient(180deg, #F7FBF7 0%, #F2F8F2 100%)",
+          px: { md: 4, lg: 5 },
+          py: { md: 3, lg: 4 },
         }}
       >
         <Box
           sx={{
             width: "100%",
-            maxWidth: 1200,
+            maxWidth: 1400,
             mx: "auto",
-
             display: "grid",
-
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(4, minmax(0, 1fr))",
-            },
-
-            gap: {
-              xs: 1.5,
-              sm: 2,
-              md: 2.5,
-            },
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            gap: { md: 2, lg: 2.5 },
           }}
         >
           {services.map((service, index) => {
-            const selected = index === currentServiceIndex;
+            const expanded = expandedServiceIndex === index;
+            const accent =
+              index === 0
+                ? "#176B3A"
+                : index === 1
+                ? "#3E7D3A"
+                : index === 2
+                ? "#2489A6"
+                : "#2497A8";
+            const iconBg =
+              index === 0
+                ? "#E7F4D2"
+                : index === 1
+                ? "#F2F2DF"
+                : index === 2
+                ? "#E3F3FA"
+                : "#E1F5F5";
 
             return (
-              <React.Fragment key={service.title}>
-                {/* SERVICE CARD */}
-
+              <Box
+                key={service.title}
+                onClick={() => toggleServiceDetails(index)}
+                sx={{
+                  minWidth: 0,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  background: "#FFFFFF",
+                  borderRadius: 4,
+                  border: expanded
+                    ? `2px solid ${accent}`
+                    : "1px solid #DCE9DF",
+                  boxShadow: expanded
+                    ? "0 12px 30px rgba(20,80,45,0.14)"
+                    : "0 7px 20px rgba(20,70,40,0.07)",
+                  transition:
+                    "transform .22s ease, box-shadow .22s ease, border-color .22s ease",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    borderColor: accent,
+                    boxShadow: "0 12px 28px rgba(20,80,45,0.13)",
+                  },
+                }}
+              >
+                {/* SERVICE IMAGE */}
                 <Box
-                  onClick={() => toggleServiceDetails(index)}
+                  component="img"
+                  src={service.images[0]}
+                  alt={service.title}
                   sx={{
                     width: "100%",
-                    minWidth: 0,
-                    boxSizing: "border-box",
-
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-
-                    px: {
-                      xs: 1.5,
-                      sm: 2,
-                      md: 2.5,
-                    },
-
-                    py: {
-                      xs: 2,
-                      sm: 2.5,
-                      md: 3,
-                    },
-
-                    minHeight: {
-                      xs: 175,
-                      sm: 185,
-                      md: 195,
-                    },
-
-                    borderRadius: {
-                      xs: 2.5,
-                      md: 3,
-                    },
-
-                    background: "#FFFFFF",
-
-                    border: selected
-                      ? "2px solid #006b38"
-                      : "1px solid #DDE8E0",
-
-                    boxShadow: selected
-                      ? "0 6px 20px rgba(0,107,56,.16)"
-                      : "0 4px 14px rgba(0,0,0,.07)",
-
-                    cursor: "pointer",
-
-                    transition:
-                      "transform .2s ease, border-color .2s ease, box-shadow .2s ease",
-
-                    "&:hover": {
-                      transform: "translateY(-3px)",
-                      borderColor: "#006b38",
-                      boxShadow:
-                        "0 8px 22px rgba(0,107,56,.15)",
-                    },
+                    height: { md: 155, lg: 175 },
+                    display: "block",
+                    objectFit: "cover",
                   }}
-                >
-                  {/* ICON */}
+                />
 
+                {/* CARD CONTENT */}
+                <Box sx={{ p: { md: 2, lg: 2.25 } }}>
                   <Box
                     sx={{
-                      width: {
-                        xs: 42,
-                        sm: 44,
-                        md: 46,
-                      },
-
-                      height: {
-                        xs: 42,
-                        sm: 44,
-                        md: 46,
-                      },
-
-                      borderRadius: "50%",
-
-                      background: service.color,
-
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-
-                      color: "#006b38",
-
-                      mb: {
-                        xs: 1.2,
-                        sm: 1.5,
-                        md: 1.7,
-                      },
+                      gap: 1.25,
+                      mb: 1.25,
                     }}
                   >
-                    {React.cloneElement(service.icon, {
-                      sx: {
-                        fontSize: {
-                          xs: 26,
-                          sm: 30,
-                          md: 34,
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        minWidth: 48,
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: iconBg,
+                      }}
+                    >
+                      {React.cloneElement(service.icon, {
+                        sx: {
+                          fontSize: 27,
+                          color: accent,
                         },
-                      },
-                    })}
+                      })}
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        color: "#103F28",
+                        fontSize: { md: "1rem", lg: "1.08rem" },
+                        fontWeight: 800,
+                        lineHeight: 1.18,
+                      }}
+                    >
+                      {service.title}
+                    </Typography>
                   </Box>
 
-
-                  {/* TITLE */}
-
                   <Typography
                     sx={{
-                      color: "#0E4D28",
-
-                      fontSize: {
-                        xs: "0.72rem",
-                        sm: "0.76rem",
-                        md: "0.82rem",
-                      },
-
-                      fontWeight: 800,
-                      lineHeight: 1.2,
-
-                      minHeight: {
-                        xs: 42,
-                        sm: 44,
-                        md: 46,
-                      },
-
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-
-                      whiteSpace: "pre-line",
-                    }}
-                  >
-                    {service.shortTitle}
-                  </Typography>
-
-                  {/* SHORT DESCRIPTION */}
-
-                  <Typography
-                    sx={{
-                      mt: 0.45,
-
-                      color: "#6B7280",
-
-                      fontSize: {
-                        xs: "0.65rem",
-                        sm: "0.7rem",
-                        md: "0.75rem",
-                      },
-
-                      lineHeight: 1.4,
-
+                      color: "#60736A",
+                      fontSize: { md: "0.82rem", lg: "0.88rem" },
+                      lineHeight: 1.5,
+                      minHeight: { md: 58, lg: 64 },
                       display: "-webkit-box",
-                      WebkitLineClamp: 2,
+                      WebkitLineClamp: 3,
                       WebkitBoxOrient: "vertical",
                       overflow: "hidden",
-
-                      maxWidth: 300,
                     }}
                   >
                     {service.heroDescription}
                   </Typography>
 
-                  {/* VIEW SERVICE */}
-
-                  <Typography
+                  <Button
+                    fullWidth
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleServiceDetails(index);
+                    }}
+                    endIcon={<ArrowForwardRoundedIcon />}
                     sx={{
-                      mt: 0.7,
-
-                      color: "#006b38",
-
-                      fontSize: {
-                        xs: "0.65rem",
-                        sm: "0.7rem",
-                        md: "0.75rem",
-                      },
-
+                      mt: 1.5,
+                      minHeight: 42,
+                      borderRadius: 2.5,
+                      background: expanded ? "#0D5B31" : "#116B3A",
+                      color: "#FFFFFF",
                       fontWeight: 800,
+                      fontSize: { md: "0.82rem", lg: "0.88rem" },
+                      textTransform: "none",
+                      boxShadow: "0 6px 16px rgba(17,107,58,0.18)",
+                      "&:hover": {
+                        background: "#0D5B31",
+                      },
                     }}
                   >
-                    {expandedServiceIndex === index
-                      ? "Close Service "
-                      : "View Service "}
-                  </Typography>
+                    {expanded ? "Close Service" : "View Service"}
+                  </Button>
                 </Box>
-
-
-              </React.Fragment>
+              </Box>
             );
           })}
         </Box>
@@ -700,9 +623,10 @@ export default function Services() {
       <Box
         sx={{
           display: { xs: "block", md: "none" },
-          px: 2,
-          py: 3,
-          background: "#F7FAF7",
+          px: 1.5,
+          py: 2.5,
+          background:
+            "linear-gradient(180deg, #F7FBF7 0%, #F2F8F2 100%)",
         }}
       >
         <Box
@@ -716,67 +640,89 @@ export default function Services() {
           }}
         >
           {services.map((service, index) => {
-            const selected = index === currentServiceIndex;
             const expanded = index === expandedServiceIndex;
+            const accent =
+              index === 0
+                ? "#1B6B3A"
+                : index === 1
+                ? "#3E7D3A"
+                : index === 2
+                ? "#2489A6"
+                : "#2497A8";
+            const iconBg =
+              index === 0
+                ? "#E7F4D2"
+                : index === 1
+                ? "#F2F2DF"
+                : index === 2
+                ? "#E3F3FA"
+                : "#E1F5F5";
 
             return (
-              <Box key={service.title}>
+              <Box
+                key={service.title}
+                sx={{
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  background: "#FFFFFF",
+                  border: expanded
+                    ? "1.5px solid rgba(27,107,58,0.24)"
+                    : "1px solid rgba(27,107,58,0.10)",
+                  boxShadow: expanded
+                    ? "0 10px 28px rgba(20,70,40,0.12)"
+                    : "0 5px 18px rgba(20,70,40,0.07)",
+                  transition: "all 0.25s ease",
+                }}
+              >
                 {/* MOBILE SERVICE CARD */}
                 <Box
                   onClick={() => toggleServiceDetails(index)}
                   sx={{
+                    position: "relative",
                     width: "100%",
+                    minHeight: 96,
                     boxSizing: "border-box",
                     display: "flex",
                     alignItems: "center",
-                    gap: 1.5,
-                    p: 1.5,
-                    borderRadius: 2.5,
+                    gap: 1.4,
+                    px: 1.25,
+                    py: 1.25,
                     cursor: "pointer",
-                    background: selected
-                      ? service.color || "#2E7D32"
+                    background: expanded
+                      ? "linear-gradient(135deg, #F0F8E8 0%, #FFFFFF 72%)"
                       : "#FFFFFF",
-                    color: selected ? "#FFFFFF" : "#1B4332",
-                    border: selected
-                      ? "2px solid transparent"
-                      : "1px solid rgba(46,125,50,0.16)",
-                    boxShadow: selected
-                      ? "0 8px 20px rgba(0,0,0,0.12)"
-                      : "0 4px 12px rgba(0,0,0,0.06)",
-                    transition: "all 0.2s ease",
                   }}
                 >
+                  {/* ICON */}
                   <Box
                     sx={{
-                      width: 48,
-                      height: 48,
-                      minWidth: 48,
+                      width: 52,
+                      height: 52,
+                      minWidth: 52,
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      background: selected
-                        ? "rgba(255,255,255,0.18)"
-                        : "rgba(46,125,50,0.08)",
+                      background: iconBg,
                     }}
                   >
                     {service.icon &&
                       React.cloneElement(service.icon, {
                         sx: {
-                          fontSize: 25,
-                          color: selected
-                            ? "#FFFFFF"
-                            : service.color || "#2E7D32",
+                          fontSize: 28,
+                          color: accent,
                         },
                       })}
                   </Box>
 
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                  {/* TEXT */}
+                  <Box sx={{ flex: 1, minWidth: 0, pr: 0.5 }}>
                     <Typography
                       sx={{
-                        fontSize: "0.98rem",
+                        fontSize: "1rem",
                         fontWeight: 800,
                         lineHeight: 1.2,
+                        color: "#103F28",
                       }}
                     >
                       {service.title}
@@ -784,28 +730,51 @@ export default function Services() {
 
                     <Typography
                       sx={{
-                        mt: 0.4,
-                        fontSize: "0.76rem",
-                        lineHeight: 1.35,
-                        opacity: selected ? 0.9 : 0.7,
+                        mt: 0.45,
+                        fontSize: "0.77rem",
+                        lineHeight: 1.42,
+                        color: "#60736A",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {service.heroDescription}
                     </Typography>
                   </Box>
 
+                  {/* SERVICE IMAGE */}
+                  <Box
+                    component="img"
+                    src={service.images[0]}
+                    alt={service.title}
+                    sx={{
+                      width: 82,
+                      height: 64,
+                      minWidth: 82,
+                      objectFit: "cover",
+                      borderRadius: "18px",
+                      display: { xs: "block", sm: "block" },
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.10)",
+                    }}
+                  />
+
+                  {/* ARROW */}
                   <Box
                     sx={{
-                      fontSize: 22,
-                      lineHeight: 1,
-                      fontWeight: 700,
-                      transform: expanded
-                        ? "rotate(90deg)"
-                        : "rotate(0deg)",
+                      width: 28,
+                      minWidth: 28,
+                      height: 28,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: accent,
+                      transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
                       transition: "transform 0.2s ease",
                     }}
                   >
-                    →
+                    <ArrowForwardRoundedIcon sx={{ fontSize: 22 }} />
                   </Box>
                 </Box>
 
@@ -813,22 +782,41 @@ export default function Services() {
                 {expanded && (
                   <Box
                     sx={{
-                      mt: 1,
-                      p: 2,
-                      borderRadius: 2.5,
+                      px: 1.5,
+                      pb: 1.5,
                       background: "#FFFFFF",
-                      border: "1px solid rgba(46,125,50,0.12)",
-                      boxShadow: "0 5px 16px rgba(0,0,0,0.06)",
                     }}
                   >
+                    <Box
+                      sx={{
+                        height: 1,
+                        background: "rgba(27,107,58,0.10)",
+                        mb: 1.5,
+                      }}
+                    />
+
+                    <Box
+                      component="img"
+                      src={service.images[0]}
+                      alt={service.title}
+                      sx={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "cover",
+                        borderRadius: 2.5,
+                        display: "block",
+                        mb: 1.5,
+                      }}
+                    />
+
                     <Typography
                       sx={{
-                        color: service.color || "#2E7D32",
-                        fontSize: "0.72rem",
+                        fontSize: "0.7rem",
                         fontWeight: 800,
-                        letterSpacing: 1,
+                        letterSpacing: 1.1,
                         textTransform: "uppercase",
-                        mb: 0.7,
+                        color: accent,
+                        mb: 0.45,
                       }}
                     >
                       Professional Munder Service
@@ -836,10 +824,11 @@ export default function Services() {
 
                     <Typography
                       sx={{
-                        fontSize: "1.25rem",
-                        fontWeight: 800,
-                        color: "#163020",
-                        mb: 1,
+                        fontSize: "1.22rem",
+                        fontWeight: 850,
+                        lineHeight: 1.2,
+                        color: "#103F28",
+                        mb: 0.7,
                       }}
                     >
                       {service.title}
@@ -847,25 +836,37 @@ export default function Services() {
 
                     <Typography
                       sx={{
-                        fontSize: "0.9rem",
-                        lineHeight: 1.65,
-                        color: "#4B5563",
-                        mb: 1.3,
+                        fontSize: "0.88rem",
+                        lineHeight: 1.6,
+                        color: "#52655D",
+                        mb: 1.1,
                       }}
                     >
                       {service.description}
                     </Typography>
 
-                    <Typography
+                    <Box
                       sx={{
-                        fontSize: "0.86rem",
-                        lineHeight: 1.65,
-                        color: "#5B6470",
-                        whiteSpace: "pre-line",
+                        position: "relative",
+                        overflow: "hidden",
+                        borderRadius: 2.5,
+                        background: "#F8FBF7",
+                        border: "1px solid rgba(27,107,58,0.08)",
+                        p: 1.25,
+                        mb: 1.4,
                       }}
                     >
-                      {service.details}
-                    </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.86rem",
+                          lineHeight: 1.65,
+                          color: "#4C5F57",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        {service.details}
+                      </Typography>
+                    </Box>
 
                     <Button
                       fullWidth
@@ -879,17 +880,16 @@ export default function Services() {
                       }}
                       endIcon={<ArrowForwardRoundedIcon />}
                       sx={{
-                        mt: 2,
-                        py: 1.25,
-                        borderRadius: 2,
-                        background:
-                          service.color || "#2E7D32",
+                        minHeight: 48,
+                        borderRadius: 2.5,
+                        background: "#116B3A",
                         color: "#FFFFFF",
                         fontWeight: 800,
+                        fontSize: "0.95rem",
                         textTransform: "none",
+                        boxShadow: "0 7px 18px rgba(17,107,58,0.22)",
                         "&:hover": {
-                          background:
-                            service.color || "#256628",
+                          background: "#0D5B31",
                         },
                       }}
                     >
