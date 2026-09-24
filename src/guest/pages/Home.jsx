@@ -1,8 +1,8 @@
 import HeroSection from "../../components/guest/HeroSection";
 import WhyChooseSection from "../../components/guest/WhyChooseSection";
-import ProjectsSection from "../../components/guest/ProjectsSection";
 import TestimonialsSection from "../../components/guest/TestimonialsSection";
 import FaqSection from "../../components/guest/FaqSection";
+import ContactSection from "../../components/guest/ContactSection";
 import { Link } from "react-router-dom";
 import {
   ArrowRight, CalendarDays, CreditCard, ShieldCheck, IndianRupee,
@@ -65,7 +65,7 @@ export default function Home() {
                   </div>
                   <div className="rounded-[18px] bg-[#F1FAF4] px-5 py-3 text-left sm:min-w-[180px]">
                     <p className="text-xs font-semibold text-[#64786F]">Visit Fee</p>
-                    <p className="text-3xl font-black leading-tight text-[#075B36]">₹99</p>
+                    <p className="text-3xl font-black leading-tight text-[#075B36]">â‚¹99</p>
                     <p className="text-xs text-[#64786F]">One-time fee</p>
                   </div>
                 </div>
@@ -78,7 +78,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-[#61766C]">Visit Fee</p>
-                      <p className="text-xl font-black text-[#063F2B]">₹99</p>
+                      <p className="text-xl font-black text-[#063F2B]">â‚¹99</p>
                       <p className="text-xs text-[#71837B]">One-time fee</p>
                     </div>
                   </div>
@@ -88,7 +88,7 @@ export default function Home() {
                       <CreditCard size={22} strokeWidth={2.4} />
                     </div>
                     <div>
-                      <p className="text-base font-extrabold text-[#063F2B]">₹99 Fully Adjustable</p>
+                      <p className="text-base font-extrabold text-[#063F2B]">â‚¹99 Fully Adjustable</p>
                       <p className="mt-1 text-xs leading-relaxed text-[#61766C]">
                         Your visit fee is adjusted when you purchase a MUNDER plan.
                       </p>
@@ -101,7 +101,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-base font-extrabold text-[#063F2B]">No Hidden Charges</p>
-                      <p className="mt-1 text-xs leading-relaxed text-[#61766C]">Pay only ₹99 for the garden visit.</p>
+                      <p className="mt-1 text-xs leading-relaxed text-[#61766C]">Pay only â‚¹99 for the garden visit.</p>
                     </div>
                   </div>
                 </div>
@@ -135,7 +135,7 @@ export default function Home() {
                   <div>
                     <h3 className="text-2xl font-black text-[#063F2B] sm:text-3xl">Explore Services</h3>
                     <p className="mt-2 max-w-lg text-sm leading-relaxed text-[#5C7167] sm:text-base">
-                      Complete garden solutions for every space — from maintenance to landscaping, plantation and more.
+                      Complete garden solutions for every space - from maintenance to landscaping, plantation and more.
                     </p>
                   </div>
                 </div>
@@ -173,9 +173,9 @@ export default function Home() {
       </section>
 
       <WhyChooseSection />
-      <ProjectsSection />
       <TestimonialsSection />
       <FaqSection />
+      <ContactSection />
     </main>
   );
 }
