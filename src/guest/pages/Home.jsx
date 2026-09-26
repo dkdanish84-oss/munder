@@ -1,3 +1,4 @@
+import SEO from "../../components/SEO";
 ﻿import HeroSection from "../../components/guest/HeroSection";
 import WhyChooseSection from "../../components/guest/WhyChooseSection";
 import TestimonialsSection from "../../components/guest/TestimonialsSection";
@@ -21,7 +22,14 @@ import gardenLandscape from "../../assets/munder/extra-photo-16.jpg";
 
 export default function Home() {
   return (
-    <main className="w-full overflow-x-hidden bg-white">
+    <>
+      <SEO
+        title="MUNDER | Landscaping & Garden Maintenance Services"
+        description="MUNDER provides professional landscaping, garden maintenance, plantation and garden care services for homes, businesses and outdoor spaces."
+        url="https://munder.in/"
+      />
+
+      <main className="w-full overflow-x-hidden bg-white">
 
       {/* =====================================================
           HERO
@@ -416,5 +424,6 @@ export default function Home() {
       <FaqSection />
 
     </main>
+    </>
   );
 }
