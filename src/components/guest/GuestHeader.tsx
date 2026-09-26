@@ -27,6 +27,13 @@ export default function GuestHeader(): React.ReactElement {
   const [open, setOpen] = useState(false);
 
   const openWhatsApp = (): void => {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "whatsapp_click", {
+        event_category: "engagement",
+        event_label: "Guest Header WhatsApp",
+      });
+    }
+
     window.open(
       "https://wa.me/917987468974?text=Hi%20Munder,%20I%20need%20garden%20services.",
       "_blank",
