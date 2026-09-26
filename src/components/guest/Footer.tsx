@@ -55,6 +55,14 @@ export default function Footer() {
                 <a
                   href="tel:+917987468974"
                   className="transition-colors hover:text-white"
+                  onClick={() => {
+                    if (typeof window.gtag === "function") {
+                      window.gtag("event", "phone_call", {
+                        event_category: "engagement",
+                        event_label: "Guest Footer Phone",
+                      });
+                    }
+                  }}
                 >
                   +91 7987468974
                 </a>
