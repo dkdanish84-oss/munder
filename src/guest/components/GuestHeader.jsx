@@ -26,6 +26,15 @@ const menu = [
 export default function GuestHeader() {
   const [open, setOpen] = useState(false);
 
+  const trackWhatsApp = () => {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "whatsapp_click", {
+        event_category: "engagement",
+        event_label: "Guest Header WhatsApp",
+      });
+    }
+  };
+
   return (
     <>
       <AppBar
@@ -88,6 +97,7 @@ export default function GuestHeader() {
               startIcon={<WhatsAppIcon />}
               href="https://wa.me/917987468974"
               target="_blank"
+              onClick={trackWhatsApp}
               sx={{
                 display: { xs: "none", md: "inline-flex" },
                 bgcolor: "#2E7D32",
@@ -150,6 +160,7 @@ export default function GuestHeader() {
               startIcon={<WhatsAppIcon />}
               href="https://wa.me/917987468974"
               target="_blank"
+              onClick={trackWhatsApp}
               sx={{
                 bgcolor: "#2E7D32",
                 textTransform: "none",
