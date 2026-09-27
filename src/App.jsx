@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import { Checkout } from "./pages/Checkout";
@@ -14,6 +14,7 @@ import Home from "./guest/pages/Home";
 import Visit from "./pages/Visit";
 import Plans from "./pages/Plans";
 import Services from "./pages/Services";
+import GardenMaintenance from "./pages/GardenMaintenance";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
 
@@ -94,7 +95,7 @@ export default function App() {
 
           <Route
             path="/garden-maintenance-bhopal"
-            element={<Services />}
+            element={<GardenMaintenance />}
           />
 
           <Route
