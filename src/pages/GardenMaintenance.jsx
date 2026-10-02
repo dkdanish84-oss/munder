@@ -107,7 +107,7 @@ export default function GardenMaintenance() {
         title="Garden Maintenance in Bhopal | MUNDER"
         description="MUNDER provides professional garden maintenance services in Bhopal for homes, villas, offices, resorts, hotels and schools. Lawn mowing, pruning, hedge trimming, weeding, watering and regular garden care."
         keywords="garden maintenance Bhopal, garden maintenance services Bhopal, gardening services Bhopal, lawn maintenance Bhopal, gardener service Bhopal, garden care Bhopal, MUNDER"
-        url="https://munder.in/garden-maintenance-bhopal"
+        url="https://munder.in/garden-maintenance-bhopal/"
       />
 
       <Helmet>
@@ -121,7 +121,7 @@ export default function GardenMaintenance() {
         />
         <meta
           property="og:url"
-          content="https://munder.in/garden-maintenance-bhopal"
+          content="https://munder.in/garden-maintenance-bhopal/"
         />
         <script type="application/ld+json">
           {JSON.stringify({
@@ -129,7 +129,7 @@ export default function GardenMaintenance() {
             "@type": "Service",
             name: "Garden Maintenance",
             serviceType: "Garden Maintenance",
-            url: "https://munder.in/garden-maintenance-bhopal",
+            url: "https://munder.in/garden-maintenance-bhopal/",
             description:
               "Professional garden maintenance services in Bhopal including lawn mowing, pruning, hedge trimming, weeding, watering, fertilizing, seasonal plant care and garden cleaning.",
             provider: {

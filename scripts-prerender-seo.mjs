@@ -21,7 +21,7 @@ const routeHtml = html
   )
   .replace(
     /<link rel="canonical"\s+href="[\s\S]*?"\s*\/>/,
-    '<link rel="canonical" href="https://munder.in/garden-maintenance-bhopal" />'
+    '<link rel="canonical" href="https://munder.in/garden-maintenance-bhopal/" />'
   )
   .replace(
     /<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/>/,
@@ -33,7 +33,7 @@ const routeHtml = html
   )
   .replace(
     /<meta\s+property="og:url"\s+content="[\s\S]*?"\s*\/>/,
-    '<meta property="og:url" content="https://munder.in/garden-maintenance-bhopal" />'
+    '<meta property="og:url" content="https://munder.in/garden-maintenance-bhopal/" />'
   )
   .replace(
     /<meta\s+name="twitter:title"\s+content="[\s\S]*?"\s*\/>/,
